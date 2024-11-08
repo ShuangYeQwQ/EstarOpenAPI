@@ -1,0 +1,6 @@
+@EstarOpenAPI_HostAddress = http://localhost:5189
+
+GET {{EstarOpenAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
