@@ -1,6 +1,6 @@
 
-using EstarOpenAPI.Application.Interfaces;
-using EstarOpenAPI.Infrastructure.Identity.Services;
+using Application.Interfaces;
+using Infrastructure.Identity.Services;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using Stripe;
 
 namespace WebApi
 {
@@ -23,6 +24,8 @@ namespace WebApi
         }
         public void ConfigureServices(IServiceCollection services)
         {
+            string secretKey = System.Configuration.ConfigurationManager.AppSettings["SecretKey"] + "";
+            StripeConfiguration.ApiKey = secretKey;
             var key = Encoding.UTF8.GetBytes(System.Configuration.ConfigurationManager.AppSettings["appSecret"] + "");
             services.AddAuthentication(x =>
             {

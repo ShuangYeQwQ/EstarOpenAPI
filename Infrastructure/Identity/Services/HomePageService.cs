@@ -1,14 +1,14 @@
-﻿using EstarOpenAPI.Application.Interfaces;
-using EstarOpenAPI.Application.RequestModel.HomePage;
-using EstarOpenAPI.Application.ResponseModel.HomePage;
-using EstarOpenAPI.Application.Wrappers;
+﻿using Application.Interfaces;
+using Application.RequestModel.HomePage;
+using Application.ResponseModel.HomePage;
+using Application.Wrappers;
 using Infrastructure.Identity.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Mail;
 using System.Net;
 using System.Text;
-using EstarOpenAPI.Infrastructure.Shared;
+using Infrastructure.Shared;
 using EStarGoogleCloud;
 using System.Data;
 using Application.RequestModel;
@@ -22,7 +22,7 @@ using static Google.Cloud.DocumentAI.V1.Document.Types.Page.Types;
 
 
 
-namespace EstarOpenAPI.Infrastructure.Identity.Services
+namespace Infrastructure.Identity.Services
 {
     public class HomePageService : IHomePageService
     {
@@ -90,7 +90,7 @@ VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{1
 email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTime.Now,"", user.Username,"0","", DateTime.Now,"", user.Status, user.Email, user.Mobilephone,""));
 
                 dbcom.Add(command);
-                int num = GoogleSqlDBHelper.ExecuteNonQueryTransaction(sql, dbcom, ref msg);
+                int num = GoogleSqlDBHelper.ExecuteNonQueryTransaction(dbcom, ref msg);
                 if(num > 0)
                 {
                     sql = string.Format(@" SELECT top 1 id FROM users where Account = @email ");
@@ -110,7 +110,7 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
                     command.Parameters.AddWithValue("@Access_Token", token);
                     command.Parameters.AddWithValue("@Expires_in", DateTime.Now.AddDays(30));
                     command.Parameters.AddWithValue("@Refiesh_token", refieshtoken);
-                    num = GoogleSqlDBHelper.ExecuteNonQuery(sql, command, ref msg);
+                    num = GoogleSqlDBHelper.ExecuteNonQuery(command, ref msg);
                     if(num > 0)
                     {
                         signup_Res.user = account;
@@ -180,7 +180,7 @@ values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email
                             command.Parameters.AddWithValue("@EmailBody", newBody);
                             command.Parameters.AddWithValue("@EmailSubject", subject);
                             command.Parameters.AddWithValue("@retrycount", "0");
-                            int num = GoogleSqlDBHelper.ExecuteNonQuery(sql, command, ref msg);
+                            int num = GoogleSqlDBHelper.ExecuteNonQuery(command, ref msg);
 
                           if( num > 0)
                             {
@@ -222,13 +222,27 @@ values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email
         {
             string user = signup_req.user + "";
             string email = signup_req.action_info.email + "";
-            string type = signup_req.action_info.password + "";//0:邮箱验证，1:手机验证
+            string password = signup_req.action_info.password + "";//0:邮箱验证，1:手机验证
             string msg = "";
             Signup_res signup_Res = new Signup_res();
             try
             {
-
+                string epassword = "";
+                bool isok = true;// Pub.VerifyPassword(password, epassword);
+                if (isok)
+                {
+                signup_Res.token = "xx";
+                signup_Res.refiesh_token = "xx";
+                signup_Res.accessTokenExpiration = "xx";
+                signup_Res.user = "xx";
+                signup_Res.username = "xx";
                 return new Response<Signup_res>(signup_Res, "登录成功！");
+                }
+                else
+                {
+                    return new Response<Signup_res>("登录失败，密码输入错误");
+                }
+                
             }
             catch (Exception ex)
             {

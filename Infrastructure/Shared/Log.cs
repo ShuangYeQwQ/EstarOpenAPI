@@ -1,4 +1,4 @@
-﻿namespace EstarOpenAPI.Infrastructure.Shared
+﻿namespace Infrastructure.Shared
 {
     public static class LogEx
     {

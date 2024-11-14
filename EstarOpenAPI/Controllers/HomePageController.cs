@@ -1,7 +1,7 @@
 
 using Application.RequestModel;
-using EstarOpenAPI.Application.Interfaces;
-using EstarOpenAPI.Application.RequestModel.HomePage;
+using Application.Interfaces;
+using Application.RequestModel.HomePage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

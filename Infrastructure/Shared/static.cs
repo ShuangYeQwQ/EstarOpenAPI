@@ -2,7 +2,7 @@
 using System.Net;
 using MailKit.Net.Smtp;
 using MimeKit;
-using EstarOpenAPI.Infrastructure.Identity.Services;
+using Infrastructure.Identity.Services;
 using Microsoft.Extensions.Logging;
 using Google.LongRunning;
 using System.Security.Cryptography;
@@ -13,7 +13,7 @@ using System.Text;
 using System.Configuration;
 using GoogleCloudModel;
 
-namespace EstarOpenAPI.Infrastructure.Shared
+namespace Infrastructure.Shared
 {
     public class Pub
     {
@@ -196,8 +196,8 @@ namespace EstarOpenAPI.Infrastructure.Shared
         /// <summary>
         /// 密码验证
         /// </summary>
-        /// <param name="password"></param>
-        /// <param name="storedHash"></param>
+        /// <param name="password">验证密码</param>
+        /// <param name="storedHash">存储密码</param>
         /// <returns></returns>
         public static bool VerifyPassword(string password, string storedHash)
         {

@@ -1,5 +1,6 @@
-using EstarOpenAPI.Application.Interfaces;
-using EstarOpenAPI.Infrastructure.Identity.Services;
+using Application.Interfaces;
+using Infrastructure.Identity.Services;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IHomePageService, HomePageService>();
+builder.Services.AddScoped<IPayService, PayService>();
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
     options.ListenAnyIP(44386, listenOptions =>
@@ -18,6 +20,13 @@ builder.WebHost.ConfigureKestrel((context, options) =>
     });
     options.ListenAnyIP(5189); // HTTP
 });
+
+
+
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];  // Set your Secret API Key here
+
+builder.Services.AddControllers();
+
 
 var app = builder.Build();
 

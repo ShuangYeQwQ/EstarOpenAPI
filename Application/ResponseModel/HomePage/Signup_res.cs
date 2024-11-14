@@ -1,4 +1,4 @@
-﻿namespace EstarOpenAPI.Application.ResponseModel.HomePage
+﻿namespace Application.ResponseModel.HomePage
 {
     public class Signup_res
     {

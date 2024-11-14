@@ -1,9 +1,9 @@
 ﻿using Application.RequestModel;
-using EstarOpenAPI.Application.RequestModel.HomePage;
-using EstarOpenAPI.Application.ResponseModel.HomePage;
-using EstarOpenAPI.Application.Wrappers;
+using Application.RequestModel.HomePage;
+using Application.ResponseModel.HomePage;
+using Application.Wrappers;
 
-namespace EstarOpenAPI.Application.Interfaces
+namespace Application.Interfaces
 {
     public interface IHomePageService
     {

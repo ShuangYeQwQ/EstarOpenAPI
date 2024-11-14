@@ -1,4 +1,4 @@
-﻿namespace EstarOpenAPI.Application.RequestModel.HomePage
+﻿namespace Application.RequestModel.HomePage
 {
 
     public class Signup_req

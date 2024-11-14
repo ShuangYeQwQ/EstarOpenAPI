@@ -20,7 +20,7 @@ namespace EStarGoogleCloud
 
 
         /// <summary>
-        /// 修改表
+        /// 参数化修改表
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
@@ -56,7 +56,7 @@ namespace EStarGoogleCloud
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static int ExecuteNonQuery(string sql, DbCommand dbcom, ref string msg)
+        public static int ExecuteNonQuery(string sql , ref string msg)
         {
             int num = 0;
             try
@@ -69,16 +69,6 @@ namespace EStarGoogleCloud
                     {
                         // Create the 'votes' table if it does not already exist.
                         createTableCommand.CommandText = sql;
-                        foreach (DbParameter param in dbcom.Parameters)
-                        {
-                            // 创建新的参数副本
-                            var newParam = createTableCommand.CreateParameter();
-                            newParam.ParameterName = param.ParameterName;
-                            newParam.Value = param.Value;
-                            newParam.DbType = param.DbType; // 根据需要设置其他属性
-                                                            // 添加新的参数
-                            createTableCommand.Parameters.Add(newParam);
-                        }
                         num = createTableCommand.ExecuteNonQuery();
                     }
                 }
@@ -265,11 +255,11 @@ namespace EStarGoogleCloud
                 // secure - consider a more secure solution such as
                 // Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
                 // keep secrets safe.
-                DataSource = Environment.GetEnvironmentVariable("INSTANCE_HOST"), // e.g. '127.0.0.1'
+                DataSource = instance_host,//Environment.GetEnvironmentVariable("INSTANCE_HOST"), // e.g. '127.0.0.1'
                 // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),         // e.g. 'my-db-user'
-                Password = Environment.GetEnvironmentVariable("DB_PASS"),       // e.g. 'my-db-password'
-                InitialCatalog = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
+                UserID = db_user,//Environment.GetEnvironmentVariable("DB_USER"),         // e.g. 'my-db-user'
+                Password = db_pass,//Environment.GetEnvironmentVariable("DB_PASS"),       // e.g. 'my-db-password'
+                InitialCatalog = db_name,//Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
 
                 // [END cloud_sql_sqlserver_dotnet_ado_connect_tcp_sslcerts]
                 // The Cloud SQL proxy provides encryption between the proxy and instance
