@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Transactions;
+using static Google.Cloud.DocumentAI.V1.Document.Types.Page.Types;
 
 namespace EStarGoogleCloud
 {
@@ -24,18 +25,16 @@ namespace EStarGoogleCloud
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static int ExecuteNonQuery(SqlCommand sqlCommand, ref string msg)
+        public static int ExecuteNonQuery(SqlCommand sqlCommand)
         {
-            ExecuteNonQuery(sqlCommand, out int result, ref msg);
+            ExecuteNonQuery(sqlCommand, out int result);
             sqlCommand.Dispose();
             return result;
         }
-        public static int ExecuteNonQuery(SqlCommand sqlCommand, out int result, ref string msg)
+        public static int ExecuteNonQuery(SqlCommand sqlCommand, out int result)
         {
             result = 0;
             var connectionString = GetSqlServerConnectionString();
-            try
-            {
                 using (SqlConnection connection = new SqlConnection(connectionString.ConnectionString))
                 {
                     connection.Open();
@@ -43,14 +42,52 @@ namespace EStarGoogleCloud
                     result = sqlCommand.ExecuteNonQuery();
                     sqlCommand.Dispose();
                 }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
-            }
             
             return result;
         }
+
+        /// <summary>
+        /// 参数化查询表记录
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static void ExecuteReader(SqlCommand sqlCommand, DataTable result)
+        {
+            ExecuteReader(sqlCommand,result,null);
+            sqlCommand.Dispose();
+        }
+
+        public static void ExecuteReader(SqlCommand sqlCommand, DataTable result ,string cnstr)
+        {
+            var connectionString = GetSqlServerConnectionString();
+                using (SqlConnection connection = new SqlConnection(connectionString.ConnectionString))
+                {
+                    sqlCommand.Connection = connection;
+                    using (SqlDataAdapter adapter = new SqlDataAdapter())
+                    {
+                        adapter.SelectCommand = sqlCommand;
+                        adapter.Fill(result);
+                    }
+                }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// 修改表
         /// </summary>
@@ -82,11 +119,6 @@ namespace EStarGoogleCloud
             
         }
        
-        
-        
-        
-        
-        
         /// <summary>
         /// 查询表记录
         /// </summary>
@@ -127,6 +159,10 @@ namespace EStarGoogleCloud
                 return dt;
             }
         }
+       
+        
+        
+        
         /// <summary>
         /// 查询单条记录
         /// </summary>

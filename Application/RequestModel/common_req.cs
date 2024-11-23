@@ -23,7 +23,7 @@ namespace Application.RequestModel
         /// <summary>
         /// 请求数据对象
         /// </summary>
-        public T action_info { get; set; }
+        public T actioninfo { get; set; }
 
     }
 }

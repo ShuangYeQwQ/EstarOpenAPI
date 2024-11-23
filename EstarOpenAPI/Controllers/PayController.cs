@@ -27,11 +27,23 @@ namespace EstarOpenAPI.Controllers
         /// <param name="signup_req">付款类型:个人报税付款,公司报税付款,保险付款</param>
         /// <returns></returns>
         //[Authorize]
-        [HttpPost("createsource")]
-        public async Task<IActionResult> CreatesourceAsync([FromBody] common_req<string> signup_req)
+        [HttpPost("createstripepay")]
+        public async Task<IActionResult> CreateStripePayAsync([FromBody] common_req<string> signup_req)
         {
-            return Ok(await _payService.CreatesourceAsync());
+            return Ok(await _payService.CreateStripePayAsync());
         }
+        /// <summary>
+        /// stripe支付成功
+        /// </summary>
+        /// <param name="signup_req">付款类型:个人报税付款,公司报税付款,保险付款</param>
+        /// <returns></returns>
+        //[Authorize]
+        [HttpPost("stripepaysuccess")]
+        public async Task<IActionResult> StripePaySuccessAsyncAsync([FromBody] common_req<string> signup_req)
+        {
+            return Ok(await _payService.StripePaySuccessAsync(signup_req.actioninfo));
+        }
+
         /// <summary>
         /// 创建paypal支付窗口
         /// </summary>
@@ -53,7 +65,7 @@ namespace EstarOpenAPI.Controllers
         [HttpPost("payment-success")]
         public async Task<IActionResult> PaymentSuccessAsync([FromBody] common_req<Pay_req> signup_req)
         {
-            return Ok(await _payService.PaymentSuccess(signup_req.action_info.oid, signup_req.action_info.payerid));
+            return Ok(await _payService.PaymentSuccess(signup_req.actioninfo.oid, signup_req.actioninfo.payerid));
         }
        
     }

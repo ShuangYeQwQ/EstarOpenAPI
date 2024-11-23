@@ -1,5 +1,6 @@
 ﻿using Application.RequestModel.HomePage;
 using Application.ResponseModel.HomePage;
+using Application.ResponseModel.PayPage;
 using Application.Wrappers;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,12 @@ namespace Application.Interfaces
         ///
         /// </summary>
         /// <returns></returns>
-        Task<Response<string>> CreatesourceAsync();
+        Task<Response<Pay_res>> CreateStripePayAsync();
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<string>> StripePaySuccessAsync(string PaymentIntentId);
         /// <summary>
         ///
         /// </summary>

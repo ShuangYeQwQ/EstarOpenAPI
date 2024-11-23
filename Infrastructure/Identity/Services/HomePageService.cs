@@ -43,7 +43,7 @@ namespace Infrastructure.Identity.Services
             {
                 //验证输入的验证码是否正确
                 string type = signup_req.type + "";//0:邮箱验证，1:手机验证
-                var action_info = signup_req.action_info;
+                var action_info = signup_req.actioninfo;
                 string username = action_info.nickname + "";
                 string password = action_info.password + "";
                 string email = action_info.email + "";
@@ -62,18 +62,19 @@ namespace Infrastructure.Identity.Services
                     code = GoogleSqlDBHelper.ExecuteScalar(sql, command, ref msg);
                     if (!code.Equals(verificationcode) || !string.IsNullOrEmpty(msg))
                     {
+                        Pub.SaveLog(nameof(HomePageService), "验证码错误，请检查您输入的验证码是否与接收的一致");
                         return new Response<Signup_res>("验证码错误，请检查您输入的验证码是否与接收的一致");
                     }
                     user.Email = email;
                 }
                 else
                 {
-                    sql = string.Format(@" SELECT top 1 Code FROM otp_verify where MobilePhone = @email   order by Sendtime DESC ");
-                    code = GoogleSqlDBHelper.ExecuteScalar(sql, command, ref msg);
-                    if (!code.Equals(verificationcode) || string.IsNullOrEmpty(msg))
-                    {
-                        return new Response<Signup_res>("验证码错误，请检查您输入的验证码是否与接收的一致");
-                    }
+                    //sql = string.Format(@" SELECT top 1 Code FROM otp_verify where MobilePhone = @email   order by Sendtime DESC ");
+                    //code = GoogleSqlDBHelper.ExecuteScalar(sql, command, ref msg);
+                    //if (!code.Equals(verificationcode) || string.IsNullOrEmpty(msg))
+                    //{
+                    //    return new Response<Signup_res>("验证码错误，请检查您输入的验证码是否与接收的一致");
+                    //}
                     //注册账号
                     user.Mobilephone = email;
                 }
@@ -110,7 +111,7 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
                     command.Parameters.AddWithValue("@Access_Token", token);
                     command.Parameters.AddWithValue("@Expires_in", DateTime.Now.AddDays(30));
                     command.Parameters.AddWithValue("@Refiesh_token", refieshtoken);
-                    num = GoogleSqlDBHelper.ExecuteNonQuery(command, ref msg);
+                    num = GoogleSqlDBHelper.ExecuteNonQuery(command);
                     if(num > 0)
                     {
                         signup_Res.user = account;
@@ -121,12 +122,13 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
                         return new Response<Signup_res>(signup_Res, "注册成功！");
                     }
                 }
-
-                return new Response<Signup_res>("注册失败！");
+                string logSql = Pub.ReplaceSqlParameters(sql, command);
+                Pub.SaveLog(nameof(HomePageService), $"注册失败,SQL:{logSql}");
+                return new Response<Signup_res>("注册失败");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, ex);
+                Pub.SaveLog(nameof(HomePageService), $"注册失败,错误信息：{ex.Message}");
                 return new Response<Signup_res>(ex.Message);
             }
         }
@@ -140,7 +142,7 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
         public async Task<Response<string>> SendVerificationEmailAsync(common_req<Signup_req> signup_req)
         {
             string user = signup_req.user + "";
-            string email = signup_req.action_info.email + "";
+            string email = signup_req.actioninfo.email + "";
             string type = signup_req.type + "";//0:邮箱验证，1:手机验证
             string msg = "";
             var command = new SqlCommand();
@@ -160,11 +162,10 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
                     newBody = newBody.Replace("{oneTimeCode}", code);
                     if (type.Equals("0"))
                     {
-                        Pub.SendEmail(email, subject, newBody, ref msg);
-                        if (!string.IsNullOrEmpty(msg))
+                        int num = Pub.SendEmail(email, subject, newBody);
+                        if (num <= 0)
                         {
-                            _logger.LogError("邮件发送失败!" + msg + ",email:" + email);
-                            return new Response<string>("ok", "邮件发送失败，" + msg);
+                            return new Response<string>("邮件发送失败!");
                         }
                             sql = string.Format($@"insert into otp_verify(code,Sendtime,ExpiryTime,Status,VerifyTime,MobilePhone,Type,Email,EmailBody,EmailSubject,retrycount) 
 values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email,@EmailBody,@EmailSubject,@retrycount)");
@@ -180,7 +181,7 @@ values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email
                             command.Parameters.AddWithValue("@EmailBody", newBody);
                             command.Parameters.AddWithValue("@EmailSubject", subject);
                             command.Parameters.AddWithValue("@retrycount", "0");
-                            int num = GoogleSqlDBHelper.ExecuteNonQuery(command, ref msg);
+                            num = GoogleSqlDBHelper.ExecuteNonQuery(command);
 
                           if( num > 0)
                             {
@@ -196,15 +197,16 @@ values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email
                       }
                       else
                       {
-                          _logger.LogError("出错,请在基础配置表(common_config)添加邮件主题，内容等配置！提示: "+ msg);
+                        Pub.SaveLog(nameof(HomePageService), $"出错,请在基础配置表(common_config)添加邮件主题，内容等配置！提示：{msg}");
                           return new Response<string>("验证失败！所需配置未完善");
                       }
                 }
+                Pub.SaveLog(nameof(HomePageService), $"验证失败,email:{email}" );
                 return new Response<string>("验证失败!" + "email:" + email);
             }
             catch (Exception ex)
             {
-                _logger.LogError("验证失败!" + ex.Message + ",email:" + email);
+                Pub.SaveLog(nameof(HomePageService), $"验证失败,email: {email}, 提示:{ex.Message}");
                 return new Response<string>("验证失败!" + ex.Message);
             }
 
@@ -221,8 +223,8 @@ values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email
         public async Task<Response<Signup_res>> LoginAsync(common_req<Signup_req> signup_req)
         {
             string user = signup_req.user + "";
-            string email = signup_req.action_info.email + "";
-            string password = signup_req.action_info.password + "";//0:邮箱验证，1:手机验证
+            string email = signup_req.actioninfo.email + "";
+            string password = signup_req.actioninfo.password + "";//0:邮箱验证，1:手机验证
             string msg = "";
             Signup_res signup_Res = new Signup_res();
             try
@@ -246,7 +248,7 @@ values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email
             }
             catch (Exception ex)
             {
-                _logger.LogError("登录失败!" + ex.Message + ",email:" + email);
+                Pub.SaveLog(nameof(HomePageService), $"登录失败!email：{email}，错误提示：{ex.Message}" );
                 return new Response<Signup_res>("登录失败!" + ex.Message);
             }
         }

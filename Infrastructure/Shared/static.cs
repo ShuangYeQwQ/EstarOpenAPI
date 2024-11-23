@@ -12,6 +12,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Configuration;
 using GoogleCloudModel;
+using Microsoft.Data.SqlClient;
+using System.Globalization;
 
 namespace Infrastructure.Shared
 {
@@ -22,11 +24,14 @@ namespace Infrastructure.Shared
         {
             _logger = logger;
         }
+        //地球半径，单位米
+        private const double EARTH_RADIUS = 6378.137;
         private const int SaltSize = 16; // 盐的大小
         private const int HashSize = 32; // 哈希的大小
         private const int Iterations = 10000; // 迭代次数
         private static long lLeft = 621355968000000000;
         private readonly static string appSecret =  ConfigurationManager.AppSettings["appSecret"] + "";
+        private static readonly object _lock = new object();//日志锁定
         //将数字变成时间
         public static string GetTimeFromInt(long ltime)
         {
@@ -45,8 +50,7 @@ namespace Infrastructure.Shared
 
         }
 
-        //地球半径，单位米
-        private const double EARTH_RADIUS = 6378.137;
+        
         /// <summary>
         /// 计算两点位置的距离，返回两点的距离，单位 米   通过经纬度计算2个点之间距离
         /// 该公式为GOOGLE提供，误差小于0.2米
@@ -115,14 +119,14 @@ namespace Infrastructure.Shared
         /// <param name="recipientEmail">收件人</param>
         /// <param name="subject">发件主题</param>
         /// <param name="body">发送内容</param>
-        public static void SendEmail(string recipientEmail, string subject, string body,ref string msg)
+        public static int SendEmail(string recipientEmail, string subject, string body)
         {
-            string _smtpServer = "smtp.gmail.com"; // SMTP 服务器地址
-            int _smtpPort = 587; // 端口（587 用于 TLS）
-            string _username = "yangyiz2024@gmail.com"; // 发件人邮箱
-            string _password = "e v k g y w f l k n z e z y w w"; // 发件人邮箱密码
+            string smtpServer = "smtp.gmail.com"; // SMTP 服务器地址
+            int smtpPort = 587; // 端口（587 用于 TLS）
+            string username = "yangyiz2024@gmail.com"; // 发件人邮箱
+            string password = "e v k g y w f l k n z e z y w w"; // 发件人邮箱密码
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("YourAppName", _username));
+            message.From.Add(new MailboxAddress("YourAppName", username));
             message.To.Add(new MailboxAddress(recipientEmail, recipientEmail));
             message.Subject = subject;
             // 使用 BodyBuilder 创建 HTML 内容
@@ -130,30 +134,33 @@ namespace Infrastructure.Shared
             bodyBuilder.HtmlBody = body;
 
             message.Body = bodyBuilder.ToMessageBody();
-            SmtpClient client = null;
-            try
+            using (var client = new SmtpClient())
             {
-                client = new SmtpClient();
-                // 连接到 SMTP 服务器
-                client.Connect(_smtpServer, _smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
-                // 身份验证
-                client.Authenticate(_username, _password);
-                // 发送邮件
-                client.Send(message);
-            }
-            catch (Exception ex)
-            {
-                msg = $"Email sending failed: {ex.Message}";
-                // 记录错误或采取适当的行动
-            }
-            finally
-            {
-                // 确保客户端断开连接
-                if (client != null && client.IsConnected)
+                try
                 {
-                    client.Disconnect(true);
+                    // 连接到 SMTP 服务器
+                    client.Connect(smtpServer, smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
+
+                    // 验证身份
+                    client.Authenticate(username, password);
+
+                    // 发送邮件
+                    client.Send(message);
+
+                    // 返回成功状态
+                    return  1;
                 }
-                client?.Dispose(); // 释放资源
+                catch (Exception ex)
+                {
+                    SaveLog("SendEmailService", $"Email sending failed: {ex.Message}");
+                }
+                finally
+                {
+                    // 确保客户端断开连接
+                    if (client.IsConnected)
+                        client.Disconnect(true);
+                }
+                return 0;
             }
         }
         /// <summary>
@@ -169,7 +176,7 @@ namespace Infrastructure.Shared
         /// <summary>
         /// 加密
         /// </summary>
-        /// <param name="password"></param>
+        /// <param name="password">需要加密的密码</param>
         /// <returns></returns>
         public static string HashPassword(string password)
         {
@@ -266,6 +273,11 @@ namespace Infrastructure.Shared
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        /// <summary>
+        /// 生成RefreshToken
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public static string GenerateRefreshToken(string userId)
         {
             var claims = new List<Claim>
@@ -328,5 +340,108 @@ namespace Infrastructure.Shared
                 return null; // 其他错误
             }
         }
+
+        
+        /// <summary>
+        /// 存储日志
+        /// </summary>
+        /// <param name="serviceName">使用的服务名称</param>
+        /// <param name="errorMessage">错误信息</param>
+        public static void SaveLog(string serviceName, string errorMessage)
+        {
+            try
+            {
+                // 日志文件夹路径 (相对于当前项目路径)
+                string logFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log");
+
+                // 如果日志文件夹不存在，则创建
+                if (!Directory.Exists(logFolderPath))
+                {
+                    Directory.CreateDirectory(logFolderPath);
+                }
+
+                // 生成日志文件名：2024-11-15.log
+                string logFileName = $"{DateTime.Now:yyyy-MM-dd}.log";
+                string logFilePath = Path.Combine(logFolderPath, logFileName);
+
+                // 当前时间，格式：2024-11-15 11:42:01.310
+                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+                // 日志内容格式：2024-11-15 11:42:01.310_ServiceName: 错误信息
+                string logContent = $"{timestamp}_{serviceName}: {errorMessage}";
+
+                // 使用锁定机制确保多线程环境下安全写入日志
+                lock (_lock)
+                {
+                    // 将日志写入文件，追加模式
+                    using (StreamWriter writer = new StreamWriter(logFilePath, true))
+                    {
+                        writer.WriteLine(logContent);
+                        writer.WriteLine();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to write log: {ex.Message}");
+            }
+        }
+        /// <summary>
+        /// 替换参数化sql的值
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="cmd"></param>
+        /// <returns></returns>
+        public static string ReplaceSqlParameters(string sql, SqlCommand cmd)
+        {
+            try
+            {
+                foreach (SqlParameter param in cmd.Parameters)
+                {
+                    // 替换 SQL 中的参数占位符 @ParamName 为实际值
+                    string paramValue = param.Value != DBNull.Value ? param.Value.ToString() : "NULL";
+                    sql = sql.Replace(param.ParameterName, paramValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                Pub.SaveLog("PubService", $"替换参数化sql的值时发生异常:{ex.Message} ,SQL:{sql},CMD:{cmd.Parameters}");
+            }
+            return sql;
+        }
+        /// <summary>
+        /// 生成随机密码
+        /// </summary>
+        /// <param name="length">密码位数</param>
+        /// <returns></returns>
+        public static string GeneratePassword(int length)
+        {
+            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // 字母和数字
+            Random random = new Random();
+            char[] password = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                password[i] = validChars[random.Next(validChars.Length)];
+            }
+
+            return new string(password);
+        }
+
+        /// <summary>
+        /// 通用类型转换方法
+        /// </summary>
+        public static T To<T>(string input, T defaultValue = default)
+        {
+            try
+            {
+                return (T)Convert.ChangeType(input, typeof(T), CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
     }
 }
