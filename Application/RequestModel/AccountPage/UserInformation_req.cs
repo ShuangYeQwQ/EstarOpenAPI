@@ -49,4 +49,12 @@ namespace Application.RequestModel.AccountPage
         /// </summary>
         public string Apartmentnumber { get; set; }
     }
+
+
+    public class User_req
+    {
+        public string Email { get; set; }
+
+        public string GooglelocalId { get; set; }
+    }
 }

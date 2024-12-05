@@ -2,17 +2,23 @@
 using Application.RequestModel;
 using Application.RequestModel.AccountPage;
 using Application.RequestModel.GoogleIdentityPlatform;
+using Application.ResponseModel.AccountPage;
 using Application.ResponseModel.GoogleIdentityPlatform;
 using Application.ResponseModel.HomePage;
 using Application.Wrappers;
 using EStarGoogleCloud;
+using Google.Rpc;
 using Google.Type;
 using GoogleCloudModel;
+using Grpc.Core;
 using Infrastructure.Identity.Models;
 using Infrastructure.Shared;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Ocsp;
+using PaypalServerSdk.Standard.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,6 +26,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static Application.RequestModel.GoogleIdentityPlatform.GooglesignUp_req;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using DateTime = System.DateTime;
 
@@ -185,10 +192,10 @@ END";
         /// <returns></returns>
         public async Task<Response<string>> CreateUserInformationAsync(common_req<UserInformation_req> signup_req)
         {
-            
+            AddGoogleUserAsync(signup_req.actioninfo.Email, "GZi9VNAc", signup_req.actioninfo.Phone);
+            UserInformation_req userInformation_Req = signup_req.actioninfo;
             int num = 0;
             string sql = "";
-            UserInformation_req userInformation_Req = signup_req.actioninfo;
             string cmdText = "select top 1 id from Users  where account=@email OR email=@email OR MobilePhone = @MobilePhone";
             SqlCommand cmd = new SqlCommand(cmdText);
             cmd.Parameters.Add("@email", SqlDbType.NVarChar).Value = userInformation_Req.Email;
@@ -249,6 +256,7 @@ END";
             }
             else
             {
+                //查看是否绑定email/手机
                 sql = @"UPDATE Users SET  UserName = @UserName,Brithdate = @Brithdate,MobilePhone = @MobilePhone,SocialSecurityNumber = @SocialSecurityNumber,
 CountryCode = @CountryCode,AdminArea1 = @AdminArea1,AdminArea2 = @AdminArea2,AddressLine1 = @AddressLine1,Addressline2 = @Addressline2
 WHERE Email = @Email OR MobilePhone = @MobilePhone";
@@ -301,7 +309,7 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
                 int num = AccountService.AddAccount(users);
                 if (num > 0)
                 {
-                     AddGoogleUserAsync(users.Email, pwd, users.Mobilephone);
+                    AddGoogleUserAsync(users.Email, pwd, users.Mobilephone);
                     DataTable table = new DataTable();
                     //发送用户账户信息邮件
                     string cmdText = "select top 2 EmailSubject,EmailBody from email_config  where EmailType = 1 or EmailType = 2 ";
@@ -333,7 +341,7 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
             {
 
             }
-            
+
         }
         /// <summary>
         /// 创建用户googleIdentity Platform账户
@@ -342,46 +350,42 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <param name="phone"></param>
-        public static async void AddGoogleUserAsync(string email,string password,string phone)
+        public static async void AddGoogleUserAsync(string email, string password, string phone)
         {
             try
             {
-                phone = "+8612949583948";
                 string apiKey = System.Configuration.ConfigurationManager.AppSettings["IdentityKey"] + "";
                 using var client = new HttpClient();
                 var url = $"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={apiKey}";
                 var requestData = new GooglesignUp_req();
                 requestData.email = email;
+                requestData.PhoneNumber = phone;
                 requestData.password = password;
                 requestData.returnSecureToken = true;
-                if (!string.IsNullOrEmpty(phone))
-                {
-                    requestData.PhoneNumber = phone;
-                }
-
-
+                string idToken = "";
+                //if (!string.IsNullOrEmpty(phone))
+                //{
+                //    requestData.PhoneNumber = phone;
+                //}
                 var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(url, content);
-
+                var result = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
-                    var error = await response.Content.ReadAsStringAsync();
-                    Pub.SaveLog(nameof(AccountService), $"Failed to create user: {error}");
-                    //throw new HttpRequestException();
+                    Pub.SaveLog(nameof(AccountService), $"Failed to create user: {result}");
+                    return;
+                    ////throw new HttpRequestException();
                 }
-
-                var result = await response.Content.ReadAsStringAsync();
                 var singupresponse = (GooglesignUp_res)JsonConvert.DeserializeObject(result, typeof(GooglesignUp_res));
-                //var singupresponse = JsonSerializer.Deserialize<GooglesignUp_res>(result);
-                await SendEmailVerificationAsync(singupresponse.idToken);
-                Pub.SaveLog(nameof(AccountService), result);
-                //return result; // 返回包含用户的 `idToken` 和 `localId` 等信息
+                idToken = singupresponse.idToken;
+                await SendEmailVerificationAsync(idToken);
+                await CheckEmailVerifiedAsync(idToken);
             }
             catch (Exception ex)
             {
                 Pub.SaveLog(nameof(AccountService), $"Failed to create user: {ex.Message}");
             }
-           
+
         }
         /// <summary>
         /// 绑定Google Identity Platform账户email
@@ -404,141 +408,201 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
 
                 var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(url, content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Pub.SaveLog(nameof(AccountService), $"MFA 启用失败: {ex.Message}");
+            }
+        }
+        /// <summary>
+        /// 查看用户Google Identity Platform账户
+        /// </summary>
+        /// <param name="idToken"></param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException"></exception>
+        public static async Task<bool> CheckEmailVerifiedAsync(string localId)
+        {
+            try
+            {
+                string apiKey = System.Configuration.ConfigurationManager.AppSettings["IdentityKey"] + "";
+                string email = "shuangyeqwq@gmail.com";
+               
+                using var client = new HttpClient();
+                var url = $"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={apiKey}";
+                // 构造请求数据
+                var requestData = new
+                {
+                    idToken = localId // localId 列表
+                };
+                // 将请求数据序列化为 JSON
+                var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
+
+                // 发送 POST 请求
+                var response = await client.PostAsync(url, content);
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();
-                    throw new HttpRequestException($"Failed to send email verification: {error}");
+                    return false;
+                    ////throw new HttpRequestException($"Failed to lookup account: {error}");
+                }
+
+                var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var isVerified = responseData?.users[0]?.emailVerified == true;//获取email是否验证
+                return isVerified;
+            }
+            catch (Exception ex)
+            {
+                Pub.SaveLog(nameof(AccountService), $"MFA 启用失败: {ex.Message}");
+                return false;
+            }
+
+        }
+        /// <summary>
+        /// 启用Google Identity Platform mfa第一步，绑定手机
+        /// </summary>
+        /// <param name="idToken"></param>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task StartmfaEnrollmentAsync(string idToken, string phone)
+        {
+            try
+            {
+                bool isemail = await CheckEmailVerifiedAsync(idToken);
+                if (isemail)
+                {
+                    string apiKey = System.Configuration.ConfigurationManager.AppSettings["IdentityKey"] + "";
+                    var requestBody = new
+                    {
+                        idToken = idToken,
+                        phoneEnrollmentInfo = new
+                        {
+                            phoneNumber = phone, // 用户手机号
+
+                        }
+                    };
+                    using var client = new HttpClient();
+                    var mfaUrl = $"https://identitytoolkit.googleapis.com/v2/accounts/mfaEnrollment:start?key={apiKey}";
+                    var mfaContent = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+                    var mfaResponse = await client.PostAsync(mfaUrl, mfaContent);
+                    var responseDatas = await mfaResponse.Content.ReadAsStringAsync();
+                    var resultss = JsonConvert.DeserializeObject<dynamic>(responseDatas);
+                    if (mfaResponse.IsSuccessStatusCode)
+                    {
+                        string sess = resultss.phoneSessionInfo?.sessionInfo + "";
+                        return;
+                    }
+                    else
+                    {
+                        Pub.SaveLog(nameof(AccountService), $"MFA 启用失败: {await mfaResponse.Content.ReadAsStringAsync()}");
+                    }
+                }
+                return;
+            }
+            catch (Exception ex)
+            {
+                Pub.SaveLog(nameof(AccountService), $"MFA 启用失败: {ex.Message}");
+            }
+
+        }
+        /// <summary>
+        /// 启用Google Identity Platform mfa第二步，验证码验证
+        /// </summary>
+        /// <param name="idToken"></param>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task StartmfaEnrollmentAsync(string idtoken, string sessioninfo, string code)
+        {
+            try
+            {
+                string apiKey = System.Configuration.ConfigurationManager.AppSettings["IdentityKey"] + "";
+                using var client = new HttpClient();
+                var requestBody2 = new
+                {
+                    idToken = idtoken, // 从登录获取的 ID Token
+                                       //phoneNumber = phone,
+                    phoneVerificationInfo = new
+                    {
+                        sessionInfo = sessioninfo,
+                        code = code,
+
+                    }
+                };
+                var mfaUrl = $"https://identitytoolkit.googleapis.com/v2/accounts/mfaEnrollment:finalize?key={apiKey}";
+                var mfaContent = new StringContent(JsonConvert.SerializeObject(requestBody2), Encoding.UTF8, "application/json");
+                var mfaResponse = await client.PostAsync(mfaUrl, mfaContent);
+                var responseDatas2 = await mfaResponse.Content.ReadAsStringAsync();
+                var resultss2 = JsonConvert.DeserializeObject<dynamic>(responseDatas2);
+                if (mfaResponse.IsSuccessStatusCode)
+                {
+                    Pub.SaveLog(nameof(AccountService), $"Session Info: {resultss2}");
+                    Console.WriteLine("MFA 启用成功！");
+                }
+                else
+                {
+                    Console.WriteLine($"MFA 启用失败: {await mfaResponse.Content.ReadAsStringAsync()}");
                 }
 
             }
             catch (Exception ex)
             {
-
-                throw;
+                Pub.SaveLog(nameof(AccountService), $"MFA 启用失败: {ex.Message}");
             }
+
         }
-        /// <summary>
-        /// 查看用户Google Identity Platform账户email是否验证
-        /// </summary>
-        /// <param name="idToken"></param>
-        /// <returns></returns>
-        /// <exception cref="HttpRequestException"></exception>
-        public async Task<bool> CheckEmailVerifiedAsync(string idToken)
+
+        public async Task<Response<User_res>> GetUserAsync(common_req<User_req> signup_req)
         {
-            string apiKey = System.Configuration.ConfigurationManager.AppSettings["IdentityKey"] + "";
-            using var client = new HttpClient();
-            var url = $"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={apiKey}";
-
-            var requestData = new { idToken };
-            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(url, content);
-
-            if (!response.IsSuccessStatusCode)
+            User_res user_Res = new User_res();
+            try
             {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new HttpRequestException($"Failed to lookup account: {error}");
+                string sqlwhere = " WHERE 1=1 AND Status = '1' ";
+                var email = signup_req.actioninfo.Email + "";
+                var googlelocalid = signup_req.actioninfo.GooglelocalId + "";
+                if (!string.IsNullOrEmpty(email))
+                {
+                    sqlwhere += " AND email=@email ";
+                }
+                if (!string.IsNullOrEmpty(googlelocalid))
+                {
+                    sqlwhere += " AND GooglelocalId=@GooglelocalId ";
+                }
+                string cmdText = "select Nickname,Gender,Avatar,Birthdate,Mobilephone,CountryCode,AdminArea1,AdminArea2,AddressLine1,AddressLine2 from Users " + sqlwhere;
+                SqlCommand cmd = new SqlCommand(cmdText);
+                cmd.Parameters.Add("@email", SqlDbType.NVarChar).Value = email;
+                cmd.Parameters.Add("@GooglelocalId", SqlDbType.VarChar).Value = googlelocalid;
+                cmd.CommandText = cmdText;
+                DataTable table = new DataTable();
+                GoogleSqlDBHelper.ExecuteReader(cmd, table);//获取用户是否存在
+                if(table != null && table.Rows.Count > 0)
+                {
+                    user_Res.Nickname = table.Rows[0]["Nickname"] +"";
+                    user_Res.Gender = table.Rows[0]["Gender"] + "";
+                    user_Res.Avatar = table.Rows[0]["Avatar"] + "";
+                    user_Res.Birthdate = table.Rows[0]["Birthdate"] + "";
+                    user_Res.Mobilephone = table.Rows[0]["Mobilephone"] + "";
+                    user_Res.CountryCode = table.Rows[0]["CountryCode"] + "";
+                    user_Res.AdminArea1 = table.Rows[0]["AdminArea1"] + "";
+                    user_Res.AdminArea2 = table.Rows[0]["AdminArea2"] + "";
+                    user_Res.AddressLine1 = table.Rows[0]["AddressLine1"] + "";
+                    user_Res.AddressLine2 = table.Rows[0]["AddressLine2"] + "";
+                    return new Response<User_res>(user_Res, "");
+                }
+                return new Response<User_res>($"获取账户信息失败: 未找到用户");
+            }
+            catch (Exception ex)
+            {
+                Pub.SaveLog(nameof(AccountService), $"获取账户信息失败: {ex.Message}");
+                return new Response<User_res>($"获取账户信息失败: {ex.Message}");
             }
 
-            var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-            var isVerified = responseData?.users[0]?.emailVerified == true;
 
-            return isVerified;
-        }
-        /// <summary>
-        /// 发送用户Google Identity Platform账户手机验证码
-        /// </summary>
-        /// <param name="phoneNumber"></param>
-        /// <returns></returns>
-        /// <exception cref="HttpRequestException"></exception>
-        public async Task<string> SendPhoneVerificationCodeAsync(string phoneNumber)
-        {
-            string apiKey = System.Configuration.ConfigurationManager.AppSettings["IdentityKey"] + "";
-            using var client = new HttpClient();
-            var url = $"https://identitytoolkit.googleapis.com/v1/accounts:sendVerificationCode?key={apiKey}";
-
-            var requestData = new
-            {
-                phoneNumber = phoneNumber,
-                recaptchaToken = "RECAPTCHA_TOKEN" // 可选：用于防止滥用
-            };
-
-            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(url, content);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new HttpRequestException($"Failed to send phone verification code: {error}");
-            }
-
-            var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-            var sessionInfo = responseData?.sessionInfo;
-
-            return sessionInfo; // 返回用于后续验证的 session 信息
-        }
-        /// <summary>
-        /// 验证用户Google Identity Platform账户手机验证码
-        /// </summary>
-        /// <param name="phoneNumber"></param>
-        /// <returns></returns>
-        /// <exception cref="HttpRequestException"></exception>
-        public async Task BindPhoneNumberAsync(string sessionInfo, string verificationCode)
-        {
-            string apiKey = System.Configuration.ConfigurationManager.AppSettings["IdentityKey"] + "";
-            using var client = new HttpClient();
-            var url = $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPhoneNumber?key={apiKey}";
-
-            var requestData = new
-            {
-                sessionInfo = sessionInfo,
-                code = verificationCode
-            };
-
-            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(url, content);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new HttpRequestException($"Failed to bind phone number: {error}");
-            }
-
-            var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-            var phoneNumber = responseData?.phoneNumber;
-
-            Console.WriteLine($"Phone number {phoneNumber} successfully bound to user.");
-        }
-        /// <summary>
-        /// 更新用户手机号到 Firebase
-        /// </summary>
-        /// <param name="idToken"></param>
-        /// <param name="phoneNumber"></param>
-        /// <returns></returns>
-        /// <exception cref="HttpRequestException"></exception>
-        public async Task UpdatePhoneNumberAsync(string idToken, string phoneNumber)
-        {
-            string apiKey = System.Configuration.ConfigurationManager.AppSettings["IdentityKey"] + "";
-            using var client = new HttpClient();
-            var url = $"https://identitytoolkit.googleapis.com/v1/accounts:update?key={apiKey}";
-
-            var requestData = new
-            {
-                idToken = idToken,
-                phoneNumber = phoneNumber
-            };
-
-            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(url, content);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new HttpRequestException($"Failed to update phone number: {error}");
-            }
-
-            Console.WriteLine("Phone number updated successfully.");
+            
         }
     }
-    
+
 }

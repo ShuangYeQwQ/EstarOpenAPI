@@ -13,9 +13,11 @@ namespace Application.RequestModel.GoogleIdentityPlatform
         public string PhoneNumber { get; set; }
         public string password { get; set; }
         public bool returnSecureToken { get; set; }
-        public List<MfaFactor> mfaInfo { get; set; }
+        public object mfaInfo { get; set; }
         public class MfaFactor
         {
+
+            public string displayName { get; set; }
             public string phoneInfo { get; set; }
         }
     }

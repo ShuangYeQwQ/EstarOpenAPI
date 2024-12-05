@@ -1,6 +1,7 @@
 ﻿using Application.RequestModel;
 using Application.RequestModel.AccountPage;
 using Application.RequestModel.HomePage;
+using Application.ResponseModel.AccountPage;
 using Application.ResponseModel.HomePage;
 using Application.Wrappers;
 using System;
@@ -18,5 +19,10 @@ namespace Application.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<Response<string>> CreateUserInformationAsync(common_req<UserInformation_req> signup_req);
+        /// <summary>
+        ///获取用户基本信息
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<User_res>> GetUserAsync(common_req<User_req> signup_req);
     }
 }
