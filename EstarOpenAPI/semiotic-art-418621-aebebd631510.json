@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "semiotic-art-418621",
+  "private_key_id": "aebebd6315102ee2c974d007fee1d756f33a6920",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCUKZ52pGyLwPtt\n6TpO4dz2NcMjN1HTdXRzT1WtkOGCnfwXunaaSKP9E1pZT44AlwAwSol1ri+4rQPO\nuopthFb1Y+d+38Yz7sgmDTMehC+NVNsZkY+/sPJ7sFEhFta9os7Af2qdFY36NNBP\nHWVmXlWEaWQvPWOC0jbqduhG0CbOVWuW7mVv5sIqjLwmk/xBR6a8fKN+iRZi5hRh\n6ZK7480qbrT3qsU++9/kPOCVeieeGT9bBmwxcgKe/5glACDX8EyB0m8rXRVqLwjC\n1VpA87PQUVdUKLE9x8bW2Y6X97ezTYktkUicj/iiyqT9d6PmGTKLoUqe30SWtJ6k\nHtURAC05AgMBAAECgf83jvqBVrw+FPtmvHcDzGXmyJj/zLbowVlXyny9eRurKHUS\nOr3+yOfA65nLryrEkh9Y4AaN2yZmalK1rbDp7TWaqMdAd7BZGh4XJsD1nVNRJEoH\niO33cbkKNYkO01NqqGX6PHgOfzwEmTm56ItS5Uc48El+Tht2ldkoUsgM0TAXGXcJ\nx7xase0iI/bPaI/kyX1rPbBH/+P22103kYiBgPfTCu/pj3Uska1iIoqqzi80ozYl\n1G04A7l9u3t5msA6xT5lDmw1Mz+RqmWvgwgaFfNWWcSx70Xg/QuTOqUY8XkDdJ7I\nHPk5FtCWAuYUpcA06ZOA0ovTUwZl+TuL9L+D2rECgYEAyZTX9pfYvXiZ50avPO5o\nYWZXmMEeoN8+srtB8Vg/wDW3nbSPYzV7BSCISn7UlCbqEQ6jv5/mXaOg6k48sm5o\ngafhWATshp9JU526ZEH+P/h+QFhcDWhFoR/+4pFxoz8D2Z5jm9KKKQiR1uvmIl4k\nkn746bxr+9H5iTlk0IdGMVECgYEAvCkI7JuC/BBIyBKJ4L+j+NoHc2FGPLDEDf36\nTl3Fh0qwXRSMmXNS7HKPNRhDFHv+GqfNyjXNqf017w7lfxtnjTGxOEijkKy9ojFq\nNMS9iIXe8RUzE4yhodZUv37+7vI+6fzTaBVRK+5F8T07SUgFrcOEvfHTYc4a87t0\nnWACA2kCgYEAx6sSO6RuwEY8E7SVEUKIy6lGrPzlLK3Uec834ynpg6bxqFlYCgnI\nP+zYcwmr4M+m25xnoABve2L/mfZC8u6fv4WdlMTT0Ajo5dT+8h3YDF9EFtIu4+zb\nw1xg6OTt7agWVTEpMwhZZ4mgg4UIYBRmH2F7hnHnd/ilNkJOVKsZYPECgYEAlfAd\nLG6/8h0H4mbjeDU+dQ9I4KijT7mMgZnh3JDc1vKtl37Ii39alRC1DZpH2gr0cklF\ns90sBknAsL8uIhu0aM8waal4rdD5TEYUW/hrEF+dSH+cM/fc1Rn2bqLEg6SGfe76\nh/Z0uI0nLxWcKMk7vTwQi0wpJccXsyGty7q14AECgYBGwVOseTWenuwZpnX8sCSG\n/73vGrpYRyUhkqf4w677vGVmob2TKT19efiC5iyitJnmOlMvL0rkvFHpx3I6MRjf\naua17Y7DIqjbOIzl2/4CWfbGxJpkPbLILXQSvHGAutqKmgoDYuOSXY9B8uY7Ii9c\nBVgkFbB5pu94PsC1iMq9rg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "my-storage-bucket@semiotic-art-418621.iam.gserviceaccount.com",
+  "client_id": "109705909191545693746",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/my-storage-bucket%40semiotic-art-418621.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

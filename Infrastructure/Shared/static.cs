@@ -14,16 +14,18 @@ using System.Configuration;
 using GoogleCloudModel;
 using Microsoft.Data.SqlClient;
 using System.Globalization;
+using System.Data;
+using System.Reflection;
+using iText.Kernel.Pdf;
+using iText.Forms;
+using iText.Forms.Fields;
+using static Google.Cloud.DocumentAI.V1.TrainProcessorVersionRequest.Types;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Infrastructure.Shared
 {
-    public class Pub
+    public static class Pub
     {
-        public ILogger<HomePageService> _logger { get; }
-        public Pub(ILogger<HomePageService> logger)
-        {
-            _logger = logger;
-        }
         //地球半径，单位米
         private const double EARTH_RADIUS = 6378.137;
         private const int SaltSize = 16; // 盐的大小
@@ -442,6 +444,192 @@ namespace Infrastructure.Shared
                 return defaultValue;
             }
         }
+        /// <summary>
+        /// 将 DataTable 转换为指定类型的实体列表
+        /// </summary>
+        /// <typeparam name="T">目标实体类型</typeparam>
+        /// <param name="table">数据表</param>
+        /// <returns>实体列表</returns>
+        public static List<T> ToList<T>(this DataTable table) where T : new()
+        {
+            // 如果表为空，返回空列表
+            if (table == null || table.Rows.Count == 0)
+            {
+                return new List<T>();
+            }
 
+            // 获取目标类型的所有属性
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            // 创建列表
+            var list = new List<T>();
+
+            foreach (DataRow row in table.Rows)
+            {
+                var item = new T();
+                foreach (var property in properties)
+                {
+                    // 检查列名是否存在且值不为 DBNull
+                    if (table.Columns.Contains(property.Name) && row[property.Name] != DBNull.Value)
+                    {
+                        // 设置属性值
+                        property.SetValue(item, Convert.ChangeType(row[property.Name], property.PropertyType));
+                    }
+                }
+                list.Add(item);
+            }
+
+            return list;
+        }
+        public static List<T> ToList<T>(IEnumerable<T> query)
+        {
+            return query.ToList();
+        }
+        /// <summary>
+        /// 数据转为pdf表单模板
+        /// </summary>
+        /// <param name="servicename">服务名称</param>
+        /// <param name="templatePath">模板文件地址</param>
+        /// <param name="pathname">转换后pdf文件</param>
+        /// <param name="formData">数据</param>
+        public static int FillPdfFormAndSaveNew(string servicename,string templatePath, string pathname,Dictionary<string, string> formData)
+        {
+            //string templatePath = @"C:\work\EStarOpenAPI\EstarOpenAPI\File\W-2.pdf";
+            //string outputPath = @"C:\work\EStarOpenAPI\EstarOpenAPI\File\New_W-2_filled.pdf";
+            int num = 1;
+            try
+            {
+                // 打开模板PDF
+                //using (PdfReader reader = new PdfReader(templatePath))
+                //{
+                //    // 创建一个新的文件输出流
+                //    using (FileStream fs = new FileStream(pathname, FileMode.Create))
+                //    {
+                //        // 创建 PdfStamper 来编辑 PDF
+                //        using (PdfStamper stamper = new PdfStamper(reader, fs))
+                //        {
+                //            // 获取PDF中的表单
+                //            AcroFields fields = stamper.AcroFields;
+                //            foreach (var field in formData)
+                //            {
+                //                var formField = field.Key;
+                //                var formFievalue = field.Value;
+                //                if (!string.IsNullOrEmpty(formField) && !string.IsNullOrEmpty(formFievalue))
+                //                {
+                //                    fields.SetField(formField, field.Value);
+                //                }
+                //            }
+                //            // 设置输出PDF的表单不可编辑
+                //            stamper.FormFlattening = false;
+
+                //            // 保存修改后的PDF
+                //            stamper.Close();
+                //        }
+                //    }
+                //}
+                // 使用 PdfReader 读取 PDF 模板
+                using (PdfReader reader = new PdfReader(templatePath))
+                using (PdfWriter writer = new PdfWriter(pathname))
+                using (PdfDocument pdfDoc = new PdfDocument(reader, writer))
+                {
+                    // 获取 PDF 表单
+                    PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
+
+                    if (form != null)
+                    {
+                        // 填充字段
+                        foreach (var field in formData)
+                        {
+                            string fieldName = field.Key;
+                            string fieldValue = field.Value;
+
+                            // 检查字段是否存在并填充
+                            if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(fieldValue))
+                            {
+                                form.GetField(fieldName).SetValue(fieldValue);
+                            }
+                        }
+
+                        // 设置表单为不可编辑
+                        form.FlattenFields();
+                    }
+                    // 保存修改后的 PDF
+                    pdfDoc.Close();
+                }
+                return num;
+            }
+            catch (Exception ex)
+            {
+                SaveLog(nameof(servicename), $"生成OCR识别后pdf模板失败：{ex.Message}");
+                num = 0;
+                return num;
+            }
+            
+
+            //Console.WriteLine("PDF form has been filled and saved successfully.");
+        }
+        /// <summary>
+        /// 获取pdf表单值
+        /// </summary>
+        /// <param name="servicename"></param>
+        /// <param name="templatePath"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> GetFilePdfForm(string servicename, string templatePath)
+        {
+            Dictionary<string, string> formData = new Dictionary<string, string>();
+            try
+            {
+                //using (PdfReader reader = new PdfReader(templatePath))
+                //{
+                //    // 获取 PDF 中的表单
+                //    AcroFields fields = reader.AcroFields;
+
+                //    // 获取并打印表单字段的名称和内容
+                //    foreach (var field in fields.Fields)
+                //    {
+                //        string key = field.Key;
+                //        string value = fields.GetField(field.Key);
+                //        if (!string.IsNullOrEmpty(key))
+                //        {
+                //            formData.Add(key, value);
+                //        }
+                //        //Console.WriteLine($"Field Name: {field.Key}, Field Value: {fields.GetField(field.Key)}");
+                //    }
+                //}
+                // 打开PDF文档
+                using (PdfReader reader = new PdfReader(templatePath))
+                using (PdfDocument pdf = new PdfDocument(reader))
+                {
+                    PdfAcroForm form = PdfAcroForm.GetAcroForm(pdf, false);
+
+                    if (form != null)
+                    {
+                        var fields = form.GetAllFormFields();
+
+                        foreach (var field in fields)
+                        {
+                            string key = field.Key;
+                            string value = field.Value.GetValueAsString();
+                            formData.Add(key, value);
+                            //string fieldName = field.Key;
+                            //string fieldValue = field.Value.GetValueAsString();
+
+                            //Console.WriteLine($"字段名称：{fieldName}, 值：{fieldValue}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("未找到任何表单字段！");
+                    }
+                }
+                return formData;
+            }
+            catch (Exception ex)
+            {
+                SaveLog(nameof(servicename), $"生成OCR识别后pdf模板失败：{ex.Message}");
+                return formData;
+            }
+            
+        }
     }
 }

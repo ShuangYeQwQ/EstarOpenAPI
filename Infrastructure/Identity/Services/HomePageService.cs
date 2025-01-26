@@ -54,12 +54,14 @@ namespace Infrastructure.Identity.Services
                 Users user = new Users();
                 string msg = "";
                 var command = new SqlCommand();
-                command.Parameters.AddWithValue("@email", email);
+                //command.Parameters.AddWithValue("@email", email);
                 if (type.Equals("0"))
                 {
                    
                     sql = string.Format($@" SELECT top 1 Code FROM otp_verify where email = @email  and ExpiryTime > GETDATE()  order by Sendtime DESC ");
-                    code = GoogleSqlDBHelper.ExecuteScalar(sql, command, ref msg);
+                    command = new SqlCommand(sql);
+                    command.Parameters.AddWithValue("@email", email);
+                    code = GoogleSqlDBHelper.ExecuteScalar(command);
                     if (!code.Equals(verificationcode) || !string.IsNullOrEmpty(msg))
                     {
                         Pub.SaveLog(nameof(HomePageService), "验证码错误，请检查您输入的验证码是否与接收的一致");
@@ -95,9 +97,9 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
                 if(num > 0)
                 {
                     sql = string.Format(@" SELECT top 1 id FROM users where Account = @email ");
-                    command = new SqlCommand();
+                    command = new SqlCommand(sql);
                     command.Parameters.AddWithValue("@email", email);
-                    string account = GoogleSqlDBHelper.ExecuteScalar(sql,command, ref msg);
+                    string account = GoogleSqlDBHelper.ExecuteScalar(command);
                     if (string.IsNullOrEmpty(account))
                     {
                         return new Response<Signup_res>("");
@@ -152,8 +154,9 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
                 {
                     //获取邮件信息模板配置
                      string sql = string.Format(" SELECT EmailBody,EmailSubject FROM common_config ");
-                    DataTable dt = GoogleSqlDBHelper.ExecuteReader(sql, command, ref msg);
-                     if (dt != null && dt.Rows.Count > 0 && string.IsNullOrEmpty(msg))
+                    DataTable dt = new DataTable();
+                    GoogleSqlDBHelper.Fill(sql, dt);
+                     if (dt != null && dt.Rows.Count > 0)
                     {
                     string code = Pub.GenerateOtp();
                     string subject = dt.Rows[0]["EmailSubject"] + "";

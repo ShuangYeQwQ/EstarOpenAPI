@@ -55,6 +55,6 @@ namespace Application.RequestModel.AccountPage
     {
         public string Email { get; set; }
 
-        public string GooglelocalId { get; set; }
+        public string Password { get; set; }
     }
 }

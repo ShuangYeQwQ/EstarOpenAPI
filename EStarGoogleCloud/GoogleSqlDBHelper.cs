@@ -6,6 +6,7 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 using System.Transactions;
 using static Google.Cloud.DocumentAI.V1.Document.Types.Page.Types;
 
@@ -34,7 +35,9 @@ namespace EStarGoogleCloud
         public static int ExecuteNonQuery(SqlCommand sqlCommand, out int result)
         {
             result = 0;
-            var connectionString = GetSqlServerConnectionString();
+            try
+            {
+                var connectionString = GetSqlServerConnectionString();
                 using (SqlConnection connection = new SqlConnection(connectionString.ConnectionString))
                 {
                     connection.Open();
@@ -42,58 +45,22 @@ namespace EStarGoogleCloud
                     result = sqlCommand.ExecuteNonQuery();
                     sqlCommand.Dispose();
                 }
+            }
+            catch (Exception ex)
+            {
+                string sql = ReplaceSqlParameters(sqlCommand.CommandText, sqlCommand);
+                ExecuteNonQuery(ex.Message, sql);
+            }
+           
             
             return result;
         }
-
-        /// <summary>
-        /// 参数化查询表记录
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        public static void ExecuteReader(SqlCommand sqlCommand, DataTable result)
-        {
-            ExecuteReader(sqlCommand,result,null);
-            sqlCommand.Dispose();
-        }
-
-        public static void ExecuteReader(SqlCommand sqlCommand, DataTable result ,string cnstr)
-        {
-            var connectionString = GetSqlServerConnectionString();
-                using (SqlConnection connection = new SqlConnection(connectionString.ConnectionString))
-                {
-                    sqlCommand.Connection = connection;
-                    using (SqlDataAdapter adapter = new SqlDataAdapter())
-                    {
-                        adapter.SelectCommand = sqlCommand;
-                        adapter.Fill(result);
-                    }
-                }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         /// <summary>
         /// 修改表
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static int ExecuteNonQuery(string sql , ref string msg)
+        public static int ExecuteNonQuery(string sql, ref string msg)
         {
             int num = 0;
             try
@@ -114,63 +81,233 @@ namespace EStarGoogleCloud
             catch (Exception ex)
             {
                 msg = ex.Message;
+                ExecuteNonQuery(ex.Message, sql);
                 return 0;
             }
-            
+
         }
-       
+
+        /// <summary>
+        /// 参数化查询表记录
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static void Fill(SqlCommand sqlCommand, DataTable result)
+        {
+            Fill(sqlCommand, result, null);
+            sqlCommand.Dispose();
+        }
+        public static void Fill(SqlCommand sqlCommand, DataTable result, string cnstr)
+        {
+            try
+            {
+                var connectionString = GetSqlServerConnectionString();
+                //using (SqlConnection connection = new SqlConnection(connectionString.ConnectionString))
+                //{
+                //    sqlCommand.Connection = connection;
+                //    using (SqlDataAdapter adapter = new SqlDataAdapter())
+                //    {
+                //        adapter.SelectCommand = sqlCommand;
+                //        adapter.Fill(result);
+                //    }
+                //}
+                using (SqlConnection connection = new SqlConnection(connectionString.ConnectionString))
+                {
+                    sqlCommand.Connection = connection;
+                    using (SqlDataAdapter adapter = new SqlDataAdapter())
+                    {
+                        adapter.SelectCommand = sqlCommand;
+                        adapter.Fill(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string sql = ReplaceSqlParameters(sqlCommand.CommandText, sqlCommand);
+                ExecuteNonQuery(ex.Message, sql);
+            }
+           
+
+        }
+
         /// <summary>
         /// 查询表记录
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static DataTable ExecuteReader(string sql, DbCommand dbcom, ref string msg)
+        public static void Fill(string sql, DataTable result)
         {
-            DataTable dt = new DataTable();
+            //DataTable dt = new DataTable();
             try
             {
                 var connectionString = GetSqlServerConnectionString();
-                using (DbConnection connection = new SqlConnection(connectionString.ConnectionString))
+                //using (DbConnection connection = new SqlConnection(connectionString.ConnectionString))
+                //{
+                //    connection.OpenWithRetry();
+                //    using (var createTableCommand = connection.CreateCommand())
+                //    {
+                //        // Create the 'votes' table if it does not already exist.
+                //        createTableCommand.CommandText = sql;
+                //        DbDataReader reader = createTableCommand.ExecuteReader();
+                //        result.Load(reader);
+                //        //dt.Load(reader);
+                //    }
+                //}
+                using (SqlConnection connection = new SqlConnection(connectionString.ConnectionString))
                 {
-                    connection.OpenWithRetry();
-                    using (var createTableCommand = connection.CreateCommand())
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(sql, connection))
                     {
-                        // Create the 'votes' table if it does not already exist.
-                        createTableCommand.CommandText = sql;
-                        foreach (DbParameter param in dbcom.Parameters)
-                        {
-                            // 创建新的参数副本
-                            var newParam = createTableCommand.CreateParameter();
-                            newParam.ParameterName = param.ParameterName;
-                            newParam.Value = param.Value;
-                            newParam.DbType = param.DbType; // 根据需要设置其他属性
-                                                            // 添加新的参数
-                            createTableCommand.Parameters.Add(newParam);
-                        }
-                        DbDataReader reader = createTableCommand.ExecuteReader();
-                        dt.Load(reader);
+                        adapter.Fill(result);
                     }
                 }
-                return dt;
             }
             catch (Exception ex)
             {
-                msg = ex.Message;
-                return dt;
+                ExecuteNonQuery(ex.Message, sql);
             }
+            //return dt;
         }
-       
-        
-        
-        
+
+
         /// <summary>
-        /// 查询单条记录
+        /// 参数化查询表记录
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static string ExecuteScalar(string sql, SqlCommand dbcom, ref string msg)
+        public static SqlDataReader ExecuteReader(SqlCommand sqlCommand)
         {
-            string result = null;
+           return ExecuteReader(sqlCommand,null);
+        }
+        public static SqlDataReader ExecuteReader(SqlCommand sqlCommand ,string cnstr)
+        {
+            //result = new DataTable();
+            try
+            {
+                var connectionString = GetSqlServerConnectionString();
+                SqlConnection connection = new SqlConnection(connectionString.ConnectionString);
+                connection.Open();
+                sqlCommand.Connection = connection;
+                return sqlCommand.ExecuteReader(CommandBehavior.CloseConnection);
+            }
+            catch (Exception ex)
+            {
+                string sql = ReplaceSqlParameters(sqlCommand.CommandText, sqlCommand);
+                ExecuteNonQuery(ex.Message, sql);
+            }
+            return null;
+        }
+
+        public static SqlDataReader ExecuteReader(string sql)
+        {
+            return ExecuteReader(sql, null);
+        }
+        /// <summary>
+        /// 查询表记录
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static SqlDataReader ExecuteReader(string sql, string cnstr)
+        {
+            try
+            {
+                var connectionString = GetSqlServerConnectionString();
+                SqlConnection connection = new SqlConnection(connectionString.ConnectionString);
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    return command.ExecuteReader(CommandBehavior.CloseConnection);
+                }
+            }
+            catch (Exception ex)
+            {
+                ExecuteNonQuery(ex.Message, sql);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 参数化查询单个字段
+        /// </summary>
+        /// <param name="sqlCommand"></param>
+        /// <returns></returns>
+        public static string ExecuteScalar(SqlCommand sqlCommand)
+        {
+            ExecuteScalar(sqlCommand, out string result);
+            sqlCommand.Dispose();
+            return result;
+        }
+        public static string ExecuteScalar(SqlCommand sqlCommand, out string result)
+        {
+            result = "";
+            try
+            {
+                var connectionString = GetSqlServerConnectionString();
+                using (SqlConnection connection = new SqlConnection(connectionString.ConnectionString))
+                {
+                    connection.Open();
+                    sqlCommand.Connection = connection;
+                    result = sqlCommand.ExecuteScalar()?.ToString() ?? "";
+                    sqlCommand.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                string sql = ReplaceSqlParameters(sqlCommand.CommandText, sqlCommand);
+                ExecuteNonQuery(ex.Message, sql);
+            }
+
+
+            return result;
+        }
+
+        /// <summary>
+        /// 参数化查询单条记录
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        //public static string ExecuteScalar(string sql, SqlCommand dbcom, ref string msg)
+        //{
+        //    string result = null;
+        //    try
+        //    {
+        //        var connectionString = GetSqlServerConnectionString();
+        //        using (DbConnection connection = new SqlConnection(connectionString.ConnectionString))
+        //        {
+        //            connection.OpenWithRetry();
+        //            using (var command = connection.CreateCommand())
+        //            {
+        //                command.CommandText = sql;
+        //                foreach (DbParameter param in dbcom.Parameters)
+        //                {
+        //                    // 创建新的参数副本
+        //                    var newParam = command.CreateParameter();
+        //                    newParam.ParameterName = param.ParameterName;
+        //                    newParam.Value = param.Value;
+        //                    newParam.DbType = param.DbType; // 根据需要设置其他属性
+        //                                                    // 添加新的参数
+        //                    command.Parameters.Add(newParam);
+        //                }
+        //                // 使用 ExecuteScalar 方法获取单个值
+        //                result = command.ExecuteScalar()?.ToString(); // 将结果转为字符串
+        //            }
+        //        }
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        string errsql = ReplaceSqlParameters(sql, sqlCommand);
+        //        ExecuteNonQuery(ex.Message, errsql);
+        //        return null;
+        //    }
+        //}
+        /// <summary>
+        /// 查询单个字段
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static string ExecuteScalar(string sql)
+        {
+            string result = "";
             try
             {
                 var connectionString = GetSqlServerConnectionString();
@@ -180,28 +317,25 @@ namespace EStarGoogleCloud
                     using (var command = connection.CreateCommand())
                     {
                         command.CommandText = sql;
-                        foreach (DbParameter param in dbcom.Parameters)
-                        {
-                            // 创建新的参数副本
-                            var newParam = command.CreateParameter();
-                            newParam.ParameterName = param.ParameterName;
-                            newParam.Value = param.Value;
-                            newParam.DbType = param.DbType; // 根据需要设置其他属性
-                                                            // 添加新的参数
-                            command.Parameters.Add(newParam);
-                        }
                         // 使用 ExecuteScalar 方法获取单个值
-                        result = command.ExecuteScalar()?.ToString(); // 将结果转为字符串
+                        result = command.ExecuteScalar()?.ToString() ?? ""; // 将结果转为字符串
                     }
                 }
                 return result;
             }
             catch (Exception ex)
             {
-                msg = ex.Message;
-                return null;
+                ExecuteNonQuery(ex.Message, sql);
+                return result;
             }
         }
+        
+        /// <summary>
+        /// 事务
+        /// </summary>
+        /// <param name="dbcom"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public static int ExecuteNonQueryTransaction(List<DbCommand> dbcom, ref string msg)
         {
             int num = 0;
@@ -243,6 +377,29 @@ namespace EStarGoogleCloud
             }
 
         }
+
+        /// <summary>
+        /// 保存sql语句错误信息
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static void ExecuteNonQuery(string msg, string errorsql)
+        {
+            string errtxt = "INSERT INTO Error_Log(CreateDate, ErrorMsg, ErrorSQL) values(getdate(), @msg, @errorsql)";
+            var connectionString = GetSqlServerConnectionString();
+            using (DbConnection connection = new SqlConnection(connectionString.ConnectionString))
+            {
+                connection.OpenWithRetry();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = errtxt;
+                    command.Parameters.Add(new SqlParameter("@msg", msg));
+                    command.Parameters.Add(new SqlParameter("@errorsql", errorsql));
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
         public static void OpenWithRetry(this DbConnection connection) =>
              // [START cloud_sql_sqlserver_dotnet_ado_backoff]
              Policy
@@ -315,7 +472,31 @@ namespace EStarGoogleCloud
             // Specify additional properties here.
             return connectionString;
         }
+        /// <summary>
+        /// 替换参数化sql的值
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="cmd"></param>
+        /// <returns></returns>
+        public static string ReplaceSqlParameters(string sql, SqlCommand cmd)
+        {
+            foreach (SqlParameter param in cmd.Parameters)
+            {
+                // Get the parameter value, handle DBNull, and escape strings if needed
+                string paramValue = param.Value != DBNull.Value ? param.Value.ToString() : "NULL";
 
+                // Escape single quotes in string values to avoid breaking SQL syntax
+                if (paramValue is string)
+                {
+                    paramValue = paramValue.Replace("'", "''");
+                }
+
+                // Replace the parameter placeholder @ParamName with the actual value
+                string paramPattern = @"@" + Regex.Escape(param.ParameterName); // Escape special characters
+                sql = Regex.Replace(sql, paramPattern, paramValue);
+            }
+            return sql;
+        }
     }
 
 }

@@ -13,10 +13,6 @@ namespace Application.RequestModel
         /// </summary>
         public string user { get; set; }
         /// <summary>
-        /// 请求用户的公司域
-        /// </summary>
-        public string domain { get; set; }
-        /// <summary>
         /// 请求类型
         /// </summary>
         public string type { get; set; }

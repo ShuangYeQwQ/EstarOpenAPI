@@ -24,5 +24,6 @@ namespace Application.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<Response<User_res>> GetUserAsync(common_req<User_req> signup_req);
+        
     }
 }
