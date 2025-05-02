@@ -4,30 +4,16 @@ using Application.RequestModel.AccountPage;
 using Application.RequestModel.GoogleIdentityPlatform;
 using Application.ResponseModel.AccountPage;
 using Application.ResponseModel.GoogleIdentityPlatform;
-using Application.ResponseModel.HomePage;
+using Application.ResponseModel.ServicePage;
 using Application.Wrappers;
 using EStarGoogleCloud;
-using Google.Rpc;
-using Google.Type;
-using GoogleCloudModel;
-using Grpc.Core;
 using Infrastructure.Identity.Models;
 using Infrastructure.Shared;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Ocsp;
-using PaypalServerSdk.Standard.Models;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using static Application.RequestModel.GoogleIdentityPlatform.GooglesignUp_req;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Application.ResponseModel.AccountPage.UserInformation_res;
 using DateTime = System.DateTime;
 
 namespace Infrastructure.Identity.Services
@@ -46,19 +32,19 @@ namespace Infrastructure.Identity.Services
             string sql = "";
             sql = @"IF NOT EXISTS (SELECT top 1 FROM Users WHERE Account = @Account OR Email = @Email OR Mobilephone = @Mobilephone)
 BEGIN 
-    INSERT INTO Users (Account, Password, UserName, CreateDate, UpdateDate, AccessToken, ExpiresIn, RefieshToken, NickName, Gender, Avatar, Birthdate, Address, Status, Email, Mobilephone,SocialSecurityNumber,CountryCode,AdminArea1,AdminArea2,AddressLine1,Addressline2,PostalCode)
-    VALUES (@Account, @Password, @UserName, @CreateDate, @UpdateDate, @AccessToken, @ExpiresIn, @RefieshToken, @NickName, @Gender, @Avatar, @Birthdate, @Address, @Status, @Email, @Mobilephone,@SocialSecurityNumber,@CountryCode,@AdminArea1,@AdminArea2,@AddressLine1,@Addressline2,@PostalCode)
+    INSERT INTO Users (Account, Password, UserName, CreateDate, UpdateDate, AccessToken, ExpiresIn, RefieshToken, NickName, Gender, Avatar, Birthdate, Address, Status, Email, Mobilephone,SocialSecurityNumber,CountryCode,AdminArea1,AdminArea2,AddressLine1,Addressline2,PostalCode,Domain,Balance,GooglelocalId,EmailVerification,PhoneVerification,FirstBuy)
+    VALUES (@Account, @Password, @UserName, @CreateDate, @UpdateDate, @AccessToken, @ExpiresIn, @RefieshToken, @NickName, @Gender, @Avatar, @Birthdate, @Address, @Status, @Email, @Mobilephone,@SocialSecurityNumber,@CountryCode,@AdminArea1,@AdminArea2,@AddressLine1,@Addressline2,@PostalCode,@Domain,@Balance,@GooglelocalId,@EmailVerification,@PhoneVerification,@FirstBuy)
 END";
             SqlCommand cmd = new SqlCommand(sql);
             cmd.Parameters.AddWithValue("@Account", users.Account);
             cmd.Parameters.AddWithValue("@Password", users.Password);
-            cmd.Parameters.AddWithValue("@UserName", users.Username);
-            cmd.Parameters.AddWithValue("@CreateDate", users.Createdate);
-            cmd.Parameters.AddWithValue("@UpdateDate", users.Updatedate);
-            cmd.Parameters.AddWithValue("@AccessToken", users.Access_token);
-            cmd.Parameters.AddWithValue("@ExpiresIn", users.Expires_in);
-            cmd.Parameters.AddWithValue("@RefieshToken", users.Refiesh_token);
-            cmd.Parameters.AddWithValue("@NickName", users.Nickname);
+            cmd.Parameters.AddWithValue("@UserName", users.UserName);
+            cmd.Parameters.AddWithValue("@CreateDate", users.CreateDate);
+            cmd.Parameters.AddWithValue("@UpdateDate", users.UpdateDate);
+            cmd.Parameters.AddWithValue("@AccessToken", users.AccessToken);
+            cmd.Parameters.AddWithValue("@ExpiresIn", users.ExpiresIn);
+            cmd.Parameters.AddWithValue("@RefieshToken", users.RefieshToken);
+            cmd.Parameters.AddWithValue("@NickName", users.NickName);
             cmd.Parameters.AddWithValue("@Gender", users.Gender);
             cmd.Parameters.AddWithValue("@Avatar", users.Avatar);
             cmd.Parameters.AddWithValue("@Birthdate", users.Birthdate);
@@ -66,7 +52,7 @@ END";
             cmd.Parameters.AddWithValue("@Status", users.Status);
             cmd.Parameters.AddWithValue("@Email", users.Email);
             cmd.Parameters.AddWithValue("@Mobilephone", users.Mobilephone);
-            //cmd.Parameters.AddWithValue("@Domain", users.Domain);
+            cmd.Parameters.AddWithValue("@Domain", users.Domain);
             cmd.Parameters.AddWithValue("@SocialSecurityNumber", users.SocialSecurityNumber);
             cmd.Parameters.AddWithValue("@CountryCode", users.CountryCode);
             cmd.Parameters.AddWithValue("@AdminArea1", users.AdminArea1);
@@ -74,6 +60,11 @@ END";
             cmd.Parameters.AddWithValue("@AddressLine1", users.AddressLine1);
             cmd.Parameters.AddWithValue("@Addressline2", users.Addressline2);
             cmd.Parameters.AddWithValue("@PostalCode", users.PostalCode);
+            cmd.Parameters.AddWithValue("@Balance", users.Balance);
+            cmd.Parameters.AddWithValue("@GooglelocalId", users.GooglelocalId);
+            cmd.Parameters.AddWithValue("@EmailVerification", users.EmailVerification);
+            cmd.Parameters.AddWithValue("@PhoneVerification", users.PhoneVerification);
+            cmd.Parameters.AddWithValue("@FirstBuy", users.FirstBuy);
             try
             {
                 num = GoogleSqlDBHelper.ExecuteNonQuery(cmd);
@@ -93,42 +84,7 @@ END";
 
        
 
-        /// <summary>
-        /// 添加用户订单
-        /// </summary>
-        /// <param name="users"></param>
-        /// <returns></returns>
-        public static void AddAccountOrder(UserOrderModel orderModel)
-        {
-            int num = 0;
-            string sql = "";
-            sql = @" insert into user_orders(uid,UserServiceId,createtime,paymentplatform,paytime,orderid,amount,account,currencycode) values(
-@Uid,@UserServiceId,@Createtime,@PaymentPlatform,@PayTime,@OrderId,@Amount,@Account,@currencycode) ";
-            SqlCommand cmd = new SqlCommand(sql);
-            cmd.Parameters.AddWithValue("@UserServiceId", orderModel.UserServiceId);
-            cmd.Parameters.AddWithValue("@OrderId", orderModel.OrderId);
-            cmd.Parameters.AddWithValue("@Uid", orderModel.Uid);
-            cmd.Parameters.AddWithValue("@Account", orderModel.Account);
-            cmd.Parameters.AddWithValue("@Amount", orderModel.Amount);
-            cmd.Parameters.AddWithValue("@PaymentPlatform", orderModel.PaymentPlatform);
-            cmd.Parameters.AddWithValue("@Createtime", orderModel.Createtime);
-            cmd.Parameters.AddWithValue("@PayTime", orderModel.PayTime);
-            cmd.Parameters.AddWithValue("@currencycode", orderModel.currencycode);
-            try
-            {
-                num = GoogleSqlDBHelper.ExecuteNonQuery(cmd);
-                if (num <= 0)
-                {
-                    string logSql = Pub.ReplaceSqlParameters(sql, cmd);
-                    Pub.SaveLog(nameof(AccountService), $"新增用户订单失败, SQL: {logSql}");
-                }
-            }
-            catch (Exception ex)
-            {
-                string logSql = Pub.ReplaceSqlParameters(sql, cmd);
-                Pub.SaveLog(nameof(AccountService), $"插入用户订单时发生异常:{ex.Message} , SQL: {logSql}");
-            }
-        }
+       
 
         /// <summary>
         /// 添加用户银行账号信息
@@ -167,7 +123,7 @@ END";
         public async Task<Response<string>> CreateUserInformationAsync(common_req<UserInformation_req> signup_req)
         {
             //AddGoogleUserAsync(signup_req.actioninfo.Email, "GZi9VNAc", signup_req.actioninfo.Phone);
-            UserInformation_req userInformation_Req = signup_req.actioninfo;
+            UserInformation_req userInformation_Req = signup_req.Actioninfo;
             int num = 0;
             string sql = "";
             string cmdText = "select top 1 uid from Users  where account=@email OR email=@email OR MobilePhone = @MobilePhone";
@@ -205,16 +161,16 @@ END";
                     Address = address,
                     Avatar = "",
                     Status = 1,
-                    Access_token = "",
-                    Expires_in = DateTime.Now,
-                    Refiesh_token = "",
+                    AccessToken = "",
+                    ExpiresIn = DateTime.Now,
+                    RefieshToken = "",
                     Mobilephone = userInformation_Req.Phone,
                     Birthdate = Pub.To<DateTime>(userInformation_Req.Birth),
-                    Createdate = DateTime.Now,
-                    Updatedate = DateTime.Now,
+                    CreateDate = DateTime.Now,
+                    UpdateDate = DateTime.Now,
                     Domain = "",
-                    Nickname = userInformation_Req.Email,
-                    Username = userInformation_Req.Name,
+                    NickName = userInformation_Req.Email,
+                    UserName = userInformation_Req.Name,
                     Password = "",
                     Gender = 0,
                     SocialSecurityNumber = userInformation_Req.Socialsecuritynumber,
@@ -302,7 +258,7 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
                             body = table.Rows[i]["EmailBody"] + "";
                             string newBody = body.Replace("{UserEmail}", users.Email);
                             newBody = newBody.Replace("{UserPassWord}", pwd);
-                            newBody = newBody.Replace("{UserName}", users.Username);
+                            newBody = newBody.Replace("{UserName}", users.UserName);
                             //发送账户信息
                             await Task.Run(() => Pub.SendEmail(users.Email, subject, newBody));
                             //if (table.Rows.Count >= 2)
@@ -548,8 +504,8 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
             User_res user_Res = new User_res();
             try
             {
-                var email = signup_req.actioninfo.Email + "";
-                var password = signup_req.actioninfo.Password + "";
+                var email = signup_req.Actioninfo.Email + "";
+                var password = signup_req.Actioninfo.Password + "";
                 string pwd = "";
                 //if (!string.IsNullOrEmpty(password))
                 //{
@@ -587,29 +543,13 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
                     user_Res.UserRole = "0";
                     user_Res.UserPageList = "";
                     //是否员工登录
-                   cmdText = @" SELECT top 1 sr.RoleType FROM Staff s left join Staff_Role sr on s.RoleId = sr.Id WHERE UId = '"+ user_Res.Id + "' ";
+                   cmdText = @" SELECT top 1 sr.Id,sr.RoleType,ViewFile FROM Users u left join User_Identity sr on u.RId = sr.Id WHERE u.UId = '" + user_Res.Id + "' ";
                     table = new DataTable();
                     GoogleSqlDBHelper.Fill(cmdText,table);
                     if(table != null && table.Rows.Count > 0)
                     {
-                        user_Res.UserRole = table.Rows[0]["RoleType"] +"";
-                    }
-                    else
-                    {
-                        //用户服务页面
-                        string userpage = "";
-                        cmdText = @" SELECT PageId FROM Service_Page where ServiceId in(SELECT us.ServiceId FROM User_Service us where us.Uid = '"+ user_Res.Id + "' Group by us.ServiceId) Group by PageId ";
-                        table = new DataTable();
-                        GoogleSqlDBHelper.Fill(cmdText, table);
-                        for (int i = 0; i < table.Rows.Count; i++)
-                        {
-                            userpage += table.Rows[i]["PageId"] + ",";
-                        }
-                        if (userpage.EndsWith(","))
-                        {
-                            userpage = userpage.Substring(0, userpage.Length - 1);
-                        }
-                        user_Res.UserPageList = userpage;
+                        user_Res.UserRole = table.Rows[0]["RoleType"] + "";
+                        user_Res.UserPageList = table.Rows[0]["ViewFile"] + "";
                     }
                     return new Response<User_res>(user_Res, "");
                 }
@@ -620,11 +560,132 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
                 Pub.SaveLog(nameof(AccountService), $"获取账户信息失败: {ex.Message}");
                 return new Response<User_res>($"获取账户信息失败: {ex.Message}");
             }
-
-
-            
         }
-        
+        /// <summary>
+        /// 获取用户个人信息
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<Response<UserInformation_res>> GetUserInformationAsync(common_req<string> signup_req)
+        {
+            string uid = signup_req.User;
+            string cmdText = "";
+            UserInformation_res userInformation_Res = new UserInformation_res();
+            userInformation_Res.UserPersonInformation = new UserPersonInformationResponse();
+            userInformation_Res.UserCompanyInformation = new UserCompanyInformationResponse();
+            cmdText = @" select nickname as name,BirthDate as birthday,Gender as sex,email,Mobilephone as phone,address,PostalCode as zipcode,Socialsecuritynumber,domain from users where uid = '" + uid + "' ";
+            DataTable table = new DataTable();
+            GoogleSqlDBHelper.Fill(cmdText, table);
+            if (table != null && table.Rows.Count > 0)
+            {
+                List<UserPersonInformationResponse> userPersonInformationResponse = Pub.ToList<UserPersonInformationResponse>(table);
+                userInformation_Res.UserPersonInformation = userPersonInformationResponse.First();
+                if (!string.IsNullOrEmpty(userInformation_Res.UserPersonInformation.Domain))
+                {
+                    cmdText = @" select name,Address,Phone,MainBusiness,Email,Zipcode,CompantNumber,TimeSheetType,BusinessType,Edd,EmployerIdentificationNumber as Ein,BankAccount,PayPeriod from User_Compant where id = '"+ userInformation_Res.UserPersonInformation.Domain + "' ";
+                     table = new DataTable();
+                    GoogleSqlDBHelper.Fill(cmdText, table);
+                    if (table != null && table.Rows.Count > 0)
+                    {
+                        List<UserCompanyInformationResponse> userCompanyInformationResponses = Pub.ToList<UserCompanyInformationResponse>(table);
+                        userInformation_Res.UserCompanyInformation = userCompanyInformationResponses.First();
+                    }
+                    }
+                return new Response<UserInformation_res>(userInformation_Res,"");
+            }
+            return new Response<UserInformation_res>("");
+        }
+
+        /// <summary>
+        /// 添加用户基本信息
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        public async Task<Response<string>> UpdateUserInformationAsync(common_req<string> signup_req)
+        {
+            string type = signup_req.Type;
+            string user = signup_req.User;
+            string changevalue = signup_req.Actioninfo;
+            string setsql = "";
+            int num = 0;
+            string parameterName = "";
+            SqlDbType parameterType = SqlDbType.NVarChar;
+            object parameterValue = changevalue; // 默认值为字符串
+
+            switch (type.ToLower())
+            {
+                case "name":
+                    setsql = "UPDATE users SET NickName = @NickName";
+                    parameterName = "@NickName";
+                    parameterType = SqlDbType.NVarChar;
+                    break;
+                case "birthday":
+                    setsql = "UPDATE users SET BirthDate = @BirthDate";
+                    parameterName = "@BirthDate";
+                    parameterType = SqlDbType.DateTime;
+                    if (!DateTime.TryParse(changevalue, out DateTime birthDate))
+                    {
+                        throw new ArgumentException("BirthDate 格式无效。");
+                    }
+                    parameterValue = birthDate;
+                    break;
+                case "gender":
+                    setsql = "UPDATE users SET Gender = @Gender";
+                    parameterName = "@Gender";
+                    parameterType = SqlDbType.Int;
+                    if (!int.TryParse(changevalue, out int gender))
+                    {
+                        throw new ArgumentException("Gender 必须为整数。");
+                    }
+                    parameterValue = gender;
+                    break;
+                case "email":
+                    setsql = "UPDATE users SET Email = @Email";
+                    parameterName = "@Email";
+                    parameterType = SqlDbType.NVarChar;
+                    break;
+                case "mobile": // 修正拼写错误，原为 "monile"
+                    setsql = "UPDATE users SET Mobilephone = @Mobilephone";
+                    parameterName = "@Mobilephone";
+                    parameterType = SqlDbType.NVarChar;
+                    break;
+                case "address":
+                    setsql = "UPDATE users SET Address = @Address";
+                    parameterName = "@Address";
+                    parameterType = SqlDbType.NVarChar;
+                    break;
+                case "postalcode":
+                    setsql = "UPDATE users SET PostalCode = @PostalCode";
+                    parameterName = "@PostalCode";
+                    parameterType = SqlDbType.VarChar;
+                    break;
+                case "socialsecuritynumber":
+                    setsql = "UPDATE users SET Socialsecuritynumber = @Socialsecuritynumber";
+                    parameterName = "@Socialsecuritynumber";
+                    parameterType = SqlDbType.NVarChar;
+                    break;
+                default:
+                    throw new ArgumentException("无效的更新类型。");
+            }
+
+            if (!string.IsNullOrEmpty(setsql))
+            {
+                string cmdText = $"{setsql} WHERE uid = @uid";
+                SqlCommand cmd = new SqlCommand(cmdText);
+                cmd.Parameters.Add("@uid", SqlDbType.NVarChar).Value = user;
+                cmd.Parameters.Add(parameterName, parameterType).Value = parameterValue;
+
+                 num = GoogleSqlDBHelper.ExecuteNonQuery(cmd);
+            }
+            if (num <= 0)
+            {
+                return new Response<string>("修改个人信息失败", "");
+            }
+            return new Response<string>("", "");
+        }
+
+
     }
 
 }

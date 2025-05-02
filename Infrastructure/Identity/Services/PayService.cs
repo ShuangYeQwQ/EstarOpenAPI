@@ -1,35 +1,23 @@
 ﻿using Application.Interfaces;
-using Application.ResponseModel.HomePage;
+using Application.RequestModel;
+//using iTextSharp.text.pdf.parser.clipper;
+using Application.RequestModel.PayPage;
+using Application.ResponseModel.PayPage;
 using Application.Wrappers;
-using Microsoft.Extensions.Configuration;
+using EStarGoogleCloud;
+using Infrastructure.Identity.Models;
+using Infrastructure.Shared;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
+using PaypalServerSdk.Standard;
 using PaypalServerSdk.Standard.Authentication;
 using PaypalServerSdk.Standard.Exceptions;
 using PaypalServerSdk.Standard.Http.Response;
 using PaypalServerSdk.Standard.Models;
-using PaypalServerSdk.Standard;
 using Stripe;
-using Stripe.Checkout;
 using Stripe.V2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Infrastructure.Identity.Models;
-using Infrastructure.Shared;
-using Microsoft.Data.SqlClient;
 using System.Data;
-using EStarGoogleCloud;
-using Google.Rpc;
-using Stripe.FinancialConnections;
-using Application.ResponseModel.PayPage;
-using System.Diagnostics;
-using Google;
-using Application.RequestModel;
-using Google.Api;
-//using iTextSharp.text.pdf.parser.clipper;
-using System.Runtime.Serialization;
+using System.Data.Common;
 
 namespace Infrastructure.Identity.Services
 {
@@ -78,9 +66,11 @@ namespace Infrastructure.Identity.Services
         /// stripe支付成功
         /// </summary>
         /// <returns></returns>
-        public async Task<Response<string>> StripePaySuccessAsync(string uid, string PaymentIntentId)
+        public async Task<Response<string>> StripePaySuccessAsync(common_req<PayPayPayment_req> signup_req)//string uid, string PaymentIntentId
         {
-            if (string.IsNullOrEmpty(PaymentIntentId))
+            string uid = signup_req.User;
+            string oid = signup_req.Actioninfo.Oid;
+            if (string.IsNullOrEmpty(oid))
             {
                 return new Response<string>("PaymentIntentId is required");
             }
@@ -89,7 +79,7 @@ namespace Infrastructure.Identity.Services
             {
                 // 使用 Stripe SDK 查询 PaymentIntent
                 var service = new PaymentIntentService();
-                var paymentIntent = service.Get(PaymentIntentId);
+                var paymentIntent = service.Get(oid);
 
                 if (paymentIntent.Status == "succeeded")
                 {
@@ -97,7 +87,7 @@ namespace Infrastructure.Identity.Services
                     var chargeService = new ChargeService();
                     var charge = chargeService.Get(paymentIntent.LatestChargeId);
                     var billingDetails = charge.BillingDetails;
-                    AddAccountInformation(uid,billingDetails.Email,"Stripe", PaymentIntentId, charge.Metadata["ReferenceId"], (charge.Amount / 100).ToString(), charge.Currency,billingDetails.Name,"2023");
+                    AddAccountInformation(uid,billingDetails.Email,"Stripe", oid, charge.Metadata["ReferenceId"], (charge.Amount / 100).ToString(), charge.Currency,billingDetails.Name, signup_req.Actioninfo.PayItems);
                     return new Response<string>("Payment verified","");
                     
                 }
@@ -116,11 +106,28 @@ namespace Infrastructure.Identity.Services
         /// </summary>
         /// <param name="signup_req">服务id</param>
         /// <returns></returns>
-        public async Task<Response<string>> CreatePayPalSourceAsync(common_req<string> signup_req)
+        public async Task<Response<int>> CreatePayPalSourceAsync(common_req<PayPal_req> signup_req)
         {
-            string moeny = "100.00";
-            string desc = "该订单仅包含基础服务，不包含（收入抵扣,所得税减免,已付税款）服务";
-            string serviceid = signup_req.actioninfo;
+            string moeny = signup_req.Actioninfo.TotalMoney; //"100.00";
+            string desc = signup_req.Actioninfo.PayDesc;
+            string serviceid = signup_req.Actioninfo.ServiceId;
+            string paytype = signup_req.Actioninfo.PayType;
+            //验证是否需要付费
+            if (paytype.Equals("1") && !string.IsNullOrEmpty(signup_req.User))
+            {
+                string cmdtxt = string.Format(@" select top 1 id from User_Orders where uid = '{0}' ", signup_req.User);
+                string oid =  GoogleSqlDBHelper.ExecuteScalar(cmdtxt);
+                if (!string.IsNullOrEmpty(oid)) {
+                    string msg = ServicesService.AddUserService(signup_req.User, serviceid, "0", "PayPal","","", signup_req.Actioninfo.PayItems);
+                    if (!string.IsNullOrEmpty(msg))
+                    {
+                        return new Response<int>(102, "购买失败！创建用户服务时出现问题："+msg);
+                    }
+                    return new Response<int>(101,"");
+                }
+            }
+
+
             string oAuthClientId =  System.Configuration.ConfigurationManager.AppSettings["oAuthClientId"] + "";
             string oAuthClientSecret = System.Configuration.ConfigurationManager.AppSettings["oAuthClientSecret"] + "";
             PaypalServerSdkClient client = new PaypalServerSdkClient.Builder()
@@ -132,6 +139,16 @@ namespace Infrastructure.Identity.Services
        .ResponseConfig(respConfig => respConfig.Headers(true)))
    .Build();
             var ordersController = client.OrdersController;
+            List<Item> items = new List<Item>();
+            for (int i = 0; i < signup_req.Actioninfo.PayItems.Count; i++)
+            {
+                Item item = new Item();
+                item.Name = signup_req.Actioninfo.PayItems[i].Name;
+                item.UnitAmount = new Money { CurrencyCode = "usd", MValue = signup_req.Actioninfo.PayItems[i].Money };
+                item.Quantity = signup_req.Actioninfo.PayItems[i].Num;
+                //item.Description = signup_req.Actioninfo.PayItems[i].Description;
+                items.Add(item);
+            }
             OrdersCreateInput ordersCreateInput = new OrdersCreateInput
             {
                 Body = new OrderRequest
@@ -142,9 +159,16 @@ namespace Infrastructure.Identity.Services
                 {
                     CurrencyCode = "usd",
                     MValue = moeny,
+                    Breakdown = new AmountBreakdown {
+                        ItemTotal = new Money {
+                    CurrencyCode = "usd",
+                    MValue = moeny,
+                        }
+                    }
                 },
                 ReferenceId = serviceid,//"AC5EA2C9-7E66-4E37-8340-4273AE354A92",//购买的项目id
-                Description = desc
+                Description = desc,
+               Items =  items,
             },],
                     PaymentSource = new PaymentSource
                     {
@@ -166,7 +190,7 @@ namespace Infrastructure.Identity.Services
             {
                 ApiResponse<Order> orderresult = await ordersController.OrdersCreateAsync(ordersCreateInput);
                 string approveUrl = orderresult.Data.Links.First(link => link.Rel == "payer-action").Href;//支付链接
-                return new Response<string>(approveUrl, "");
+                return new Response<int>(100,approveUrl);
                 //OrdersAuthorizeInput ordersAuthorizeInput = new OrdersAuthorizeInput
                 // {
                 //   Id = orderresult.Data.Id,
@@ -178,17 +202,18 @@ namespace Infrastructure.Identity.Services
             catch (ApiException e)
             {
                 // TODO: Handle exception here
-                return new Response<string>(e.Message);
+                return new Response<int>(102,e.Message);
             }
         }
         /// <summary>
         /// 授权付款
-        /// </summary>
-        /// <param name="token">订单号</param>
-        /// <param name="PayerID"></param>
+        /// </summary> string uid, string token, string PayerID
         /// <returns></returns>
-        public async Task<Response<string>> PaymentSuccess(string uid, string token, string PayerID)
+        public async Task<Response<string>> PaymentSuccess(common_req<PayPayPayment_req> signup_req)
         {
+            string uid = signup_req.User;
+            string oid = signup_req.Actioninfo.Oid;
+            //string serviceyear = signup_req.Actioninfo.BeginServiceDate;
             string oAuthClientId = System.Configuration.ConfigurationManager.AppSettings["oAuthClientId"] + "";
             string oAuthClientSecret = System.Configuration.ConfigurationManager.AppSettings["oAuthClientSecret"] + "";
             PaypalServerSdkClient client = new PaypalServerSdkClient.Builder()
@@ -201,7 +226,7 @@ namespace Infrastructure.Identity.Services
     .Build();
             OrdersGetInput ordersGetInput = new OrdersGetInput
             {
-                Id = token,
+                Id = oid,
             };
 
             try
@@ -210,7 +235,7 @@ namespace Infrastructure.Identity.Services
                 var paymentsController = client.PaymentsController;
                 OrdersAuthorizeInput ordersAuthorizeInput = new OrdersAuthorizeInput
                 {
-                    Id = token,
+                    Id = oid,
                     Prefer = "return=minimal",
                 };
                 //获取授权付款id
@@ -231,8 +256,18 @@ namespace Infrastructure.Identity.Services
                 if (paystatus.Equals("Completed"))
                 {
                     ApiResponse<Order> result = await ordersController.OrdersGetAsync(ordersGetInput);
-                    AddAccountInformation(uid, ordersresult.Data.Payer.EmailAddress, "PayPal", result.Data.Id, result.Data.PurchaseUnits[0].ReferenceId, result.Data.PurchaseUnits[0].Amount.MValue, result.Data.PurchaseUnits[0].Shipping.Name.FullName, result.Data.PurchaseUnits[0].Amount.CurrencyCode, "2023");
-                    return new Response<string>("支付失败！支付未完成");
+                    //string uid, string email,string paymentplatform,string oid,string rid,string amount,string fullname,string currencycode,string year
+                    string email = ordersresult.Data.Payer.EmailAddress;
+                    string serviceid = result.Data.PurchaseUnits[0].ReferenceId;
+                    string amount = result.Data.PurchaseUnits[0].Amount.MValue;
+                    string fullname = result.Data.PurchaseUnits[0].Shipping.Name.FullName;
+                    string currencycode = result.Data.PurchaseUnits[0].Amount.CurrencyCode; 
+                    string msg =  AddAccountInformation(uid, email, "PayPal",oid , serviceid, amount, fullname,currencycode, signup_req.Actioninfo.PayItems);
+                    if (!string.IsNullOrEmpty(msg))
+                    {
+                        return new Response<string>("支付成功！创建用户服务信息失败："+msg);
+                    }
+                    return new Response<string>("支付成功！","");
                 }
                     return new Response<string>("支付失败！支付未完成");
             }
@@ -253,13 +288,14 @@ namespace Infrastructure.Identity.Services
         /// <param name="amount">购买的金额</param>
         /// <param name="fullname">用户名</param>
         /// /// <param name="year">服务年份</param>
-        public static void AddAccountInformation(string uid, string email,string paymentplatform,string oid,string rid,string amount,string fullname,string currencycode,string year)
+        public static string AddAccountInformation(string uid, string email,string paymentplatform,string oid,string rid,string amount,string fullname,string currencycode, List<PayItem> payItems)
         {
             try
             {
                 string cmdText = ""; 
                 SqlCommand cmd;
                 DataTable table;
+                //用户不存在创建
                 if (!string.IsNullOrEmpty(uid))
                 {
                     cmdText = "select top 1 Uid from Users where account=@email OR email=@email";
@@ -282,16 +318,16 @@ namespace Infrastructure.Identity.Services
                             Address = "",
                             Avatar = "",
                             Status = 0,
-                            Access_token = "",
-                            Expires_in = DateTime.Now,
-                            Refiesh_token = "",
+                            AccessToken = "",
+                            ExpiresIn = DateTime.Now,
+                            RefieshToken = "",
                             Mobilephone = "",
                             Birthdate = DateTime.Now,
-                            Createdate = DateTime.Now,
-                            Updatedate = DateTime.Now,
+                            CreateDate = DateTime.Now,
+                            UpdateDate = DateTime.Now,
                             Domain = "",
-                            Nickname = fullname,
-                            Username = fullname,
+                            NickName = fullname,
+                            UserName = fullname,
                             Password = "",
                             Gender = 0,
                             SocialSecurityNumber = "",
@@ -300,7 +336,12 @@ namespace Infrastructure.Identity.Services
                             AdminArea2 = "",
                             AddressLine1 = "",
                             Addressline2 = "",
-                            PostalCode = ""
+                            PostalCode = "",
+                            Balance = "0",
+                            GooglelocalId = "",
+                            EmailVerification = "0",
+                            PhoneVerification = "0",
+                            FirstBuy = "0"
                         };
                         AccountService.CreateUser(usersModel);
                         table = new DataTable();
@@ -312,139 +353,54 @@ namespace Infrastructure.Identity.Services
                         uid = table.Rows[0]["uid"] + "";
                     }
                 }
-                
-                    //创建订单信息，订单先记录，后面修改服务id为用户服务id
-                    UserOrderModel orderModel = new UserOrderModel
-                    {
-                        UserServiceId = rid,
-                        OrderId = oid,
-                        Uid = uid,
-                        Account = email,
-                        Amount = Pub.To<decimal>(amount),
-                        PaymentPlatform = paymentplatform,
-                        Createtime = DateTime.Now,
-                        PayTime = DateTime.Now,
-                        currencycode = currencycode
-                    };
-                    AccountService.AddAccountOrder(orderModel);
-                //将服务按服务模板点数/最近处理服务时间/最近处理服务状态/创建时间分配给员工，获取3个员工id，会计id
-                string sid = "";
-                string sid1 = "";
-                string sid2 = "";
-                cmdText = @" WITH MinPoints AS (
-    SELECT MIN(s.ServiceModelPoints) AS MinPoints
-    FROM staff s
-    INNER JOIN Staff_Role r ON s.RoleId = r.Id
-    WHERE r.RoleType IN (1, 2, 3)
-),
-RankedStaff AS (
-    SELECT 
-        s.Id, 
-        r.RoleType, 
-        s.ServiceModelPoints, 
-        s.ProcessedServiceCount, 
-        s.CreateDate, 
-        s.HandleServiceDate,
-        s.HandleServiceStatus,
-        ROW_NUMBER() OVER (
-            PARTITION BY r.RoleType
-            ORDER BY 
-                s.ServiceModelPoints, 
-                s.HandleServiceDate ASC, 
-                CASE 
-                    WHEN s.HandleServiceStatus = 0 THEN 1
-                    WHEN s.HandleServiceStatus = 3 THEN 2
-                    ELSE 3
-                END,
-                s.CreateDate ASC
-        ) AS RowNum
-    FROM staff s
-    INNER JOIN Staff_Role r ON s.RoleId = r.Id
-    WHERE r.RoleType IN (1, 2, 3)
-    AND s.ServiceModelPoints = (SELECT MinPoints FROM MinPoints)
-    AND s.Status = '2'
-)
-SELECT Id, RoleType
-FROM RankedStaff
-WHERE RowNum = 1; ";
-                     cmd = new SqlCommand(cmdText);
-                     cmd.CommandText = cmdText;
-                     table = new DataTable();
-                    GoogleSqlDBHelper.Fill(cmd, table);
-                    if (table != null && table.Rows.Count > 0)
-                    {
-                    for (int i = 0; i < table.Rows.Count; i++)
-                    {
-                        string id = table.Rows[i]["id"] + "";
-                        string roleType = table.Rows[i]["RoleType"] + "";
-                        switch (roleType)
-                        {
-                            case "1":
-                                sid = id;
-                                break;
-                            case "2":
-                                sid1 = id;
-                                break;
-                            case "3":
-                                sid2 = id;
-                                break;
-                        }
-                    }
-                    }
-                    //创建用户购买项目
-                    UserServiceModel serviceModel = new UserServiceModel
-                    {
-                        UId = uid,
-                        Name = "",
-                        CreateTime = DateTime.Now,
-                        BeginDate = DateTime.Now,
-                        EndDate = DateTime.Now,
-                        ServiceId = rid,
-                        Status = "0",
-                        Descs = "",
-                        Year = year,
-                        SId = sid,
-                        SId1 = sid1,
-                        SId2 = sid2,
-                    };
-                    int num = ServicesService.AddUserService(serviceModel);
-                if(num > 0)
+                string msg = ServicesService.AddUserService(uid, rid, amount, paymentplatform, oid, currencycode, payItems);
+                if(!string.IsNullOrEmpty(msg))
                 {
-                    cmdText = "select top 1 id from User_Service where Uid = '"+uid+"' AND Year = '"+year+"' AND ServiceId = '"+ rid + "' AND Status = '0' ";
-                    string usid = GoogleSqlDBHelper.ExecuteScalar(cmdText);
-                    if (string.IsNullOrEmpty(usid)){
-                        //使用数据库模板，数据库添加员工选择的任务模板发布任务
-                        string TaskTitle = "上传文件";
-                        string TaskContent = "请上传您的报税资料相关文件，如（W-2）（1095）等相关的pdf或图片文件";
-                        UserTaskModel userTaskModel = new UserTaskModel
-                        {
-                            Uid = uid,
-                            CreateTime = DateTime.Now,
-                            UpdateTime = DateTime.Now,
-                            UserServiceId = usid,
-                            Sid = "",
-                            SendType = 0,
-                            Status = 0,
-                            Type = 0,
-                            TaskTitle = TaskTitle,
-                            TaskContent = TaskContent,
-                        };
-                        ServicesService.AddUserTask(userTaskModel);
-                        //修改订单表数据服务id为用户服务id
-                        cmdText = " update User_Orders set UserServiceId = '"+ usid + "' where OrderId = '"+ oid + "' and Uid = '"+uid+"' ";
-                        string msg = "";
-                        GoogleSqlDBHelper.ExecuteNonQuery(cmdText,ref msg);
-                    }
-                    
-
+                    return "添加用户服务失败！"+msg;
                 }
-                
+                return "";
+                //string usid = "";
+                //if (num > 0)
+                //{
+                //    cmdText = "select top 1 id from User_Service where Uid = '"+uid+ "'  AND ServiceId = '"+ rid + "' AND Status = '0' ";//AND ServiceBeginYear = '" + year+"'
+                //     usid = GoogleSqlDBHelper.ExecuteScalar(cmdText);
+                //    if (string.IsNullOrEmpty(usid)){
+                //        //使用数据库模板，数据库添加员工选择的任务模板发布任务
+                //        string TaskTitle = "上传文件";
+                //        string TaskContent = "请上传您的报税资料相关文件，如（W-2）（1095）等相关的pdf或图片文件";
+                //        UserTaskModel userTaskModel = new UserTaskModel
+                //        {
+                //            Uid = uid,
+                //            CreateTime = DateTime.Now,
+                //            UpdateTime = DateTime.Now,
+                //            UserServiceId = usid,
+                //            Sid = "",
+                //            SendType = 0,
+                //            Status = 0,
+                //            Type = 0,
+                //            TaskTitle = TaskTitle,
+                //            TaskContent = TaskContent,
+                //        };
+                //        ServicesService.AddUserTask(userTaskModel);
+                //        //修改订单表数据服务id为用户服务id
+                //       // cmdText = " update User_Orders set UserServiceId = '"+ usid + "' where OrderId = '"+ oid + "' and Uid = '"+uid+"' ";
+                //       // string msg = "";
+                //       // GoogleSqlDBHelper.ExecuteNonQuery(cmdText,ref msg);
+                //    }
+                //}
+
             }
             catch (Exception ex)
             {
                 Pub.SaveLog("PayService", $"创建用户账户信息出现错误，用户：{email}，错误信息：{ex.Message}");
+                return ex.Message;
             }
            
         }
+
+
+
+
+       
     }
 }

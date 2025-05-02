@@ -34,6 +34,25 @@ namespace EstarOpenAPI.Controllers
         {
             return Ok(await _accountService.GetUserAsync(signup_req));
         }
-        
+        /// <summary>
+        /// 获取用户基本信息
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        [HttpPost("getuserinformation")]
+        public async Task<IActionResult> GetUserInformationAsync([FromBody] common_req<string> signup_req)
+        {
+            return Ok(await _accountService.GetUserInformationAsync(signup_req));
+        }
+        /// <summary>
+        /// 用户修改基本信息
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        [HttpPost("updateuserinformation")]
+        public async Task<IActionResult> UpdateUserInformationAsync([FromBody] common_req<string> signup_req)
+        {
+            return Ok(await _accountService.UpdateUserInformationAsync(signup_req));
+        }
     }
 }

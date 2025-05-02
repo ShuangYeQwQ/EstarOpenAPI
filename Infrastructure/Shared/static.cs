@@ -21,6 +21,7 @@ using iText.Forms;
 using iText.Forms.Fields;
 using static Google.Cloud.DocumentAI.V1.TrainProcessorVersionRequest.Types;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Xml.Serialization;
 
 namespace Infrastructure.Shared
 {
@@ -631,5 +632,21 @@ namespace Infrastructure.Shared
             }
             
         }
+        /// <summary>
+        /// 生成 XML 字符串
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string SerializeToXml<T>(T obj)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            using (StringWriter writer = new StringWriter())
+            {
+                serializer.Serialize(writer, obj);
+                return writer.ToString();
+            }
+        }
+
     }
 }

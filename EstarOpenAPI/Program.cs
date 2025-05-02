@@ -14,6 +14,7 @@ builder.Services.AddScoped<IHomePageService, HomePageService>();
 builder.Services.AddScoped<IPayService, PayService>();
 builder.Services.AddScoped<IAccountService, Infrastructure.Identity.Services.AccountService>();
 builder.Services.AddScoped<IServicesService, ServicesService>();
+builder.Services.AddScoped<ICchApiService, CchApiService>();
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
     options.ListenAnyIP(44386, listenOptions =>

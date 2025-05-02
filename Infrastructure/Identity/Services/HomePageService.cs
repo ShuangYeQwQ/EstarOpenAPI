@@ -42,8 +42,8 @@ namespace Infrastructure.Identity.Services
             try
             {
                 //验证输入的验证码是否正确
-                string type = signup_req.type + "";//0:邮箱验证，1:手机验证
-                var action_info = signup_req.actioninfo;
+                string type = signup_req.Type + "";//0:邮箱验证，1:手机验证
+                var action_info = signup_req.Actioninfo;
                 string username = action_info.nickname + "";
                 string password = action_info.password + "";
                 string email = action_info.email + "";
@@ -143,9 +143,9 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
         /// <returns></returns>
         public async Task<Response<string>> SendVerificationEmailAsync(common_req<Signup_req> signup_req)
         {
-            string user = signup_req.user + "";
-            string email = signup_req.actioninfo.email + "";
-            string type = signup_req.type + "";//0:邮箱验证，1:手机验证
+            string user = signup_req.User + "";
+            string email = signup_req.Actioninfo.email + "";
+            string type = signup_req.Type + "";//0:邮箱验证，1:手机验证
             string msg = "";
             var command = new SqlCommand();
             try
@@ -225,9 +225,9 @@ values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email
         /// <returns></returns>
         public async Task<Response<Signup_res>> LoginAsync(common_req<Signup_req> signup_req)
         {
-            string user = signup_req.user + "";
-            string email = signup_req.actioninfo.email + "";
-            string password = signup_req.actioninfo.password + "";//0:邮箱验证，1:手机验证
+            string user = signup_req.User + "";
+            string email = signup_req.Actioninfo.email + "";
+            string password = signup_req.Actioninfo.password + "";//0:邮箱验证，1:手机验证
             string msg = "";
             Signup_res signup_Res = new Signup_res();
             try

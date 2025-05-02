@@ -1,5 +1,8 @@
 ﻿using Application.Interfaces;
 using Application.RequestModel;
+using Application.RequestModel.HomePage;
+using Application.RequestModel.PayPage;
+using Application.RequestModel.ServicePage;
 using Application.ResponseModel.AccountPage;
 using Application.ResponseModel.GoogleDocumentAI;
 using Application.ResponseModel.ServicePage;
@@ -9,14 +12,22 @@ using EStarGoogleCloud.Response;
 using Google.Cloud.Firestore;
 using Infrastructure.Identity.Models;
 using Infrastructure.Shared;
+using iText.Kernel.Geom;
+using iText.Layout.Element;
 using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Crypto;
+using Stripe.Radar;
+using Stripe.V2;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using static iText.IO.Image.Jpeg2000ImageData;
 
 namespace Infrastructure.Identity.Services
 {
@@ -24,74 +35,74 @@ namespace Infrastructure.Identity.Services
     {
         /// <summary>
         /// 用户服务显示模板，每个服务未完成个数
-        /// </summary>
+        /// </summary> 
         /// <param name="signup_req"></param>
         /// <returns></returns>
         public async Task<Response<ServiceList_res>> GetServiceCountAsync(common_req<string> signup_req)
         {
             ServiceList_res serviceList_Res = new ServiceList_res();
-            string uid = signup_req.user;
+            string uid = signup_req.User;
             List<ServiceListCount_res> personalAccounting = new List<ServiceListCount_res>();
             List<ServiceListCount_res> personalInsurance = new List<ServiceListCount_res>();
             List<ServiceListCount_res> companyAccounting = new List<ServiceListCount_res>();
             List<ServiceListCount_res> companyInsurance = new List<ServiceListCount_res>();
-            
-                string cmdText = string.Format(@" select id,ServiceNameDesc as name,ServiceLevel1,ServiceLevel2,ServiceLevel3,(select count(id) from User_Service where Uid = '{0}' and isnull(Uid,'') != ''  and ServiceId = s.id and Status != '10' ) as userServiceCount from Services s where (ServiceType = '0' OR ServiceType = '2')  and IsSeparateBuy = '1'  and (ServiceLevel1 = '1' or ServiceLevel1 = '2')
- ", signup_req.actioninfo);
-                //数据库处理 
-                DataTable table = new DataTable();
-                GoogleSqlDBHelper.Fill(cmdText, table);
-                if (table != null && table.Rows.Count > 0)
-                {
-                    // 个人会计
-                    var sortedQuery = from row in table.AsEnumerable()
-                                      where row.Field<int>("ServiceLevel1") == 1
-                                      where row.Field<int>("ServiceLevel2") == 1
-                                      orderby row.Field<int>("ServiceLevel3") ascending
-                                      select new ServiceListCount_res
-                                      {
-                    id = row.Field<string>("id")??"",   // 只选择需要的字段
-                    name = row.Field<string>("name") ?? "",  // 服务名称
-                    serviceCount = row.Field<int>("userServiceCount") // 计算服务数量，确保是字符串
-                }; 
-                    personalAccounting = sortedQuery.ToList();                
-               
+
+            string cmdText = string.Format(@" select id,ServiceNameDesc as name,ServiceLevel1,ServiceLevel2,ServiceLevel3,(select count(id) from User_Service where Uid = '{0}' and isnull(Uid,'') != ''  and ServiceId = s.id and Status != '10' ) as userServiceCount from Services s where (ServiceType = '0' OR ServiceType = '2')  and IsSeparateBuy = '1'  and (ServiceLevel1 = '1' or ServiceLevel1 = '2')
+ ", signup_req.Actioninfo);
+            //数据库处理 
+            DataTable table = new DataTable();
+            GoogleSqlDBHelper.Fill(cmdText, table);
+            if (table != null && table.Rows.Count > 0)
+            {
+                // 个人会计
+                var sortedQuery = from row in table.AsEnumerable()
+                                  where row.Field<int>("ServiceLevel1") == 1
+                                  where row.Field<int>("ServiceLevel2") == 1
+                                  orderby row.Field<int>("ServiceLevel3") ascending
+                                  select new ServiceListCount_res
+                                  {
+                                      id = row.Field<string>("id") ?? "",   // 只选择需要的字段
+                                      name = row.Field<string>("name") ?? "",  // 服务名称
+                                      serviceCount = row.Field<int>("userServiceCount") // 计算服务数量，确保是字符串
+                                  };
+                personalAccounting = sortedQuery.ToList();
+
                 //个人保险
                 sortedQuery = from row in table.AsEnumerable()
-                                      where row.Field<int>("ServiceLevel1") == 1
-                                      where row.Field<int>("ServiceLevel2") == 2
-                                      orderby row.Field<int>("ServiceLevel3") ascending
-                                   select new ServiceListCount_res
-                                   {
-                                       id = row.Field<string>("id") ?? "",   // 只选择需要的字段
-                                       name = row.Field<string>("name") ?? "",  // 服务名称
-                                       serviceCount = row.Field<int>("userServiceCount") // 计算服务数量，确保是字符串
-                                   };
-                    personalInsurance = sortedQuery.ToList();
+                              where row.Field<int>("ServiceLevel1") == 1
+                              where row.Field<int>("ServiceLevel2") == 2
+                              orderby row.Field<int>("ServiceLevel3") ascending
+                              select new ServiceListCount_res
+                              {
+                                  id = row.Field<string>("id") ?? "",   // 只选择需要的字段
+                                  name = row.Field<string>("name") ?? "",  // 服务名称
+                                  serviceCount = row.Field<int>("userServiceCount") // 计算服务数量，确保是字符串
+                              };
+                personalInsurance = sortedQuery.ToList();
                 // 公司会计
                 sortedQuery = from row in table.AsEnumerable()
                               where row.Field<int>("ServiceLevel1") == 2
                               where row.Field<int>("ServiceLevel2") == 1
                               orderby row.Field<int>("ServiceLevel3") ascending
                               select new ServiceListCount_res
-                                   {
-                                       id = row.Field<string>("id") ?? "",   // 只选择需要的字段
-                                       name = row.Field<string>("name") ?? "",  // 服务名称
-                                       serviceCount = row.Field<int>("userServiceCount") // 计算服务数量，确保是字符串
-                                   };
-                    companyAccounting = sortedQuery.ToList();
+                              {
+                                  id = row.Field<string>("id") ?? "",   // 只选择需要的字段
+                                  name = row.Field<string>("name") ?? "",  // 服务名称
+                                  serviceCount = row.Field<int>("userServiceCount") // 计算服务数量，确保是字符串
+                              };
+                companyAccounting = sortedQuery.ToList();
                 //公司保险
                 sortedQuery = from row in table.AsEnumerable()
                               where row.Field<int>("ServiceLevel1") == 2
                               where row.Field<int>("ServiceLevel2") == 2
                               orderby row.Field<int>("ServiceLevel3") ascending
                               select new ServiceListCount_res
-                                  {
-                                      id = row.Field<string>("id") ?? "",   // 只选择需要的字段
-                                      name = row.Field<string>("name") ?? "",  // 服务名称
-                                      serviceCount = row.Field<int>("userServiceCount") // 计算服务数量，确保是字符串
-                                  };
-                    companyInsurance = sortedQuery.ToList();
+                              {
+                                  id = row.Field<string>("id") ?? "",   // 只选择需要的字段
+                                  name = row.Field<string>("name") ?? "",  // 服务名称
+                                  serviceCount = row.Field<int>("userServiceCount") // 计算服务数量，确保是字符串
+                              };
+                companyInsurance = sortedQuery.ToList();
             }
             serviceList_Res.personalAccounting = personalAccounting;
             serviceList_Res.personalInsurance = personalInsurance;
@@ -104,44 +115,334 @@ namespace Infrastructure.Identity.Services
         /// </summary>
         /// <param name="users"></param>
         /// <returns></returns>
-        public static int AddUserService(UserServiceModel userProjectModel)
+        public static string AddUserService(string uid, string sid, string payamount,string paymentplatform,string oid,string currencycode, List<PayItem> payItems)
         {
-            int num = 0;
+            //根据点数,服务状态设置服务员工 - 添加服务基本信息  -  各项服务明细（主服务，附加服务）  -  服务变量信息    -    修改服务员工点数
+            string OrdinaryEmployees = "";//普通
+            string ExpertEmployees = "";//专家
+            string ProfessionalEmployees = "";//专业
+            string AccountingEmployees = "";//会计
+            string cmdText = "";
             string sql = "";
-            sql = "SELECT top 1 ProjectName FROM Project_Service WHERE id = '" + userProjectModel.ServiceId + "';";
-            string servicename = userProjectModel.Year + GoogleSqlDBHelper.ExecuteScalar(sql);
-            sql = @" insert into User_Service(CreateTime, Uid, Year, ServiceId, Status, Begindate, Enddate, Sid, Sid1, Sid2, Descs,Name) 
-values(@CreateTime, @Uid, @Year, @ServiceId, @Status, @Begindate, @Enddate, @Sid, @Sid1, @Sid2, @Descs,@Name) ";
-            SqlCommand cmd = new SqlCommand(sql);
-            cmd.Parameters.AddWithValue("@Uid", userProjectModel.UId);
-            cmd.Parameters.AddWithValue("@CreateTime", userProjectModel.CreateTime);
-            cmd.Parameters.AddWithValue("@Year", userProjectModel.Year);
-            cmd.Parameters.AddWithValue("@ServiceId", userProjectModel.ServiceId);
-            cmd.Parameters.AddWithValue("@Status", userProjectModel.Status);
-            cmd.Parameters.AddWithValue("@Begindate", userProjectModel.BeginDate);
-            cmd.Parameters.AddWithValue("@Enddate", userProjectModel.EndDate);
-            cmd.Parameters.AddWithValue("@Sid", userProjectModel.SId);
-            cmd.Parameters.AddWithValue("@Sid1", userProjectModel.SId1);
-            cmd.Parameters.AddWithValue("@Sid2", userProjectModel.SId2);
-            cmd.Parameters.AddWithValue("@Descs", userProjectModel.Descs);
-            cmd.Parameters.AddWithValue("@Name", servicename);
+            string msg = "";
+            SqlCommand cmd = new SqlCommand();
+            DataTable table = new DataTable();
+            List<DbCommand> dbcom = new List<DbCommand>();
             try
             {
-                num = GoogleSqlDBHelper.ExecuteNonQuery(cmd);
+                #region 将服务按服务模板点数/最近处理服务时间/最近处理服务状态/创建时间分配给员工，获取3个员工id，会计id
+                cmdText = @" WITH MinPoints AS (
+    SELECT 
+        r.RoleType,
+        MIN(s.ServiceModelPoints) AS MinPoints
+    FROM staff s
+    INNER JOIN User_Identity r ON s.RoleId = r.Id
+    WHERE r.RoleType IN (2, 3, 4, 5)
+    GROUP BY r.RoleType  -- 按角色类型分组，计算每个角色的最小值
+),
+RankedStaff AS (
+    SELECT 
+         s.UId as id, 
+        r.RoleType, 
+        s.ServiceModelPoints, 
+        s.ProcessedServiceCount, 
+        s.CreateDate, 
+        s.HandleServiceDate,
+        s.HandleServiceStatus,
+        ROW_NUMBER() OVER (
+            PARTITION BY r.RoleType
+            ORDER BY 
+                s.HandleServiceDate ASC,  -- 移除冗余的ServiceModelPoints排序
+                CASE 
+                    WHEN s.HandleServiceStatus = 0 THEN 1  -- 状态0优先
+                    WHEN s.HandleServiceStatus = 3 THEN 2  -- 状态3其次
+                    ELSE 3  -- 其他状态最后
+                END,
+                s.CreateDate ASC
+        ) AS RowNum
+    FROM staff s
+    INNER JOIN User_Identity r ON s.RoleId = r.Id
+    INNER JOIN MinPoints mp ON r.RoleType = mp.RoleType 
+        AND s.ServiceModelPoints = mp.MinPoints  -- 关联每个角色的最小值
+    WHERE 
+        r.RoleType IN (2, 3, 4, 5)
+        AND s.Status = '2'  -- 假设状态'2'表示有效员工
+)
+SELECT Id, RoleType
+FROM RankedStaff
+WHERE RowNum = 1;  -- 取每个角色的第一条记录 ";
+                cmd = new SqlCommand(cmdText);
+                table = new DataTable();
+                GoogleSqlDBHelper.Fill(cmd, table);
+                if (table != null && table.Rows.Count > 0)
+                {
+                    for (int i = 0; i < table.Rows.Count; i++)
+                    {
+                        string id = table.Rows[i]["id"] + "";
+                        string roleType = table.Rows[i]["RoleType"] + "";
+                        switch (roleType)
+                        {
+                            case "2":
+                                OrdinaryEmployees = id;
+                                break;
+                            case "3":
+                                ExpertEmployees = id;
+                                break;
+                            case "4":
+                                ProfessionalEmployees = id;
+                                break;
+                            case "5":
+                                AccountingEmployees = id;
+                                break;
+                        }
+                    }
+                }
+                #endregion
+
+                #region 添加用户服务基本信息
+                UserServiceModel userServiceModel = new UserServiceModel();
+                userServiceModel.UId = uid;
+                userServiceModel.ServiceId = sid;
+                userServiceModel.Status = "0";
+                userServiceModel.Descs = "";
+                userServiceModel.CreateTime = DateTime.Now;
+                userServiceModel.FirstPayAmount = Pub.To<decimal>(payamount);
+                userServiceModel.TotalAmount = Pub.To<decimal>(payamount);
+                sql = @" insert into User_Service(Id,Uid,ServiceId,Status,Descs,CreateTime,FirstPayAmount,TotalAmount) 
+values(@Id,@Uid,@ServiceId,@Status,@Descs,@CreateTime,@FirstPayAmount,@TotalAmount) ";
+                cmd = new SqlCommand(sql);
+                cmd.Parameters.AddWithValue("@Id", userServiceModel.Id);
+                cmd.Parameters.AddWithValue("@Uid", userServiceModel.UId);
+                cmd.Parameters.AddWithValue("@ServiceId", userServiceModel.ServiceId);
+                cmd.Parameters.AddWithValue("@Status", userServiceModel.Status);
+                cmd.Parameters.AddWithValue("@Descs", userServiceModel.Descs);
+                cmd.Parameters.AddWithValue("@CreateTime", userServiceModel.CreateTime);
+                cmd.Parameters.AddWithValue("@FirstPayAmount", userServiceModel.FirstPayAmount);
+                cmd.Parameters.AddWithValue("@TotalAmount", userServiceModel.TotalAmount);
+                dbcom.Add(cmd);
+                #endregion
+
+                #region 创建订单基本信息
+                UserOrderModel orderModel = new UserOrderModel();
+                if (!payamount.Equals("0"))
+                {
+                    orderModel.Uid = uid;
+                    orderModel.Createtime = DateTime.Now;
+                    orderModel.UpdateTime = DateTime.Now;
+                    orderModel.UserServiceId = userServiceModel.Id;
+                    orderModel.PayAmount = Pub.To<decimal>(payamount);
+                    orderModel.DiscountAmount = 0;
+                    orderModel.OrderId = oid;
+                    orderModel.OrderTime = DateTime.Now;
+                    orderModel.OrderNote = "";
+                    orderModel.OrderSource = paymentplatform;
+                    orderModel.CurrencyCode = currencycode;
+                    sql = @" insert into user_orders(Id, Uid, CreateTime, UpdateTime, UserServiceId, OrderId, OrderTime, PayAmount, DiscountAmount, OrderNote, OrderSource,CurrencyCode) values(
+@Id, @Uid, @CreateTime, @UpdateTime, @UserServiceId, @OrderId, @OrderTime, @PayAmount, @DiscountAmount, @OrderNote, @OrderSource,@CurrencyCode) ";
+                    cmd = new SqlCommand(sql);
+                    cmd.Parameters.AddWithValue("@Id", orderModel.Id);
+                    cmd.Parameters.AddWithValue("@Uid", orderModel.Uid);
+                    cmd.Parameters.AddWithValue("@Createtime", orderModel.Createtime);
+                    cmd.Parameters.AddWithValue("@UpdateTime", orderModel.UpdateTime);
+                    cmd.Parameters.AddWithValue("@UserServiceId", orderModel.UserServiceId);
+                    cmd.Parameters.AddWithValue("@OrderId", orderModel.OrderId);
+                    cmd.Parameters.AddWithValue("@OrderTime", orderModel.OrderTime);
+                    cmd.Parameters.AddWithValue("@PayAmount", orderModel.PayAmount);
+                    cmd.Parameters.AddWithValue("@DiscountAmount", orderModel.DiscountAmount);
+                    cmd.Parameters.AddWithValue("@OrderNote", orderModel.OrderNote);
+                    cmd.Parameters.AddWithValue("@OrderSource", orderModel.OrderSource);
+                    cmd.Parameters.AddWithValue("@CurrencyCode", orderModel.CurrencyCode);
+                    dbcom.Add(cmd);
+                }
+                #endregion
+
+                #region 创建服务详情，订单详情
+                for (int i = 0; i < payItems.Count; i++)
+                {
+                    var serviceid = payItems[i].Id;
+                    var servicemoney = Pub.To<decimal>(payItems[i].Money);
+                    var servicenum = payItems[i].Num;
+                    var servicetype = payItems[i].Type;
+                    if (payamount.Equals("0"))
+                    {
+                        servicemoney = 0;
+                    }
+                    if (!servicetype.Equals("1"))
+                    {
+                        //添加服务详情
+                        UserServiceDetailModel userServiceDetailModel = new UserServiceDetailModel();
+                        userServiceDetailModel.UserServiceId = userServiceModel.Id;
+                        userServiceDetailModel.ServiceId = serviceid;
+                        userServiceDetailModel.CreateTime = DateTime.Now;
+                        userServiceDetailModel.TotalAmount = servicemoney;
+                        userServiceDetailModel.PayAmount = servicemoney;
+                        userServiceDetailModel.BeginDate = DateTime.Now;
+                        userServiceDetailModel.EndDate = DateTime.Now;
+                        userServiceDetailModel.Status = "0";
+                        userServiceDetailModel.BeginServiceDate = DateTime.Now;
+                        userServiceDetailModel.EndServiceDate = DateTime.Now;
+                        userServiceDetailModel.ServiceNumber = 1;
+                        userServiceDetailModel.IsEnd = "1";
+                        userServiceDetailModel.OrdinaryEmployees = OrdinaryEmployees;
+                        userServiceDetailModel.ExpertEmployees = ExpertEmployees;
+                        userServiceDetailModel.ProfessionalEmployees = ProfessionalEmployees;
+                        userServiceDetailModel.AccountingEmployees = AccountingEmployees;
+                        userServiceDetailModel.Descs = "";
+                        sql = @" insert into User_ServiceDetail(Id,UserServiceId, ServiceId, CreateTime, TotalAmount, PayAmount, Begindate, Enddate, Status, BeginServiceDate, EndServiceDate, ServiceNumber, IsEnd, OrdinaryEmployees, ExpertEmployees, ProfessionalEmployees, AccountingEmployees, Descs) 
+values(@Id,@UserServiceId, @ServiceId, @CreateTime, @TotalAmount, @PayAmount, @Begindate, @Enddate, @Status, @BeginServiceDate, @EndServiceDate, @ServiceNumber, @IsEnd, @OrdinaryEmployees, @ExpertEmployees, @ProfessionalEmployees, @AccountingEmployees, @Descs) ";
+                        cmd = new SqlCommand(sql);
+                        cmd.Parameters.AddWithValue("@Id", userServiceDetailModel.Id);
+                        cmd.Parameters.AddWithValue("@UserServiceId", userServiceDetailModel.UserServiceId);
+                        cmd.Parameters.AddWithValue("@ServiceId", userServiceDetailModel.ServiceId);
+                        cmd.Parameters.AddWithValue("@CreateTime", userServiceDetailModel.CreateTime);
+                        cmd.Parameters.AddWithValue("@TotalAmount", userServiceDetailModel.TotalAmount);
+                        cmd.Parameters.AddWithValue("@PayAmount", userServiceDetailModel.PayAmount);
+                        cmd.Parameters.AddWithValue("@Begindate", userServiceDetailModel.BeginDate);
+                        cmd.Parameters.AddWithValue("@Enddate", userServiceDetailModel.EndDate);
+                        cmd.Parameters.AddWithValue("@Status", userServiceDetailModel.Status);
+                        cmd.Parameters.AddWithValue("@BeginServiceDate", userServiceDetailModel.BeginServiceDate);
+                        cmd.Parameters.AddWithValue("@EndServiceDate", userServiceDetailModel.EndServiceDate);
+                        cmd.Parameters.AddWithValue("@ServiceNumber", userServiceDetailModel.ServiceNumber);
+                        cmd.Parameters.AddWithValue("@IsEnd", userServiceDetailModel.IsEnd);
+                        cmd.Parameters.AddWithValue("@OrdinaryEmployees", userServiceDetailModel.OrdinaryEmployees);
+                        cmd.Parameters.AddWithValue("@ExpertEmployees", userServiceDetailModel.ExpertEmployees);
+                        cmd.Parameters.AddWithValue("@ProfessionalEmployees", userServiceDetailModel.ProfessionalEmployees);
+                        cmd.Parameters.AddWithValue("@AccountingEmployees", userServiceDetailModel.AccountingEmployees);
+                        cmd.Parameters.AddWithValue("@Descs", userServiceDetailModel.Descs);
+                        dbcom.Add(cmd);
+
+
+                        cmdText = @" SELECT ID FROM Service_Items WHERE ServiceId = '" + serviceid + "' AND Isrequired = '1' ";
+                        cmd = new SqlCommand(cmdText);
+                        DataTable dataTable = new DataTable();
+                        GoogleSqlDBHelper.Fill(cmd, dataTable);
+                        //添加服务变量
+                        for (int j = 0; j < dataTable.Rows.Count; j++)
+                        {
+                            var filteredItems =
+   (from item in payItems
+    where item.Type == "1" && item.Id == dataTable.Rows[j]["ID"] + ""
+    select item).First();
+                            if (filteredItems != null && !string.IsNullOrEmpty(filteredItems.Id))
+                            {
+                                servicemoney += Pub.To<decimal>(filteredItems.Money);
+                                UserServiceItems userServiceItems = new UserServiceItems();
+                                userServiceItems.UserServiceDeatilId = userServiceDetailModel.Id;
+                                userServiceItems.ServiceItemId = filteredItems.Id;
+                                userServiceItems.ServiceNumber = "1";
+                                userServiceItems.UserServiceItemValue = filteredItems.Num;
+                                userServiceItems.UserServiceItemAmount = filteredItems.Money;
+                                userServiceItems.StaffServiceItemValue = "0";
+                                userServiceItems.StaffServiceItemAmount = "0";
+                                sql = @" insert into User_ServiceItems(UserServiceDeatilId, ServiceNumber, ServiceItemId, UserServiceItemValue, UserServiceItemAmount, StaffServiceItemValue, StaffServiceItemAmount) 
+                            values(@UserServiceDeatilId, @ServiceNumber, @ServiceItemId, @UserServiceItemValue, @UserServiceItemAmount, @StaffServiceItemValue, @StaffServiceItemAmount) ";
+                                cmd = new SqlCommand(sql);
+                                cmd.Parameters.AddWithValue("@UserServiceDeatilId", userServiceItems.UserServiceDeatilId);
+                                cmd.Parameters.AddWithValue("@ServiceNumber", userServiceItems.ServiceNumber);
+                                cmd.Parameters.AddWithValue("@ServiceItemId", userServiceItems.ServiceItemId);
+                                cmd.Parameters.AddWithValue("@UserServiceItemValue", userServiceItems.UserServiceItemValue);
+                                cmd.Parameters.AddWithValue("@UserServiceItemAmount", userServiceItems.UserServiceItemAmount);
+                                cmd.Parameters.AddWithValue("@StaffServiceItemValue", userServiceItems.StaffServiceItemValue);
+                                cmd.Parameters.AddWithValue("@StaffServiceItemAmount", userServiceItems.StaffServiceItemAmount);
+                                dbcom.Add(cmd);
+                            }
+                        }
+                        //订单明细
+                        if (!payamount.Equals("0"))
+                        {
+                            sql = @" insert into User_OrdersDetail(Oid, UserServiceDetailId, Createtime, PaymentPlatform, PayTime, OrderId, Amount, CurrencyCode, OrderNote) values(
+ @Oid, @UserServiceDetailId, @Createtime, @PaymentPlatform, @PayTime, @OrderId, @Amount, @CurrencyCode, @OrderNote) ";
+                            cmd = new SqlCommand(sql);
+                            cmd.Parameters.AddWithValue("@OId", orderModel.Id);
+                            cmd.Parameters.AddWithValue("@UserServiceDetailId", userServiceDetailModel.Id);
+                            cmd.Parameters.AddWithValue("@Createtime", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@PaymentPlatform", paymentplatform);
+                            cmd.Parameters.AddWithValue("@PayTime", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@OrderId", oid);
+                            cmd.Parameters.AddWithValue("@CurrencyCode", currencycode);
+                            cmd.Parameters.AddWithValue("@OrderNote", "");
+                            cmd.Parameters.AddWithValue("@Amount", servicemoney);
+                            dbcom.Add(cmd);
+                        }
+                    }
+                }
+                #endregion
+
+                int num = GoogleSqlDBHelper.ExecuteNonQueryTransaction(dbcom, ref msg);
                 if (num <= 0)
                 {
-                    string logSql = Pub.ReplaceSqlParameters(sql, cmd);
-                    Pub.SaveLog(nameof(AccountService), $"新增用户购买的服务失败, SQL: {logSql}");
+                    Pub.SaveLog(nameof(AccountService), $"添加用户购买的服务时发生异常: " + msg);
                 }
-                return num;
+                return msg;
             }
             catch (Exception ex)
             {
-                string logSql = Pub.ReplaceSqlParameters(sql, cmd);
-                Pub.SaveLog(nameof(AccountService), $"插入用户购买的服务时发生异常:{ex.Message} , SQL: {logSql}");
-                return num;
+                msg = ex.Message;
+                Pub.SaveLog(nameof(AccountService), $"添加用户购买的服务时发生异常: " + ex.Message);
+                return msg;
             }
         }
+
+        /// <summary>
+        /// 添加用户订单
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        public static void AddAccountOrder( UserOrderModel orderModel, List<PayItem> payItems)
+        {
+            int num = 0;
+            string sql = "";
+            string msg = "";
+            List<DbCommand> dbcom = new List<DbCommand>();
+            sql = @" insert into user_orders(uid,ServiceId,createtime,OrderTime,amount,currencycode,oid) values(
+@Uid,@ServiceId,@Createtime,@OrderTime,@Amount,@currencycode,@Oid) ";
+            SqlCommand cmd = new SqlCommand(sql);
+            cmd.Parameters.AddWithValue("@Createtime", orderModel.Createtime);
+            cmd.Parameters.AddWithValue("@OrderTime", orderModel.OrderTime);
+            num = GoogleSqlDBHelper.ExecuteNonQuery(cmd);
+            if (num > 0)
+            {
+                foreach (PayItem payItem in payItems)
+                {
+                    sql = @" insert into User_OrdersDetail(Oid,ServiceId,createtime,ServiceNumber,PaymentPlatform,PayTime,OrderId,Amount,currencycode,ServiceType) values(
+(select top 1 id from User_Orders where uid = '" + orderModel.Uid + "' and  oid = '" + orderModel.OrderId + "' order by CreateTime desc),@ServiceId,@Createtime,@ServiceNumber,@PaymentPlatform,@PayTime,@OrderId,@Amount,@currencycode,@ServiceType) ";
+                    cmd = new SqlCommand(sql);
+                    cmd.Parameters.AddWithValue("@ServiceId", payItem.Id);
+                    cmd.Parameters.AddWithValue("@createtime", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@ServiceNumber", "1");
+                    cmd.Parameters.AddWithValue("@PaymentPlatform", orderModel.OrderSource);
+                    cmd.Parameters.AddWithValue("@PayTime", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@OrderId", orderModel.OrderId);
+                    cmd.Parameters.AddWithValue("@Amount", payItem.Money);
+                    cmd.Parameters.AddWithValue("@ServiceType", payItem.Type);
+                    dbcom.Add(cmd);
+                }
+                try
+                {
+                    num = GoogleSqlDBHelper.ExecuteNonQueryTransaction(dbcom, ref msg);
+                    // num = GoogleSqlDBHelper.ExecuteNonQuery(cmd);
+                    if (num <= 0)
+                    {
+                        //string logSql = Pub.ReplaceSqlParameters(sql, cmd);
+                        Pub.SaveLog(nameof(AccountService), $"新增用户订单详情失败");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Pub.SaveLog(nameof(AccountService), $"插入用户订单时发生异常:{ex.Message}");
+                }
+            }
+            else
+            {
+                Pub.SaveLog(nameof(AccountService), $"新增用户订单失败");
+            }
+
+
+
+
+
+        }
+
 
         /// <summary>
         /// 添加用户任务
@@ -194,7 +495,7 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
             UserTask_res userTask_Res = new UserTask_res();
             List<UserUnfinishedTask> userUnfinishedTasks = new List<UserUnfinishedTask>();
             List<UserCompleteServices> userCompleteServices = new List<UserCompleteServices>();
-            string cmdText = string.Format(@" SELECT id,taskTitle,taskContent,type as taskType FROM user_task where uid = '{0}' and status = '0' order by CreateTime DESC ", signup_req.actioninfo);
+            string cmdText = string.Format(@" SELECT id,taskTitle,taskContent,type as taskType FROM user_task where uid = '{0}' and status = '0' order by CreateTime DESC ", signup_req.Actioninfo);
             //数据库处理
             DataTable table = new DataTable();
             GoogleSqlDBHelper.Fill(cmdText, table);
@@ -216,7 +517,23 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
         {
 
             UserTaskDetail_res userDetailTask_Res = new UserTaskDetail_res();
-
+            string sqltxt = "  select ut.UserServiceDetailId, ut.CreateTime, ut.TaskTitle, ut.TaskContent, ut.Type,isnull(u.nickname,'') as sendUser,s.ServiceName,usd.Begindate from User_Task ut left join Users u on ut.Sid = u.Uid inner join User_ServiceDetail usd on ut.UserServiceDetailId = usd.Id inner join Services s on usd.ServiceId = s.Id where ut.uid = @Uid and ut.id = @Id  ";
+            SqlCommand sqlCommand = new SqlCommand(sqltxt);
+            sqlCommand.Parameters.AddWithValue("@Uid", signup_req.User);
+            sqlCommand.Parameters.AddWithValue("@Id", signup_req.Actioninfo);
+            DataTable table = new DataTable();
+            GoogleSqlDBHelper.Fill(sqlCommand, table);
+            if(table != null && table.Rows.Count > 0)
+            {
+                userDetailTask_Res.sendUser = table.Rows[0]["sendUser"] +"";
+                userDetailTask_Res.taskContent = table.Rows[0]["taskContent"] + "";
+                userDetailTask_Res.type = table.Rows[0]["type"] + "";
+                userDetailTask_Res.createTime = table.Rows[0]["createTime"] + "";
+                userDetailTask_Res.userServiceDetailId = table.Rows[0]["userServiceDetailId"] + "";
+                userDetailTask_Res.taskTitle = table.Rows[0]["taskTitle"] + "";
+                userDetailTask_Res.serviceName = table.Rows[0]["ServiceName"] + "";
+                userDetailTask_Res.begindate = table.Rows[0]["Begindate"] + "";
+            }
             return new Response<UserTaskDetail_res>(userDetailTask_Res, "");
         }
         /// <summary>
@@ -226,18 +543,18 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
         /// <returns></returns>
         public async Task<Response<string>> UpdateUserTaskStatusAsync(common_req<string> signup_req)
         {
-            string sqltxt = @" Update User_Task SET Status = '" + signup_req.type + "',UpdateTime = getdate() WHERE id = '" + signup_req.actioninfo + "' ";
+            string sqltxt = @" Update User_Task SET Status = '" + signup_req.Type + "',UpdateTime = getdate() WHERE id = '" + signup_req.Actioninfo + "' ";
             string msg = "";
             int num = GoogleSqlDBHelper.ExecuteNonQuery(sqltxt, ref msg);
             if (num > 0)
             {
-                if (signup_req.type.Equals("1"))
+                if (signup_req.Type.Equals("1"))
                 {
-                    sqltxt = @" SELECT UserServiceId User_Task WHERE id = '" + signup_req.actioninfo + "' ";
+                    sqltxt = @" SELECT UserServiceId User_Task WHERE id = '" + signup_req.Actioninfo + "' ";
                     string userServiceId = GoogleSqlDBHelper.ExecuteScalar(sqltxt);
                     if (!string.IsNullOrEmpty(userServiceId))
                     {
-                        sqltxt = @" Update User_Service SET Status = '" + signup_req.type + "' WHERE id = '" + userServiceId + "' ";
+                        sqltxt = @" Update User_Service SET Status = '" + signup_req.Type + "' WHERE id = '" + userServiceId + "' ";
                         num = GoogleSqlDBHelper.ExecuteNonQuery(sqltxt, ref msg);
                         if (num <= 0)
                         {
@@ -250,34 +567,111 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
             }
             else
             {
-                Pub.SaveLog(nameof(ServicesService), $"修改任务用户任务状态出错！任务id:{signup_req.actioninfo}，错误信息:{msg}");
+                Pub.SaveLog(nameof(ServicesService), $"修改任务用户任务状态出错！任务id:{signup_req.Actioninfo}，错误信息:{msg}");
                 return new Response<string>("修改任务出错！" + msg);
             }
 
 
         }
         /// <summary>
-        /// 用户已完成，未完成服务列表
+        /// 服务列表
         /// </summary>
         /// <param name="signup_req"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<Response<UserServiceList_res>> GetServiceListAsync(common_req<string> signup_req)
+        public async Task<Response<UserServiceList_res>> GetServiceListAsync(common_req<UserService_req> signup_req)
         {
+            string role = signup_req.Actioninfo.Role;
             UserServiceList_res serviceList_Res = new UserServiceList_res();
-            List<CompleteServiceList_res> completeServiceList_Res = new List<CompleteServiceList_res>();
-            List<UnfinishedServiceList_res> unfinishedServiceList_Res = new List<UnfinishedServiceList_res>();
-            string cmdText = string.Format(@"select id,name as serviceName,(select top 1 UserName from Users where id = us.Uid) as userName,FORMAT(Begindate, 'yyyy-MM-dd') AS serviceDate,Status as serviceStatus,FORMAT(Begindate, 'yyyy-MM-dd') AS beginDate from User_Service us 
-where Status != '10' and uid = '{0}' ", signup_req.actioninfo);
+            serviceList_Res.totalCount = 0;
+            serviceList_Res.totalPages = 0;
+            serviceList_Res.unfinishedServiceList = new List<UnfinishedServiceList_res>();
+            string cmdText = "";
+            string servicecountcmdText = "";
+            int page = signup_req.Actioninfo.Page;
+            int pageSize = 10;
+            page =  (page - 1) * pageSize;
+            string serviceName = signup_req.Actioninfo.ServiceName;
+            string status = signup_req.Actioninfo.Status;
+            string wheretxt = "";
+            if (!status.Equals("-1"))
+            {
+                wheretxt += " AND us.Status = '"+ status + "'";
+            }
+            if (!string.IsNullOrEmpty(serviceName))
+            {
+                wheretxt += " AND  s.ServiceName like '%" + serviceName + "%' ";
+            }
+            switch (role)
+            {
+                case "0":
+                    break;
+                case "1":
+                    break;
+                case "2":
+                    cmdText = string.Format(@"select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_Service us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
+where us.Status != '2' and 
+us.ID IN (select UserServiceId from User_ServiceDetail where OrdinaryEmployees = '{0}'  AND Status != '10' GROUP BY UserServiceId) ", signup_req.User);
+                    servicecountcmdText = string.Format(@"");
+                    break;
+                case "3":
+                    cmdText = string.Format(@"select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_Service us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
+where us.Status != '2' and 
+us.ID IN (select UserServiceId from User_ServiceDetail where ExpertEmployees = '{0}'  AND Status != '10' GROUP BY UserServiceId) ORDER BY us.CreateTime DESC ", signup_req.User);
+                    break;
+                case "4":
+                    cmdText = string.Format(@"select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_Service us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
+where us.Status != '2' and 
+us.ID IN (select UserServiceId from User_ServiceDetail where ProfessionalEmployees = '{0}'  AND Status != '10' GROUP BY UserServiceId) ORDER BY us.CreateTime DESC ", signup_req.User);
+                    break;
+                case "5":
+                    cmdText = string.Format(@"select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_Service us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
+where us.Status != '2' and 
+us.ID IN (select UserServiceId from User_ServiceDetail where AccountingEmployees = '{0}'  AND Status != '10' GROUP BY UserServiceId) ORDER BY us.CreateTime DESC ", signup_req.User);
+                    break;
+                case "6":
+                  
+                    cmdText = string.Format(@" SELECT 
+    us.id,
+    s.ServiceName AS serviceName,
+    u.NickName AS nickName,
+    us.CreateTime AS beginDate,
+    us.Status AS serviceStatus 
+FROM User_Service us
+INNER JOIN Services s ON us.ServiceId = s.Id
+INNER JOIN Users u ON us.Uid = u.Uid
+WHERE 1 = 1 AND us.uid = '{0}' {3}
+ORDER BY us.CreateTime DESC
+OFFSET {1} ROWS 
+FETCH NEXT {2} ROWS ONLY ", signup_req.User,page, pageSize, wheretxt);
+                    servicecountcmdText = string.Format(@" SELECT COUNT(*) AS TotalCount
+FROM User_Service us
+INNER JOIN Services s ON us.ServiceId = s.Id
+INNER JOIN Users u ON us.Uid = u.Uid
+WHERE us.uid = '{0}' {1} ", signup_req.User, wheretxt);
+                    break;
+                case "7":
+                    break;
+                case "8":
+                    break;
+                default:
+                    break;
+            }
+          
             //数据库处理
             DataTable table = new DataTable();
             GoogleSqlDBHelper.Fill(cmdText, table);
             if (table != null && table.Rows.Count > 0)
             {
-                unfinishedServiceList_Res = Pub.ToList<UnfinishedServiceList_res>(table);
+                serviceList_Res.unfinishedServiceList = Pub.ToList<UnfinishedServiceList_res>(table);
             }
-            serviceList_Res.unfinishedServiceList = unfinishedServiceList_Res;
-            //serviceList_Res.completeServiceList_Res = completeServiceList_Res;
+            table = new DataTable();
+            GoogleSqlDBHelper.Fill(servicecountcmdText, table);
+            if (table != null && table.Rows.Count > 0)
+            {
+                serviceList_Res.totalCount = Pub.To<int>(table.Rows[0]["totalCount"] +"");
+                serviceList_Res.totalPages = (int)Math.Ceiling(serviceList_Res.totalCount / (double)pageSize);
+            }
             return new Response<UserServiceList_res>(serviceList_Res, "");
         }
         /// <summary>
@@ -287,16 +681,29 @@ where Status != '10' and uid = '{0}' ", signup_req.actioninfo);
         /// <returns></returns>
         public async Task<Response<List<ServiceItem_res>>> GetServiceItemListAsync(common_req<string> signup_req)
         {
+            List<ServiceItem_res> serviceItemList = GetServiceItem(signup_req.Actioninfo);
+            if (serviceItemList.Count > 0)
+            {
+
+
+                return new Response<List<ServiceItem_res>>(serviceItemList, "");
+            }
+            return new Response<List<ServiceItem_res>>("未找到该服务下变量设置");
+        }
+
+        public List<ServiceItem_res> GetServiceItem(string id)
+        {
             List<ServiceItem_res> serviceItemList = new List<ServiceItem_res>();
-            string cmdText = string.Format(@"select Id,ItemsName,ItemsType,ItemMinInterval,ItemMaxInterval from Service_Items si 
-where  ServiceId = '{0}' ", signup_req.actioninfo);
+            string cmdText = string.Format(@"select Id,ItemsName,ItemsType,ItemMinInterval,ItemMaxInterval,IsRequired,Descs from Service_Items si 
+where  ServiceId = '{0}' ", id);
             //数据库处理
             DataTable table = new DataTable();
-            GoogleSqlDBHelper.Fill(cmdText, table); 
+            GoogleSqlDBHelper.Fill(cmdText, table);
             if (table != null && table.Rows.Count > 0)
             {
+
                 cmdText = string.Format(@"select Id,ItemsId, ItemsMinNumber, ItemsMaxNumber, BaseValue, ItemsMax, AdditionalValue from Service_ItemsValue siv where siv.ItemsId in (select si.id from Service_Items si 
-where si.ServiceId = '{0}') ", signup_req.actioninfo);
+where si.ServiceId = '{0}') ", id);
                 //数据库处理
                 DataTable itemvaluetable = new DataTable();
                 GoogleSqlDBHelper.Fill(cmdText, itemvaluetable);
@@ -306,6 +713,8 @@ where si.ServiceId = '{0}') ", signup_req.actioninfo);
                     serviceItem_Res.Id = table.Rows[i]["Id"] + "";
                     serviceItem_Res.ItemsName = table.Rows[i]["ItemsName"] + "";
                     serviceItem_Res.ItemsType = table.Rows[i]["ItemsType"] + "";
+                    serviceItem_Res.IsRequired = table.Rows[i]["IsRequired"] + "";
+                    serviceItem_Res.Descs = table.Rows[i]["Descs"] + "";
                     serviceItem_Res.ItemMinInterval = table.Rows[i]["ItemMinInterval"] + "";
                     serviceItem_Res.ItemMaxInterval = table.Rows[i]["ItemMaxInterval"] + "";
                     //获取每项变量下设置的条件，金额
@@ -322,11 +731,9 @@ where si.ServiceId = '{0}') ", signup_req.actioninfo);
                     }
                     serviceItemList.Add(serviceItem_Res);
                 }
-                return new Response<List<ServiceItem_res>>(serviceItemList, "");
             }
-            return new Response<List<ServiceItem_res>>("未找到该服务下变量设置");
+            return serviceItemList;
         }
-
         /// <summary>
         /// ocr识别文件中表格类型 w-2,1099
         /// </summary>
@@ -336,7 +743,7 @@ where si.ServiceId = '{0}') ", signup_req.actioninfo);
             // 返回文件数据
             List<GoogleDocumentAIFormName_res> googleDocumentAIFormName_Res = new List<GoogleDocumentAIFormName_res>();
             string endpoint = "";
-            string sql = $"select top 1 projectId,locationId,processorId,(select top 1 Year from User_Service where id = '{signup_req.actioninfo}') as year,(select top 1 serviceid from User_Service where id = '{signup_req.actioninfo}') as serviceid from Google_ProcessorsConfig where Name = 'FormName' ";
+            string sql = $"select top 1 projectId,locationId,processorId,(select top 1 ServiceBeginYear from User_Service where id = '{signup_req.Actioninfo}') as year,(select top 1 serviceid from User_Service where id = '{signup_req.Actioninfo}') as serviceid from Google_ProcessorsConfig where Name = 'FormName' ";
             DataTable dt = new DataTable();
             GoogleSqlDBHelper.Fill(sql, dt);
             string jsonKeyPath = "C:\\work\\EstarOpenAPI\\EstarOpenAPI\\File\\semiotic-art-418621-88496cd79e0d.json";  // 替换为你的密钥文件路径
@@ -355,7 +762,7 @@ where si.ServiceId = '{0}') ", signup_req.actioninfo);
                 FirestoreDb firestoreDb = FirestoreDb.Create("semiotic-art-418621");
 
                 // 获取 Firestore 集合
-                var collectionReference = firestoreDb.Collection($"customers/{signup_req.user}/services/{serviceid}/manage/upload/year/{year}/file");
+                var collectionReference = firestoreDb.Collection($"customers/{signup_req.User}/services/{serviceid}/manage/upload/year/{year}/file");
                 // 构建查询，筛选 `isocrname` 为 "0" 的文档
                 Query query = collectionReference.WhereEqualTo("isocrname", "0");
                 // 执行查询并获取结果
@@ -415,7 +822,7 @@ where si.ServiceId = '{0}') ", signup_req.actioninfo);
                                         }
                                     }
                                     // 更新 Firestore 中的 filetype 字段
-                                    var documentReference = firestoreDb.Collection($"customers/{signup_req.user}/services/{serviceid}/manage/upload/year/{year}/file").Document(doc.Id);
+                                    var documentReference = firestoreDb.Collection($"customers/{signup_req.User}/services/{serviceid}/manage/upload/year/{year}/file").Document(doc.Id);
                                     await documentReference.UpdateAsync("isocrname", "1"); // 更新 isocrname
                                     if (!string.IsNullOrEmpty(formtype))
                                     {
@@ -450,7 +857,7 @@ where si.ServiceId = '{0}') ", signup_req.actioninfo);
             string sql = "select top 1 projectId,locationId,processorId from Google_ProcessorsConfig where Name = 'FormParser' ";
             DataTable dt = new DataTable();
             GoogleSqlDBHelper.Fill(sql, dt);
-            sql = $"select id,FileAddress,FileName,FileType,BucketName,FileURL,FileSize from User_Service_File where UId = '{signup_req.user}' and UserServiceId = '{signup_req.actioninfo}' and isocr = '0' ";
+            sql = $"select id,FileAddress,FileName,FileType,BucketName,FileURL,FileSize from User_Service_File where UId = '{signup_req.User}' and UserServiceId = '{signup_req.Actioninfo}' and isocr = '0' ";
             DataTable dt2 = new DataTable();
             GoogleSqlDBHelper.Fill(sql, dt2);
             if (dt != null && dt.Rows.Count > 0 && dt2 != null && dt2.Rows.Count > 0)
@@ -487,6 +894,212 @@ where si.ServiceId = '{0}') ", signup_req.actioninfo);
                 }
             }
         }
-    
+
+
+        /// <summary>
+        /// 获取服务信息
+        /// </summary>
+        /// <param name="signup_req.Actioninfo">选择购买的服务</param>
+        /// <returns></returns>
+        public async Task<Response<ServiceDeatil_res>> GetServiceDetail(common_req<string> signup_req)
+        {
+            string cmdText = "";
+            string servicetype = signup_req.Actioninfo;
+            ServiceDeatil_res serviceDetail = new ServiceDeatil_res();
+            switch (servicetype)
+            {
+                case "1":
+                    //个人所得税申报
+                    cmdText = string.Format(@" SELECT top 1 id,ServiceName,ServiceNameDesc,Amount,ServiceLevel1,ServiceLevel2,ServiceLevel3,Descs FROM Services s WHERE ServiceLevel1 = '1' AND  ServiceLevel2 = '1' AND ServiceLevel3 = '1' ");
+                    break;
+                case "8":
+                    //新公司成立
+
+                    break;
+                case "9":
+                    //代发薪资
+                    cmdText = string.Format(@" SELECT top 1 id,ServiceName,ServiceNameDesc,Amount,ServiceLevel1,ServiceLevel2,ServiceLevel3,Descs FROM Services s WHERE ServiceLevel1 = '2' AND  ServiceLevel2 = '1' AND ServiceLevel3 = '2' ");
+                    break;
+                case "10":
+                    //代理记账
+                    cmdText = string.Format(@" SELECT top 1 id,ServiceName,ServiceNameDesc,Amount,ServiceLevel1,ServiceLevel2,ServiceLevel3,Descs FROM Services s WHERE ServiceLevel1 = '2' AND  ServiceLevel2 = '1' AND ServiceLevel3 = '3' ");
+                    break;
+                case "11":
+                    //报表申报
+
+                    break;
+                case "12":
+                    //报销售
+                    cmdText = string.Format(@" SELECT top 1 id,ServiceName,ServiceNameDesc,Amount,ServiceLevel1,ServiceLevel2,ServiceLevel3,Descs FROM Services s WHERE ServiceLevel1 = '2' AND  ServiceLevel2 = '1' AND ServiceLevel3 = '5' ");
+                    break;
+                default:
+                    //服务id
+                    cmdText = string.Format(@" SELECT top 1 id,ServiceName,ServiceNameDesc,Amount,ServiceLevel1,ServiceLevel2,ServiceLevel3,Descs FROM Services s WHERE id = '{0}' ", servicetype);
+                    break;
+            }
+            //数据库处理
+            DataTable table = new DataTable();
+            GoogleSqlDBHelper.Fill(cmdText, table);
+            if (table != null && table.Rows.Count > 0)
+            {
+                serviceDetail.Id = table.Rows[0]["id"] + "";
+                serviceDetail.ServiceName = table.Rows[0]["ServiceName"] + "";
+                serviceDetail.ServiceNameDesc = table.Rows[0]["ServiceNameDesc"] + "";
+                serviceDetail.Amount = table.Rows[0]["Amount"] + "";
+                serviceDetail.ServiceLevel1 = table.Rows[0]["ServiceLevel1"] + "";
+                serviceDetail.ServiceLevel2 = table.Rows[0]["ServiceLevel2"] + "";
+                serviceDetail.ServiceLevel3 = table.Rows[0]["ServiceLevel3"] + "";
+                serviceDetail.Descs = table.Rows[0]["Descs"] + "";
+                serviceDetail.AdditionalList = new List<ServiceDeatil_res>();
+                serviceDetail.ServicePackage = new List<ServiceDeatil_res>();
+                //获取服务相关联的包
+                cmdText = string.Format(@" SELECT 
+    s.id, s.ServiceName, s.ServiceNameDesc, s.Amount, 
+    s.ServiceLevel1, s.ServiceLevel2, s.ServiceLevel3, s.Descs
+FROM Services s
+JOIN Service_Additional sal ON s.id = sal.ServiceId
+WHERE sal.AdditionalId = '{0}'
+order by s.ServiceLevel3 asc ", serviceDetail.Id);
+                table = new DataTable();
+                GoogleSqlDBHelper.Fill(cmdText, table);
+                if (table != null && table.Rows.Count > 0)
+                {
+                    for (int i = 0; i < table.Rows.Count; i++)
+                    {
+                        ServiceDeatil_res servicepackage = new ServiceDeatil_res();
+                        servicepackage.Id = table.Rows[i]["id"] + "";
+                        servicepackage.ServiceName = table.Rows[i]["ServiceName"] + "";
+                        servicepackage.ServiceNameDesc = table.Rows[i]["ServiceNameDesc"] + "";
+                        servicepackage.Amount = table.Rows[i]["Amount"] + "";
+                        servicepackage.ServiceLevel1 = table.Rows[i]["ServiceLevel1"] + "";
+                        servicepackage.ServiceLevel2 = table.Rows[i]["ServiceLevel2"] + "";
+                        servicepackage.ServiceLevel3 = table.Rows[i]["ServiceLevel3"] + "";
+                        servicepackage.Descs = table.Rows[i]["Descs"] + "";
+                        servicepackage.AdditionalList = new List<ServiceDeatil_res>();
+                        servicepackage.ServicePackage = new List<ServiceDeatil_res>();
+                        serviceDetail.ServicePackage.Add(servicepackage);
+                    }
+                }
+                //获取服务相关联附加服务
+                cmdText = string.Format(@" SELECT 
+    s.id, s.ServiceName, s.ServiceNameDesc, s.Amount, 
+    s.ServiceLevel1, s.ServiceLevel2, s.ServiceLevel3, s.Descs
+FROM Services s
+JOIN Service_Additional sal ON s.id = sal.AdditionalId
+WHERE sal.ServiceId = '{0}'
+	 order by s.ServiceLevel3 asc ", serviceDetail.Id);
+                table = new DataTable();
+                GoogleSqlDBHelper.Fill(cmdText, table);
+                if (table != null && table.Rows.Count > 0)
+                {
+                    for (int i = 0; i < table.Rows.Count; i++)
+                    {
+                        ServiceDeatil_res serviceAdditional = new ServiceDeatil_res();
+                        serviceAdditional.Id = table.Rows[i]["id"] + "";
+                        serviceAdditional.ServiceName = table.Rows[i]["ServiceName"] + "";
+                        serviceAdditional.ServiceNameDesc = table.Rows[i]["ServiceNameDesc"] + "";
+                        serviceAdditional.Amount = table.Rows[i]["Amount"] + "";
+                        serviceAdditional.ServiceLevel1 = table.Rows[i]["ServiceLevel1"] + "";
+                        serviceAdditional.ServiceLevel2 = table.Rows[i]["ServiceLevel2"] + "";
+                        serviceAdditional.ServiceLevel3 = table.Rows[i]["ServiceLevel3"] + "";
+                        serviceAdditional.Descs = table.Rows[i]["Descs"] + "";
+                        serviceAdditional.AdditionalList = new List<ServiceDeatil_res>();
+                        serviceAdditional.ServicePackage = new List<ServiceDeatil_res>();
+                        serviceDetail.AdditionalList.Add(serviceAdditional);
+                    }
+                }
+                //获取服务必填变量信息
+                serviceDetail.serviceItems = GetServiceItem(serviceDetail.Id);
+                return new Response<ServiceDeatil_res>(serviceDetail);
+            }
+            return new Response<ServiceDeatil_res>("错误！获取服务信息出错");
+
+        }
+
+
+        /// <summary>
+        /// 获取包信息
+        /// </summary>
+        /// <param name="signup_req.Actioninfo">选择购买的服务</param>
+        /// <returns></returns>
+        public async Task<Response<ServicePackageDeatil_res>> GetServicePackageDetail(common_req<string> signup_req)
+        {
+            string cmdText = "";
+            string servicetype = signup_req.Actioninfo;
+            ServicePackageDeatil_res serviceDetail = new ServicePackageDeatil_res();
+            serviceDetail.PackageServices = new List<ServicePackageDeatil_res.PackageService>();
+            cmdText = string.Format(@" SELECT top 1 id,ServiceName,ServiceNameDesc,Amount,ServiceLevel1,ServiceLevel2,ServiceLevel3,Descs FROM Services s WHERE id = '{0}' ", servicetype);
+
+            //数据库处理
+            DataTable table = new DataTable();
+            GoogleSqlDBHelper.Fill(cmdText, table);
+            if (table != null && table.Rows.Count > 0)
+            {
+                serviceDetail.Id = table.Rows[0]["id"] + "";
+                serviceDetail.ServiceName = table.Rows[0]["ServiceName"] + "";
+                serviceDetail.ServiceNameDesc = table.Rows[0]["ServiceNameDesc"] + "";
+                serviceDetail.Discount = table.Rows[0]["Amount"] + "";
+                serviceDetail.ServiceLevel1 = table.Rows[0]["ServiceLevel1"] + "";
+                serviceDetail.ServiceLevel2 = table.Rows[0]["ServiceLevel2"] + "";
+                serviceDetail.ServiceLevel3 = table.Rows[0]["ServiceLevel3"] + "";
+                serviceDetail.Descs = table.Rows[0]["Descs"] + "";
+                cmdText = string.Format(@" SELECT id,ServiceName,ServiceNameDesc,Amount,ServiceLevel1,ServiceLevel2,ServiceLevel3,Descs FROM Services WHERE  id in ( select sa.additionalid from service_additional sa  where sa.serviceid = '{0}') order by ServiceLevel1,ServiceLevel2,ServiceLevel3 ", servicetype);
+
+                //数据库处理
+                table = new DataTable();
+                GoogleSqlDBHelper.Fill(cmdText, table);
+                if (table != null && table.Rows.Count > 0)
+                {
+                    for (int i = 0; i < table.Rows.Count; i++)
+                    {
+                        ServicePackageDeatil_res.PackageService packageService = new ServicePackageDeatil_res.PackageService();
+                        packageService.ServiceId = table.Rows[i]["id"] + "";
+                        packageService.ServiceName = table.Rows[i]["ServiceName"] + "";
+                        packageService.ServiceNameDesc = table.Rows[i]["ServiceNameDesc"] + "";
+                        packageService.Amount = table.Rows[i]["Amount"] + "";
+                        packageService.ServiceLevel1 = table.Rows[i]["ServiceLevel1"] + "";
+                        packageService.ServiceLevel2 = table.Rows[i]["ServiceLevel2"] + "";
+                        packageService.ServiceLevel3 = table.Rows[i]["ServiceLevel3"] + "";
+                        packageService.Descs = table.Rows[i]["Descs"] + "";
+                        packageService.AdditionalList = new List<ServiceDeatil_res>();
+                        //获取服务相关联附加服务
+                        cmdText = string.Format(@" SELECT 
+    s.id, s.ServiceName, s.ServiceNameDesc, s.Amount, 
+    s.ServiceLevel1, s.ServiceLevel2, s.ServiceLevel3, s.Descs
+FROM Services s
+JOIN Service_Additional sal ON s.id = sal.AdditionalId
+WHERE sal.ServiceId = '{0}'
+	 order by s.ServiceLevel3 asc ", packageService.ServiceId);
+                        DataTable table2 = new DataTable();
+                        GoogleSqlDBHelper.Fill(cmdText, table2);
+                        if (table2 != null && table2.Rows.Count > 0)
+                        {
+                            for (int j = 0; j < table2.Rows.Count; j++)
+                            {
+                                ServiceDeatil_res serviceAdditional = new ServiceDeatil_res();
+                                serviceAdditional.Id = table2.Rows[j]["id"] + "";
+                                serviceAdditional.ServiceName = table2.Rows[j]["ServiceName"] + "";
+                                serviceAdditional.ServiceNameDesc = table2.Rows[j]["ServiceNameDesc"] + "";
+                                serviceAdditional.Amount = table2.Rows[j]["Amount"] + "";
+                                serviceAdditional.ServiceLevel1 = table2.Rows[j]["ServiceLevel1"] + "";
+                                serviceAdditional.ServiceLevel2 = table2.Rows[j]["ServiceLevel2"] + "";
+                                serviceAdditional.ServiceLevel3 = table2.Rows[j]["ServiceLevel3"] + "";
+                                serviceAdditional.Descs = table2.Rows[j]["Descs"] + "";
+                                serviceAdditional.AdditionalList = new List<ServiceDeatil_res>();
+                                serviceAdditional.ServicePackage = new List<ServiceDeatil_res>();
+                                packageService.AdditionalList.Add(serviceAdditional);
+                            }
+                        }
+                        //获取服务必填变量信息
+                        packageService.serviceItems = GetServiceItem(packageService.ServiceId);
+                        serviceDetail.PackageServices.Add(packageService);
+                    }
+                }
+                return new Response<ServicePackageDeatil_res>(serviceDetail);
+            }
+            return new Response<ServicePackageDeatil_res>("错误！获取服务包信息出错");
+
+        }
+
     }
 }

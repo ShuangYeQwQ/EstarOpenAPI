@@ -1,5 +1,6 @@
 ﻿using Application.RequestModel;
 using Application.RequestModel.HomePage;
+using Application.RequestModel.PayPage;
 using Application.ResponseModel.HomePage;
 using Application.ResponseModel.PayPage;
 using Application.Wrappers;
@@ -22,18 +23,18 @@ namespace Application.Interfaces
         ///
         /// </summary>
         /// <returns></returns>
-        Task<Response<string>> StripePaySuccessAsync(string uid, string PaymentIntentId);
+        Task<Response<string>> StripePaySuccessAsync(common_req<PayPayPayment_req> signup_req);
         /// <summary>
         ///
         /// </summary>
         /// <returns></returns>
-        Task<Response<string>> CreatePayPalSourceAsync(common_req<string> signup_req);
+        Task<Response<int>> CreatePayPalSourceAsync(common_req<PayPal_req> signup_req);
 
         /// <summary>
         ///
         /// </summary>
         /// <returns></returns>
-        Task<Response<string>> PaymentSuccess(string uid,string token, string PayerID);
+        Task<Response<string>> PaymentSuccess(common_req<PayPayPayment_req> signup_req);
         
     }
 }

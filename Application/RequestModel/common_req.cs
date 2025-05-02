@@ -11,15 +11,15 @@ namespace Application.RequestModel
         /// <summary>
         /// 请求用户
         /// </summary>
-        public string user { get; set; }
+        public string User { get; set; }
         /// <summary>
         /// 请求类型
         /// </summary>
-        public string type { get; set; }
+        public string Type { get; set; }
         /// <summary>
         /// 请求数据对象
         /// </summary>
-        public T actioninfo { get; set; }
+        public T Actioninfo { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.RequestModel;
+using Application.RequestModel.ServicePage;
 using Application.ResponseModel.AccountPage;
 using Application.ResponseModel.GoogleDocumentAI;
 using Application.ResponseModel.ServicePage;
@@ -34,10 +35,10 @@ namespace Application.Interfaces
         /// <returns></returns>
         Task<Response<string>> UpdateUserTaskStatusAsync(common_req<string> signup_req);
         /// <summary>
-        ///用户已完成，未完成服务列表
+        ///服务列表
         /// </summary>
         /// <returns></returns>
-        Task<Response<UserServiceList_res>> GetServiceListAsync(common_req<string> signup_req);
+        Task<Response<UserServiceList_res>> GetServiceListAsync(common_req<UserService_req> signup_req);
         /// <summary>
         ///服务下变量列表
         /// </summary>
@@ -48,6 +49,16 @@ namespace Application.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<Response<List<GoogleDocumentAIFormName_res>>> GoogleDocumentAIGetFormNameAsync(common_req<string> signup_req);
-
+        /// <summary>
+        ///获取服务信息
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<ServiceDeatil_res>> GetServiceDetail(common_req<string> signup_req);
+        /// <summary>
+        ///获取服务包信息
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<ServicePackageDeatil_res>> GetServicePackageDetail(common_req<string> signup_req);
+        
     }
 }

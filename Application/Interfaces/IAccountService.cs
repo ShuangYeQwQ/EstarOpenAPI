@@ -24,6 +24,16 @@ namespace Application.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<Response<User_res>> GetUserAsync(common_req<User_req> signup_req);
+        /// <summary>
+        ///获取用户个人信息
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<UserInformation_res>> GetUserInformationAsync(common_req<string> signup_req);
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<string>> UpdateUserInformationAsync(common_req<string> signup_req);
         
     }
 }

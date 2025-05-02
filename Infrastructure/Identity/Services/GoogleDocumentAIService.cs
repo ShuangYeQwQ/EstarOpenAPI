@@ -25,7 +25,7 @@ namespace Infrastructure.Identity.Services
             // 返回文件数据
             List<GoogleDocumentAIFormName_res> googleDocumentAIFormName_Res = new List<GoogleDocumentAIFormName_res>();
             string endpoint = "";
-            string sql = $"select top 1 projectId,locationId,processorId,(select top 1 Year from User_Service where id = '{signup_req.actioninfo}') as year,(select top 1 serviceid from User_Service where id = '{signup_req.actioninfo}') as serviceid from Google_ProcessorsConfig where Name = 'FormName' ";
+            string sql = $"select top 1 projectId,locationId,processorId,(select top 1 ServiceBeginYear from User_Service where id = '{signup_req.Actioninfo}') as year,(select top 1 serviceid from User_Service where id = '{signup_req.Actioninfo}') as serviceid from Google_ProcessorsConfig where Name = 'FormName' ";
             DataTable dt = new DataTable();
             GoogleSqlDBHelper.Fill(sql, dt);
             string jsonKeyPath = "C:\\work\\EstarOpenAPI\\EstarOpenAPI\\File\\semiotic-art-418621-88496cd79e0d.json";  // 替换为你的密钥文件路径
@@ -44,7 +44,7 @@ namespace Infrastructure.Identity.Services
                 FirestoreDb firestoreDb = FirestoreDb.Create("semiotic-art-418621");
 
                 // 获取 Firestore 集合
-                var collectionReference = firestoreDb.Collection($"customers/{signup_req.user}/services/{serviceid}/manage/upload/year/{year}/file");
+                var collectionReference = firestoreDb.Collection($"customers/{signup_req.User}/services/{serviceid}/manage/upload/year/{year}/file");
                 // 构建查询，筛选 `isocrname` 为 "0" 的文档
                 Query query = collectionReference.WhereEqualTo("isocrname", "0");
                 // 执行查询并获取结果
@@ -107,7 +107,7 @@ namespace Infrastructure.Identity.Services
                                     {
                                         formtype = formtype.Substring(0, formtype.Length - 1);
                                         // 更新 Firestore 中的 filetype 字段
-                                        var documentReference = firestoreDb.Collection($"customers/{signup_req.user}/services/{serviceid}/manage/upload/year/{year}/file").Document(doc.Id);
+                                        var documentReference = firestoreDb.Collection($"customers/{signup_req.User}/services/{serviceid}/manage/upload/year/{year}/file").Document(doc.Id);
                                         await documentReference.UpdateAsync("formtype", formtype); // 更新 formtype
                                         await documentReference.UpdateAsync("isocrname", "1"); // 更新 isocrname
                                     }
@@ -192,7 +192,7 @@ namespace Infrastructure.Identity.Services
             string sql = "select top 1 projectId,locationId,processorId from Google_ProcessorsConfig where Name = 'FormParser' ";
             DataTable dt = new DataTable();
             GoogleSqlDBHelper.Fill(sql, dt);
-            sql = $"select id,FileAddress,FileName,FileType,BucketName,FileURL,FileSize from User_Service_File where UId = '{signup_req.user}' and UserServiceId = '{signup_req.actioninfo}' and isocr = '0' ";
+            sql = $"select id,FileAddress,FileName,FileType,BucketName,FileURL,FileSize from User_Service_File where UId = '{signup_req.User}' and UserServiceId = '{signup_req.Actioninfo}' and isocr = '0' ";
             DataTable dt2 = new DataTable();
             GoogleSqlDBHelper.Fill(sql, dt2);
             if (dt != null && dt.Rows.Count > 0 && dt2 != null && dt2.Rows.Count > 0)

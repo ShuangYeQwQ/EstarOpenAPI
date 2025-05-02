@@ -17,6 +17,15 @@ namespace Application.ResponseModel.ServicePage
         /// </summary>
         public string ItemsName { get; set; }
         /// <summary>
+        /// 是否必填0:否1:是
+        /// </summary>
+        public string IsRequired { get; set; }
+
+        /// <summary>
+        /// 说明
+        /// </summary>
+        public string Descs { get; set; }
+        /// <summary>
         /// 可输入变量类型
         /// </summary>
         public string ItemsType { get; set; }

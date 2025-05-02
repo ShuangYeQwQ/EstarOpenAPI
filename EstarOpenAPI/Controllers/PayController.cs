@@ -39,9 +39,9 @@ namespace EstarOpenAPI.Controllers
         /// <returns></returns>
         //[Authorize]
         [HttpPost("stripepaysuccess")]
-        public async Task<IActionResult> StripePaySuccessAsyncAsync([FromBody] common_req<string> signup_req)
+        public async Task<IActionResult> StripePaySuccessAsyncAsync([FromBody] common_req<PayPayPayment_req> signup_req)
         {
-            return Ok(await _payService.StripePaySuccessAsync(signup_req.user, signup_req.actioninfo));
+            return Ok(await _payService.StripePaySuccessAsync(signup_req));
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace EstarOpenAPI.Controllers
         /// <returns></returns>
         //[Authorize]
         [HttpPost("createpaypalsource")]
-        public async Task<IActionResult> CreatePayPalSourceAsync([FromBody] common_req<string> signup_req)
+        public async Task<IActionResult> CreatePayPalSourceAsync([FromBody] common_req<PayPal_req> signup_req)
         {
             // https://localhost:44386/api/Pay/createpaypalsource
             return Ok(await _payService.CreatePayPalSourceAsync(signup_req));
@@ -63,9 +63,9 @@ namespace EstarOpenAPI.Controllers
         /// <param name="PayerID"></param>
         /// <returns></returns>
         [HttpPost("payment-success")]
-        public async Task<IActionResult> PaymentSuccessAsync([FromBody] common_req<Pay_req> signup_req)
+        public async Task<IActionResult> PaymentSuccessAsync([FromBody] common_req<PayPayPayment_req> signup_req)
         {
-            return Ok(await _payService.PaymentSuccess(signup_req.user, signup_req.actioninfo.oid, signup_req.actioninfo.payerid));
+            return Ok(await _payService.PaymentSuccess(signup_req));
         }
        
     }

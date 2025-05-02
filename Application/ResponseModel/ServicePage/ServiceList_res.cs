@@ -21,19 +21,25 @@ namespace Application.ResponseModel.ServicePage
     //用户服务列表
     public class UserServiceList_res
     {
-        //已完成服务列表
-        public List<CompleteServiceList_res> completeServiceList { get; set; }
-        //未完成服务列表
+        /// <summary>
+        /// 服务总数
+        /// </summary>
+        public int totalCount { get; set; }
+        /// <summary>
+        /// 服务总页数
+        /// </summary>
+        public int totalPages { get; set; }
+        //服务列表
         public List<UnfinishedServiceList_res> unfinishedServiceList { get; set; }
     }
 
     //已完成服务列表
-    public class CompleteServiceList_res
+    public class UnfinishedServiceList_res
     {
         //服务id
         public string id { get; set; }
         //用户名称
-        public string userName { get; set; }
+        public string nickName { get; set; }
         //服务名称
         public string serviceName { get; set; }
         //服务使用年份
@@ -47,23 +53,6 @@ namespace Application.ResponseModel.ServicePage
         //服务状态
         public string status { get; set; }
     }
-    //未完成服务列表
-    public class UnfinishedServiceList_res
-    {
-        //服务id
-        public string id { get; set; }
-        //用户名称
-        public string userName { get; set; }
-        //服务名称
-        public string serviceName { get; set; }
-        //服务使用年份
-        public string serviceDate { get; set; }
-        //服务状态 0：已下单,（待上传文件），1：已处理待员工1审核/ 2：员工1已审核待员工2审核/ 3：员工2已审核待员工3审核/ 4：员工3已审核待员工2发送税表，签字，账单文件/ 5：已发送文件待客户处理/ 10：已完成
-        public string serviceStatus { get; set; }
-        //开始时间
-        public string beginDate { get; set; }
-
-    }
     //首页服务未完成个数
     public class ServiceListCount_res
     {
@@ -73,7 +62,81 @@ namespace Application.ResponseModel.ServicePage
         public string name { get; set; }
         //用户购买未完成的服务数
         public int serviceCount { get; set; }
-        
+
     }
 
+
+    public class ServiceDeatil_res
+    {
+        //服务id
+        public string Id { get; set; }
+        //服务名
+        public string ServiceName { get; set; }
+        //
+        public string ServiceNameDesc { get; set; }
+        //基础价格
+        public string Amount { get; set; }
+        // 类别1
+        public string ServiceLevel1 { get; set; }
+        //类别2
+        public string ServiceLevel2 { get; set; }
+        //类别3
+        public string ServiceLevel3 { get; set; }
+        //备注
+        public string Descs { get; set; }
+        //附加服务
+        public List<ServiceDeatil_res> AdditionalList { get; set; }
+        //包
+        public List<ServiceDeatil_res> ServicePackage { get; set; }
+        //服务变量
+        public List<ServiceItem_res> serviceItems { get; set; } 
+
+    }
+    public class ServicePackageDeatil_res
+    {
+        //服务id
+        public string Id { get; set; }
+        //服务名
+        public string ServiceName { get; set; }
+        //
+        public string ServiceNameDesc { get; set; }
+        //折扣
+        public string Discount { get; set; }
+        // 类别1
+        public string ServiceLevel1 { get; set; }
+        //类别2
+        public string ServiceLevel2 { get; set; }
+        //类别3
+        public string ServiceLevel3 { get; set; }
+        //备注
+        public string Descs { get; set; }
+        /// <summary>
+        /// 包下面的服务
+        /// </summary>
+        public List<PackageService> PackageServices { get; set; }
+
+        public class PackageService
+        {
+            public string ServiceId { get; set; } 
+            //服务名
+            public string ServiceName { get; set; }
+            //
+            public string ServiceNameDesc { get; set; }
+            //基础价格
+            public string Amount { get; set; }
+            // 类别1
+            public string ServiceLevel1 { get; set; }
+            //类别2
+            public string ServiceLevel2 { get; set; }
+            //类别3
+            public string ServiceLevel3 { get; set; }
+            //备注
+            public string Descs { get; set; }
+            //附加服务`
+            public List<ServiceDeatil_res> AdditionalList { get; set; }
+            //服务变量
+            public List<ServiceItem_res> serviceItems { get; set; }
+        }
+    }
+    
 }

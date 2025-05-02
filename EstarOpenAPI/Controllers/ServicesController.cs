@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.RequestModel;
 using Application.RequestModel.AccountPage;
+using Application.RequestModel.ServicePage;
 using Infrastructure.Identity.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -57,12 +58,12 @@ namespace EstarOpenAPI.Controllers
             return Ok(await _servicesService.UpdateUserTaskStatusAsync(signup_req));
         }
         /// <summary>
-        /// 用户已完成，未完成服务列表
+        /// 服务列表
         /// </summary>
         /// <param name="signup_req"></param>
         /// <returns></returns>
         [HttpPost("getservicelist")]
-        public async Task<IActionResult> GetServiceListAsync([FromBody] common_req<string> signup_req)
+        public async Task<IActionResult> GetServiceListAsync([FromBody] common_req<UserService_req> signup_req)
         {
             return Ok(await _servicesService.GetServiceListAsync(signup_req));
         }
@@ -85,6 +86,26 @@ namespace EstarOpenAPI.Controllers
         public async Task<IActionResult> GoogleDocumentAIGetFormNameAsync([FromBody] common_req<string> signup_req)
         {
             return Ok(await _servicesService.GoogleDocumentAIGetFormNameAsync(signup_req));
+        }
+        /// <summary>
+        /// 获取服务信息
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        [HttpPost("getservicedetail")]
+        public async Task<IActionResult> GetServiceDetail([FromBody] common_req<string> signup_req)
+        {
+            return Ok(await _servicesService.GetServiceDetail(signup_req));
+        }
+        /// <summary>
+        /// 获取服务包信息
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        [HttpPost("getservicepackagedetail")]
+        public async Task<IActionResult> GetServicePackageDetail([FromBody] common_req<string> signup_req)
+        {
+            return Ok(await _servicesService.GetServicePackageDetail(signup_req));
         }
     }
 }

@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Identity.Models
 {
+
     public class UsersModel
     {
+        
         /// <summary>
         /// 用户id
         /// </summary>
-        public string id { get; set; }
+        public string Uid { get; set; }
         /// <summary>
         /// 账号
         /// </summary>
@@ -23,7 +25,7 @@ namespace Infrastructure.Identity.Models
         /// <summary>
         /// 用户名
         /// </summary>
-        public string Username { get; set; }
+        public string UserName { get; set; }
         /// <summary>
         /// 用户手机号
         /// </summary>
@@ -35,27 +37,27 @@ namespace Infrastructure.Identity.Models
         /// <summary>
         /// 创建日期
         /// </summary>
-        public DateTime Createdate { get; set; }
+        public DateTime CreateDate { get; set; }
         /// <summary>
         /// 修改日期
         /// </summary>
-        public DateTime Updatedate { get; set; }
+        public DateTime UpdateDate { get; set; }
         /// <summary>
         /// token
         /// </summary>
-        public string Access_token { get; set; }
+        public string AccessToken { get; set; }
         /// <summary>
         /// 过期时间
         /// </summary>
-        public DateTime Expires_in { get; set; }
+        public DateTime ExpiresIn { get; set; }
         /// <summary>
         /// Refieshtoken
         /// </summary>
-        public string Refiesh_token { get; set; }
+        public string RefieshToken { get; set; }
         /// <summary>
         /// 用户昵称
         /// </summary>
-        public string Nickname { get; set; }
+        public string NickName { get; set; }
         /// <summary>
         /// 性别
         /// </summary>
@@ -108,29 +110,42 @@ namespace Infrastructure.Identity.Models
         /// 邮编
         /// </summary>
         public string PostalCode { get; set; }
+        /// <summary>
+        /// 余额
+        /// </summary>
+        public string Balance { get; set; }
+        /// <summary>
+        /// Google账户id
+        /// </summary>
+        public string GooglelocalId { get; set; }
+        /// <summary>
+        /// 是否验证google邮箱   0:未验证,1：已验证
+        /// </summary>
+        public string EmailVerification { get; set; }
+        /// <summary>
+        /// 验证google手机   0:未验证,1：已验证
+        /// </summary>
+        public string PhoneVerification { get; set; }
+        /// <summary>
+        /// 是否购买过服务  0:未购买，1：购买过
+        /// </summary>
+        public string FirstBuy { get; set; }
 
     }
 
+    //用户服务
     public class UserServiceModel
     {
-        public string Id { get; set; }
+        public Guid Id { get; private set; } = Guid.NewGuid(); // 直接初始化
         /// <summary>
         /// 用户id
         /// </summary>
         public string UId { get; set; }
-        /// <summary>
-        /// 服务名称
-        /// </summary>
-        public string Name { get; set; }
         
         /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
-        /// <summary>
-        /// 服务年份
-        /// </summary>
-        public string Year { get; set; }
         /// <summary>
         /// 服务id
         /// </summary>
@@ -139,6 +154,53 @@ namespace Infrastructure.Identity.Models
         /// 服务状态
         /// </summary>
         public string Status { get; set; }
+
+        /// <summary>
+        /// 首次支付金额
+        /// </summary>
+        public decimal FirstPayAmount { get; set; }
+        /// <summary>
+        /// 已支付金额
+        /// </summary>
+        public decimal TotalAmount { get; set; }
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string Descs { get; set; }
+    }
+    
+    //用户服务明细
+    public class UserServiceDetailModel {
+        public Guid Id { get; private set; } = Guid.NewGuid(); // 直接初始化
+        /// <summary>
+        /// 服务ID
+        /// </summary>
+        public string ServiceId { get; set; }
+        /// <summary>
+        /// 服务主id
+        /// </summary>
+        public Guid UserServiceId { get; set; }
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
+        /// <summary>
+        /// 服务使用开始时间  报税年份  持续性服务使用开始时间
+        /// </summary>
+        public DateTime BeginServiceDate { get; set; }
+        /// <summary>
+        /// 服务使用结束时间 持续性服务使用结束时间
+        /// </summary>
+        public DateTime EndServiceDate { get; set; }
+        /// <summary>
+        /// 服务金额
+        /// </summary>
+        public decimal TotalAmount { get; set; }
+        /// <summary>
+        /// 已支付金额
+        /// </summary>
+        public decimal PayAmount { get; set; }
+
         /// <summary>
         /// 服务开始时间
         /// </summary>
@@ -148,53 +210,161 @@ namespace Infrastructure.Identity.Models
         /// </summary>
         public DateTime EndDate { get; set; }
         /// <summary>
-        /// 员工id
+        /// 服务计数(持续性)
         /// </summary>
-        public string SId { get; set; }
+        public int ServiceNumber { get; set; }
+        /// <summary>
+        /// 持续服务是否结束
+        /// </summary>
+        public string IsEnd { get; set; }
+        /// <summary>
+        /// 服务状态
+        /// </summary>
+        public string Status { get; set; }
         /// <summary>
         /// 员工id
         /// </summary>
-        public string SId1 { get; set; }
+        public string OrdinaryEmployees { get; set; }
         /// <summary>
         /// 员工id
         /// </summary>
-        public string SId2 { get; set; }
+        public string ExpertEmployees { get; set; }
+        /// <summary>
+        /// 员工id
+        /// </summary>
+        public string ProfessionalEmployees { get; set; }
+        /// <summary>
+        /// 员工id
+        /// </summary>
+        public string AccountingEmployees { get; set; }
         /// <summary>
         /// 描述
         /// </summary>
         public string Descs { get; set; }
+    
     }
-    public class UserOrderModel
+
+    //用户服务变量
+    public class UserServiceItems
     {
         /// <summary>
         /// 
         /// </summary>
         public string Id { get; set; }
         /// <summary>
+        /// 用户服务详情id
+        /// </summary>
+        public Guid UserServiceDeatilId { get; set; }
+        /// <summary>
+        /// 服务计数(持续性)
+        /// </summary>
+        public string ServiceNumber { get; set; }
+        /// <summary>
+        /// 服务变量id
+        /// </summary>
+        public string ServiceItemId { get; set; }
+        /// <summary>
+        /// 客户输入变量值
+        /// </summary>
+        public string UserServiceItemValue { get; set; }
+        /// <summary>
+        /// 客户变量金额
+        /// </summary>
+        public string UserServiceItemAmount { get; set; }
+        /// <summary>
+        /// 员工处理后变量值
+        /// </summary>
+        public string  StaffServiceItemValue{ get; set; }
+        /// <summary>
+        /// 员工变量金额
+        /// </summary>
+        public string StaffServiceItemAmount { get; set; }
+    }
+    
+    //用户订单
+    public class UserOrderModel
+    {
+        public Guid Id { get; private set; } = Guid.NewGuid(); // 直接初始化
+        /// <summary>
         /// 下单用户编号
         /// </summary>
         public string Uid { get; set; }
-        /// <summary>
-        /// 下单用户账户
-        /// </summary>
-        public string Account { get; set; }
-
-        /// <summary>
-        /// 购买项目id
-        /// </summary>
-        public string UserServiceId { get; set; }
         /// <summary>
         /// 订单创建时间
         /// </summary>
         public DateTime Createtime { get; set; }
         /// <summary>
-        /// 支付平台
+        /// 订单创建时间
         /// </summary>
-        public string PaymentPlatform { get; set; }
+        public DateTime UpdateTime { get; set; }
+        /// <summary>
+        /// 付款平台id
+        /// </summary>
+        public string OrderId { get; set; }
+        /// <summary>
+        /// 购买项目id
+        /// </summary>
+        public Guid UserServiceId { get; set; }
+       
+        /// <summary>
+        /// 购买时间
+        /// </summary>
+        public DateTime OrderTime { get; set; }
+        /// <summary>
+        /// 订单金额
+        /// </summary>
+        public decimal PayAmount { get; set; }
+        /// <summary>
+        /// 优惠金额
+        /// </summary>
+        public decimal DiscountAmount { get; set; }
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string OrderNote { get; set; }
+        /// <summary>
+        /// 来源
+        /// </summary>
+        public string OrderSource { get; set; }
+        /// <summary>
+        /// 支付的货币类型
+        /// </summary>
+        public string CurrencyCode { get; set; }
+        
+    }
+
+    //用户订单详情
+    public class UserOrderDetailModel
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Id { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Guid OId { get; set; }
+        /// <summary>
+        /// 订单创建时间
+        /// </summary>
+        public DateTime Createtime { get; set; }
+        /// <summary>
+        /// 购买项目id
+        /// </summary>
+        public string UserServiceDetailId { get; set; }
         /// <summary>
         /// 购买时间
         /// </summary>
         public DateTime PayTime { get; set; }
+       
+        /// <summary>
+        /// 支付平台
+        /// </summary>
+        public string PaymentPlatform { get; set; }
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string OrderNote { get; set; }
         /// <summary>
         /// 平台订单号
         /// </summary>
@@ -206,10 +376,12 @@ namespace Infrastructure.Identity.Models
         /// <summary>
         /// 金额类型
         /// </summary>
-        public string currencycode { get; set; }
-        
+        public string CurrencyCode { get; set; }
 
     }
+
+
+    //用户任务
     public class UserTaskModel()
     {
         /// <summary>
