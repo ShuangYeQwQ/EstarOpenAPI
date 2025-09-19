@@ -1,0 +1,184 @@
+﻿
+<View>
+	<Identifier Hierarchy="Federal\Income\Wages, Salaries and Tips (W-2)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection Name="Wages and Salaries (IRS W-2)">
+		<GridData ID="-47009" Description="Wages and Salaries">
+			<Detail>
+				<WorkSheetSection  Name="IRS W-2">
+					<FieldData Location="IFDSW2.0" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.1" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.17" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.2" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.3" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.4" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.5" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.6" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.7" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.8" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.9" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.10" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.11" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.12" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.13" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.14" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.45" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.15" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.16" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.44" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.19" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.20" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.21" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.30" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.31" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.32" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.33" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.34" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.35" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.36" LocationType="FieldID" Value="" />
+					<FieldData Location="IFDSW2.46" LocationType="FieldID" Value="" />
+
+					<!-- Box 12 Grid -->
+					<GridData ID="A40025" Description="Box 12">
+						<Fields>
+							<FieldHeader Location="IFDSW2.22" LocationType="FieldID" FieldIndex="1" />
+							<FieldHeader Location="IFDSW2.23" LocationType="FieldID" FieldIndex="2" />
+						</Fields>
+						<Row>
+							<RowValue FieldIndex="1" Value="" />
+							<RowValue FieldIndex="2" Value="" />
+						</Row>
+						<Row>
+							<RowValue FieldIndex="1" Value="" />
+							<RowValue FieldIndex="2" Value="" />
+						</Row>
+					</GridData>
+
+					<!-- Other Grid -->
+					<GridData ID="B40025" Description="Other">
+						<Fields>
+							<FieldHeader Location="IFDSW2.24" LocationType="FieldID" FieldIndex="1" />
+							<FieldHeader Location="IFDSW2.25" LocationType="FieldID" FieldIndex="2" />
+							<FieldHeader Location="IFDSW2.18" LocationType="FieldID" FieldIndex="3" />
+						</Fields>
+						<Row>
+							<RowValue FieldIndex="1" Value="" />
+							<RowValue FieldIndex="2" Value="" />
+							<RowValue FieldIndex="3" Value="" />
+						</Row>
+					</GridData>
+
+					<!-- State and City Info Grid -->
+					<GridData ID="C40025" Description="State and City Info">
+						<Fields>
+							<FieldHeader Location="IFDSW2.26" LocationType="FieldID" FieldIndex="1" />
+							<FieldHeader Location="IFDSW2.27" LocationType="FieldID" FieldIndex="2" />
+							<FieldHeader Location="IFDSW2.28" LocationType="FieldID" FieldIndex="3" />
+							<FieldHeader Location="IFDSW2.29" LocationType="FieldID" FieldIndex="4" />
+							<FieldHeader Location="IFDSW2.37" LocationType="FieldID" FieldIndex="5" />
+							<FieldHeader Location="IFDSW2.38" LocationType="FieldID" FieldIndex="6" />
+							<FieldHeader Location="IFDSW2.39" LocationType="FieldID" FieldIndex="7" />
+							<FieldHeader Location="IFDSW2.40" LocationType="FieldID" FieldIndex="8" />
+							<!--<FieldHeader Location="IFDSW2.41" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.42" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.51" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.43" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.52" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.49" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.50" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.53" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.47" LocationType="FieldID" Value="" />
+							<FieldHeader Location="IFDSW2.48" LocationType="FieldID" Value="" />-->
+						</Fields>
+						<Row>
+							<RowValue FieldIndex="1" Value="" />
+							<RowValue FieldIndex="2" Value="" />
+							<RowValue FieldIndex="3" Value="" />
+							<RowValue FieldIndex="4" Value="" />
+							<RowValue FieldIndex="5" Value="" />
+							<RowValue FieldIndex="6" Value="" />
+							<RowValue FieldIndex="7" Value="" />
+							<RowValue FieldIndex="8" Value="" />
+						</Row>
+					</GridData>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>
+
+
+
+<!--<WorkSheetSection ID="47009" SectionNumber="47009" Name="Wages and Salaries (IRS W-2)">
+	<GridData ID="-47009" Description="Wages and Salaries">
+		<Detail>
+			<WorkSheetSection ID="IFDSW2" SectionNumber="40025" Name="IRS W-2">
+				<FieldData Location="TS" FieldID="IFDSW2.0"/>
+				<FieldData Location="FS" FieldID="IFDSW2.1"/>
+				<FieldData Location="Employee social security no" FieldID="IFDSW2.17"/>
+				<FieldData Location="Wages, tips, other comp - PY" FieldID="IFDSW2.2"/>
+				<FieldData Location="Employer identification number" FieldID="IFDSW2.3"/>
+				<FieldData Location="Wages, tips other compensation" FieldID="IFDSW2.4"/>
+				<FieldData Location="Federal income tax withheld" FieldID="IFDSW2.5"/>
+				<FieldData Location="Employer name" FieldID="IFDSW2.6"/>
+				<FieldData Location="Social security wages" FieldID="IFDSW2.7"/>
+				<FieldData Location="Social security tax withheld" FieldID="IFDSW2.8"/>
+				<FieldData Location="Employer address" FieldID="IFDSW2.9"/>
+				<FieldData Location="Medicare wages" FieldID="IFDSW2.10"/>
+				<FieldData Location="Medicare tax withheld" FieldID="IFDSW2.11"/>
+				<FieldData Location="Employer city" FieldID="IFDSW2.12"/>
+				<FieldData Location="Employer state" FieldID="IFDSW2.13"/>
+				<FieldData Location="Employer ZIP" FieldID="IFDSW2.14"/>
+				<FieldData Location="Employer foreign country cd" FieldID="IFDSW2.45"/>
+				<FieldData Location="Social security tips" FieldID="IFDSW2.15"/>
+				<FieldData Location="Allocated tips" FieldID="IFDSW2.16"/>
+				<FieldData Location="Control number" FieldID="IFDSW2.44"/>
+				<FieldData Location="Dependent care benefits" FieldID="IFDSW2.19"/>
+				<FieldData Location="Employee name" FieldID="IFDSW2.20"/>
+				<FieldData Location="Nonqualified plans" FieldID="IFDSW2.21"/>
+				<FieldData Location="Statutory employee" FieldID="IFDSW2.30"/>
+				<FieldData Location="Retirement plan" FieldID="IFDSW2.31"/>
+				<FieldData Location="Third-party sick pay" FieldID="IFDSW2.32"/>
+				<FieldData Location="Employee address" FieldID="IFDSW2.33"/>
+				<FieldData Location="Employee city" FieldID="IFDSW2.34"/>
+				<FieldData Location="Employee state" FieldID="IFDSW2.35"/>
+				<FieldData Location="Employee ZIP" FieldID="IFDSW2.36"/>
+				<FieldData Location="Employee foreign country code" FieldID="IFDSW2.46"/>
+				<GridData ID="A40025" Description="Box 12">
+					<Fields>
+						<FieldHeader Location="Code1  Box 12" FieldID="IFDSW2.22"/>
+						<FieldHeader Location="Amount (W-2, box 12)" FieldID="IFDSW2.23"/>
+					</Fields>
+				</GridData>
+				<GridData ID="B40025" Description="Other">
+					<Fields>
+						<FieldHeader Location="Other Deducts/Benefits Descrip" FieldID="IFDSW2.24"/>
+						<FieldHeader Location="Other Amount 1" FieldID="IFDSW2.25"/>
+						<FieldHeader Location="Code" FieldID="IFDSW2.18"/>
+					</Fields>
+				</GridData>
+				<GridData ID="C40025" Description="State and City Info">
+					<Fields>
+						<FieldHeader Location="State" FieldID="IFDSW2.26"/>
+						<FieldHeader Location="Employer's state ID number" FieldID="IFDSW2.27"/>
+						<FieldHeader Location="State wages" FieldID="IFDSW2.28"/>
+						<FieldHeader Location="State withholding" FieldID="IFDSW2.29"/>
+						<FieldHeader Location="City wages" FieldID="IFDSW2.37"/>
+						<FieldHeader Location="City withholding" FieldID="IFDSW2.38"/>
+						<FieldHeader Location="City code" FieldID="IFDSW2.39"/>
+						<FieldHeader Location="Locality name" FieldID="IFDSW2.40"/>
+						<FieldHeader Location="Military" FieldID="IFDSW2.41"/>
+						<FieldHeader Location="State use" FieldID="IFDSW2.42"/>
+						<FieldHeader Location="State use 2" FieldID="IFDSW2.51"/>
+						<FieldHeader Location="State disability insurance" FieldID="IFDSW2.43"/>
+						<FieldHeader Location="Work days/hours in city" FieldID="IFDSW2.52"/>
+						<FieldHeader Location="Dates worked in city from" FieldID="IFDSW2.49"/>
+						<FieldHeader Location="Dates worked in city to" FieldID="IFDSW2.50"/>
+						<FieldHeader Location="Hypo state wages - override" FieldID="IFDSW2.53"/>
+						<FieldHeader Location="Hypo state code (if diff)" FieldID="IFDSW2.47"/>
+						<FieldHeader Location="State exclude from hypo" FieldID="IFDSW2.48"/>
+					</Fields>
+				</GridData>
+			</WorkSheetSection>-->

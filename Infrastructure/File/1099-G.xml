@@ -1,0 +1,49 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Income\Other Income (1099-G, 1099-K, 1099-MISC, 1099-NEC, W-2G)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Certain Government Payments (IRS 1099-G)">
+		<GridData ID="-47678" Description="Certain Government Payments">
+			<Detail>
+				<WorkSheetSection Name="IRS 1099-G">
+					<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDS109G.0"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDS109G.1"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City" FieldID="IFDS109G.3"/>
+					<FieldData FieldName="FARM" Type="Text" Location="Farm name" FieldID="IFDS109G.33"/>
+					<FieldData FieldName="UNEMPLOY" Type="Float" Location="Unemployment compensation" FieldID="IFDS109G.4"/>
+					<FieldData FieldName="PAYERNM" Type="Text" Location="Payer's name" FieldID="IFDS109G.5"/>
+					<FieldData FieldName="PAYERST" Type="Text" Location="Payer's street address" FieldID="IFDS109G.6"/>
+					<FieldData FieldName="PAYERCTY" Type="Text" Location="Payer's city" FieldID="IFDS109G.7"/>
+					<FieldData FieldName="PAYRSTAT" Type="Enum" Location="Payer's state" FieldID="IFDS109G.28"/>
+					<FieldData FieldName="PAYERZIP" Type="Text" Location="Payer's ZIP" FieldID="IFDS109G.29"/>
+					<FieldData FieldName="STREFUND" Type="Float" Location="State tax refund" FieldID="IFDS109G.9"/>
+					<FieldData FieldName="PHONE" Type="Text" Location="Payer's phone" FieldID="IFDS109G.8"/>
+					<FieldData FieldName="LCREFUND" Type="Float" Location="Local tax refund" FieldID="IFDS109G.26"/>
+					<FieldData FieldName="PAYERID" Type="Text" Location="Payer's identification number" FieldID="IFDS109G.10"/>
+					<FieldData FieldName="RECIPID" Type="Text" Location="Recipient's identification no." FieldID="IFDS109G.11"/>
+					<FieldData FieldName="YEAR" Type="Float" Location="Year for box 2" FieldID="IFDS109G.12"/>
+					<FieldData FieldName="FEDWH" Type="Float" Location="Federal income tax withheld" FieldID="IFDS109G.13"/>
+					<FieldData FieldName="RECIPNM" Type="Text" Location="Recipient's name" FieldID="IFDS109G.14"/>
+					<FieldData FieldName="RTAA" Type="Float" Location="RTAA payments" FieldID="IFDS109G.15"/>
+					<FieldData FieldName="TAXGRANT" Type="Float" Location="Taxable grants" FieldID="IFDS109G.16"/>
+					<FieldData FieldName="RECIPADD" Type="Text" Location="Recipient's address" FieldID="IFDS109G.17"/>
+					<FieldData FieldName="AGPYMT" Type="Float" Location="Agriculture payments" FieldID="IFDS109G.18"/>
+					<FieldData FieldName="TRADEBUS" Type="Enum" Location="Trade or business income" FieldID="IFDS109G.19"/>
+					<FieldData FieldName="RECIPCTY" Type="Text" Location="Recipient's city" FieldID="IFDS109G.20"/>
+					<FieldData FieldName="RECIPST" Type="Enum" Location="Recipient's state" FieldID="IFDS109G.21"/>
+					<FieldData FieldName="RECIPZIP" Type="Text" Location="Recipient's ZIP code" FieldID="IFDS109G.22"/>
+					<FieldData FieldName="RECIPFC" Type="Enum" Location="Recipient's foreign country" FieldID="IFDS109G.35"/>
+					<FieldData FieldName="RECIPPRV" Type="Text" Location="Recipient's province/county" FieldID="IFDS109G.36"/>
+					<FieldData FieldName="MARKETGN" Type="Float" Location="Market gain" FieldID="IFDS109G.23"/>
+					<FieldData FieldName="ACCTNO" Type="Text" Location="Account number" FieldID="IFDS109G.24"/>
+					<FieldData FieldName="2NDTIN" Type="Enum" Location="2nd TIN notice" FieldID="IFDS109G.38"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDS109G.2"/>
+					<FieldData FieldName="STATEID" Type="Text" Location="State identification no." FieldID="IFDS109G.31"/>
+					<FieldData FieldName="STATEWH" Type="Float" Location="State withholding" FieldID="IFDS109G.30"/>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

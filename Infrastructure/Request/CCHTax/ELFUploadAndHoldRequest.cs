@@ -37,10 +37,22 @@ namespace Infrastructure.Request.CCHTax
     // ComplianceMessageResponse 类定义
     public class ComplianceMessageResponse
     {
-        [JsonPropertyName("MessageID")]
-        public string MessageID { get; set; }
+        [JsonPropertyName("MessageIndex")]
+        public string MessageIndex { get; set; }
 
-        [JsonPropertyName("MessageText")]
-        public string MessageText { get; set; }
+        [JsonPropertyName("Title")]
+        public string Title { get; set; }
+
+        [JsonPropertyName("Message")]
+        public string Message { get; set; }
+        [JsonPropertyName("MessageOptions")]
+        public string MessageOptions { get; set; }
+        [JsonPropertyName("MessageType")]
+        public string MessageType { get; set; }
+        [JsonPropertyName("MessageAccepted")]
+        public string MessageAccepted { get; set; }
+        [JsonPropertyName("UserInput")]
+        public string UserInput { get; set; }
+
     }
 }

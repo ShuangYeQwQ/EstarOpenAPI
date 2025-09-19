@@ -1,0 +1,62 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Income\IRAs, Pensions and Annuities (1099-R)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Distributions from Pensions, Annuities and IRAs (IRS 1099-R)">
+		<GridData ID="-47255" Description="Dist Pensions, Annuities, IRAs ">
+			<Detail>
+				<WorkSheetSection Name="IRS 1099-R">
+					<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDS099R.0"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDS099R.1"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City" FieldID="IFDS099R.3"/>
+					<FieldData FieldName="PAYNAME" Type="Text" Location="Payer's name" FieldID="IFDS099R.4"/>
+					<FieldData FieldName="GROSSDIS" Type="Float" Location="Gross distribution" FieldID="IFDS099R.5"/>
+					<FieldData FieldName="PAYSTRT" Type="Text" Location="Payer's street address" FieldID="IFDS099R.6"/>
+					<FieldData FieldName="TAXAMT" Type="Float" Location="Taxable amount" FieldID="IFDS099R.7"/>
+					<FieldData FieldName="PAYCITY" Type="Text" Location="Payer's city" FieldID="IFDS099R.8"/>
+					<FieldData FieldName="PAYSTATE" Type="Enum" Location="Payer's state" FieldID="IFDS099R.44"/>
+					<FieldData FieldName="PAYZIP" Type="Text" Location="Payer's ZIP or postal code" FieldID="IFDS099R.45"/>
+					<FieldData FieldName="PAYFRNCD" Type="Enum" Location="Payer's foreign country code" FieldID="IFDS099R.48"/>
+					<FieldData FieldName="TAXNDTRM" Type="Enum" Location="Taxable amount not determined" FieldID="IFDS099R.9"/>
+					<FieldData FieldName="TOTDIST" Type="Enum" Location="Total distribution" FieldID="IFDS099R.10"/>
+					<FieldData FieldName="PAYRPRVN" Type="Text" Location="Payer's province, st or county" FieldID="IFDS099R.51"/>
+					<FieldData FieldName="CAPGAIN" Type="Float" Location="Capital gain" FieldID="IFDS099R.13"/>
+					<FieldData FieldName="FEDWH" Type="Float" Location="Federal income tax withheld" FieldID="IFDS099R.14"/>
+					<FieldData FieldName="PAYRPHNE" Type="Text" Location="Payer's telephone number" FieldID="IFDS099R.36"/>
+					<FieldData FieldName="PAYFPHNE" Type="Text" Location="Payer's foreign phone number" FieldID="IFDS099R.37"/>
+					<FieldData FieldName="PAYFDID" Type="Text" Location="Payer's Fed identification num" FieldID="IFDS099R.11"/>
+					<FieldData FieldName="RECID" Type="Text" Location="Recipient's identification num" FieldID="IFDS099R.12"/>
+					<FieldData FieldName="EMPCONTR" Type="Float" Location="Employee contribution" FieldID="IFDS099R.15"/>
+					<FieldData FieldName="UNREALAP" Type="Float" Location="Unrealized apprec in security" FieldID="IFDS099R.16"/>
+					<FieldData FieldName="RECNAME" Type="Text" Location="Recipient's name" FieldID="IFDS099R.17"/>
+					<FieldData FieldName="RECADDR" Type="Text" Location="Recipient's address" FieldID="IFDS099R.18"/>
+					<FieldData FieldName="DISTCODE" Type="Text" Location="Distribution code" FieldID="IFDS099R.20"/>
+					<FieldData FieldName="IRA_SEP" Type="Enum" Location="IRA/SEP/Simple" FieldID="IFDS099R.21"/>
+					<FieldData FieldName="OTHDIST" Type="Float" Location="Other distribution" FieldID="IFDS099R.22"/>
+					<FieldData FieldName="ODISTPCT" Type="Float" Location="Distribution percent" FieldID="IFDS099R.23"/>
+					<FieldData FieldName="RECCITY" Type="Text" Location="Recipient's city" FieldID="IFDS099R.19"/>
+					<FieldData FieldName="RECSTATE" Type="Enum" Location="Recipient's state" FieldID="IFDS099R.46"/>
+					<FieldData FieldName="RECZIP" Type="Text" Location="Recipient's ZIP or postal code" FieldID="IFDS099R.47"/>
+					<FieldData FieldName="FRNCNTRY" Type="Enum" Location="Recipient's foreign country cd" FieldID="IFDS099R.49"/>
+					<FieldData FieldName="RECPRVN" Type="Text" Location="Recipient's prov, st or county" FieldID="IFDS099R.52"/>
+					<FieldData FieldName="PCTTTLD" Type="Float" Location="Percent of total distribution" FieldID="IFDS099R.24"/>
+					<FieldData FieldName="TOTEMPCN" Type="Float" Location="Total employee contributions" FieldID="IFDS099R.25"/>
+					<FieldData FieldName="STTXWH1" Type="Float" Location="State tax withheld" FieldID="IFDS099R.26"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDS099R.2"/>
+					<FieldData FieldName="PAYSTNO1" Type="Text" Location="Payer's state number" FieldID="IFDS099R.27"/>
+					<FieldData FieldName="STDISTR1" Type="Float" Location="State distribution" FieldID="IFDS099R.28"/>
+					<FieldData FieldName="AMNTIRR" Type="Float" Location="Amount allocable to IRR" FieldID="IFDS099R.50"/>
+					<FieldData FieldName="YEARROTH" Type="Float" Location="First year of Roth 401(k) cont" FieldID="IFDS099R.43"/>
+					<FieldData FieldName="FATCA" Type="Enum" Location="FATCA filing requirement" FieldID="IFDS099R.31"/>
+					<FieldData FieldName="ACCTNUM" Type="Text" Location="Account number" FieldID="IFDS099R.29"/>
+					<FieldData FieldName="PAYDATE" Type="Text" Location="Date of payment" FieldID="IFDS099R.32"/>
+					<FieldData FieldName="LCTXWH1" Type="Float" Location="Local tax withheld" FieldID="IFDS099R.33"/>
+					<FieldData FieldName="LCNAME1" Type="Text" Location="Name of locality" FieldID="IFDS099R.34"/>
+					<FieldData FieldName="LCDISTR1" Type="Float" Location="Local distribution" FieldID="IFDS099R.35"/>
+					</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

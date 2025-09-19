@@ -1,0 +1,34 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Income\Social Security Benefit Statement (SSA-1099)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Social Security Benefit Statement (SSA-1099)">
+		<GridData ID="-47330" Description="Social Security Benefit Stmt">
+			<Detail>
+				<WorkSheetSection Name="IRS SSA-1099">
+					<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDSSSA.0"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDSSSA.1"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDSSSA.2"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City" FieldID="IFDSSSA.3"/>
+					<FieldData FieldName="BUSINESS" Type="Text" Location="Business name" FieldID="IFDSSSA.22"/>
+					<FieldData FieldName="FARM" Type="Text" Location="Farm name" FieldID="IFDSSSA.23"/>
+					<FieldData FieldName="PASSACT" Type="Text" Location="Passthrough activity name" FieldID="IFDSSSA.24"/>
+					<FieldData FieldName="NAME" Type="Text" Location="Name" FieldID="IFDSSSA.4"/>
+					<FieldData FieldName="BENSSN" Type="Text" Location="Beneficiary's SSN" FieldID="IFDSSSA.5"/>
+					<FieldData FieldName="BENPAID" Type="Float" Location="Benefits paid" FieldID="IFDSSSA.6"/>
+					<FieldData FieldName="BENREPD" Type="Float" Location="Benefits repaid to SSA" FieldID="IFDSSSA.7"/>
+					<FieldData FieldName="NETBNFTS" Type="Float" Location="Net benefits" FieldID="IFDSSSA.8"/>
+					<FieldData FieldName="DESCBX3" Type="Paragraph" Location="Description of amount in Box 3" FieldID="IFDSSSA.9"/>
+					<FieldData FieldName="DESCBX4" Type="Paragraph" Location="Description of amount in Box 4" FieldID="IFDSSSA.10"/>
+					<FieldData FieldName="VOLFDWH" Type="Float" Location="Voluntary Fed income tax w/h" FieldID="IFDSSSA.11"/>
+					<FieldData FieldName="ADDR1" Type="Text" Location="Address line 1" FieldID="IFDSSSA.12"/>
+					<FieldData FieldName="ADDR2" Type="Text" Location="Address line 2" FieldID="IFDSSSA.13"/>
+					<FieldData FieldName="ADDR3" Type="Text" Location="Address line 3" FieldID="IFDSSSA.14"/>
+					<FieldData FieldName="CLAIMNUM" Type="Text" Location="Claim number" FieldID="IFDSSSA.15"/>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

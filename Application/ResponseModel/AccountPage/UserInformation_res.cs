@@ -32,11 +32,19 @@ namespace Application.ResponseModel.AccountPage
             public string Email { get; set; }
             // 手机
             public string Phone { get; set; }
-            // 地址
+            // 详细地址
             public string Address { get; set; }
+            // 州
+            public string state { get; set; }
+            // 城市
+            public string city { get; set; }
+            // 街道地址
+            public string street { get; set; }
+            // 地址
+            public string apartment { get; set; }
+            // 公寓号
+            public string zipcode { get; set; }
             // 邮编
-            public string Zipcode { get; set; }
-            // 社安号
             public string SocialSecurityNumber { get; set; }
         }
         public class UserCompanyInformationResponse

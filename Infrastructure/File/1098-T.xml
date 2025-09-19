@@ -1,0 +1,46 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Credits\8863 / 8917 - Tuition Statement (1098-T)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Tuition Statement (IRS 1098-T)">
+		<GridData ID="-47619" Description="Tuition Statement">
+			<Detail>
+				<WorkSheetSection Name="IRS 1098-T">
+					<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDSTUIT.13"/>
+					<FieldData FieldName="FSO" Type="Enum" Location="FS" FieldID="IFDSTUIT.14"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDSTUIT.15"/>
+					<FieldData FieldName="FLRNAME" Type="Text" Location="Educational institution name" FieldID="IFDSTUIT.17"/>
+					<FieldData FieldName="PMTREC" Type="Float" Location="Payments received for tuition" FieldID="IFDSTUIT.2"/>
+					<FieldData FieldName="FLRADDR" Type="Text" Location="Ed institution addr" FieldID="IFDSTUIT.18"/>
+					<FieldData FieldName="FLRCITY" Type="Text" Location="Ed institution city" FieldID="IFDSTUIT.19"/>
+					<FieldData FieldName="FLRSTATE" Type="Enum" Location="Ed institution state" FieldID="IFDSTUIT.20"/>
+					<FieldData FieldName="FLRZIP" Type="Text" Location="Ed institution ZIP" FieldID="IFDSTUIT.21"/>
+					<FieldData FieldName="FGCODE" Type="Enum" Location="Ed institution fgn cntry cd" FieldID="IFDSTUIT.33"/>
+					<FieldData FieldName="PROVINCE" Type="Text" Location="Ed institution prov/st/county" FieldID="IFDSTUIT.34"/>
+					<FieldData FieldName="FLRPHONE" Type="Text" Location="Ed institution phone" FieldID="IFDSTUIT.22"/>
+					<FieldData FieldName="FLRID" Type="Text" Location="Ed institution ID no." FieldID="IFDSTUIT.23"/>
+					<FieldData FieldName="STDSSN" Type="Text" Location="Student's SSN" FieldID="IFDSTUIT.24"/>
+					<FieldData FieldName="DTDPNAME" Type="Text" Location="Dependent name" FieldID="IFDSTUIT.7"/>
+					<FieldData FieldName="STDNAME" Type="Text" Location="Student's first name" FieldID="IFDSTUIT.25"/>
+					<FieldData FieldName="LASTNAME" Type="Text" Location="Student's last name" FieldID="IFDSTUIT.8"/>
+					<FieldData FieldName="ADJPRYR" Type="Float" Location="Adjust. made for a prior year" FieldID="IFDSTUIT.11"/>
+					<FieldData FieldName="SCHOLAR" Type="Float" Location="Scholarships or grants" FieldID="IFDSTUIT.6"/>
+					<FieldData FieldName="STDADDR" Type="Text" Location="Student's address" FieldID="IFDSTUIT.26"/>
+					<FieldData FieldName="STDCITY" Type="Text" Location="Student's city" FieldID="IFDSTUIT.27"/>
+					<FieldData FieldName="STDSTATE" Type="Enum" Location="Student's state" FieldID="IFDSTUIT.28"/>
+					<FieldData FieldName="STDZIP" Type="Text" Location="Student's ZIP code" FieldID="IFDSTUIT.29"/>
+					<FieldData FieldName="SCHOLGRA" Type="Float" Location="Adj to grant for a prior year" FieldID="IFDSTUIT.10"/>
+					<FieldData FieldName="ACPERIOD" Type="Enum" Location="Includes amnts for Jan.-March" FieldID="IFDSTUIT.30"/>
+					<FieldData FieldName="STDFCCD" Type="Enum" Location="Student's foreign country code" FieldID="IFDSTUIT.3"/>
+					<FieldData FieldName="STDFPROV" Type="Text" Location="Student's prov/st/county" FieldID="IFDSTUIT.35"/>
+					<FieldData FieldName="SERVPROV" Type="Text" Location="Service provider/acct. no." FieldID="IFDSTUIT.9"/>
+					<FieldData FieldName="HALFSTD" Type="Enum" Location="At least half-time student" FieldID="IFDSTUIT.4"/>
+					<FieldData FieldName="GRADSTD" Type="Enum" Location="Graduate student" FieldID="IFDSTUIT.5"/>
+					<FieldData FieldName="INSCONTR" Type="Float" Location="Insurance contract reimburse" FieldID="IFDSTUIT.0"/>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

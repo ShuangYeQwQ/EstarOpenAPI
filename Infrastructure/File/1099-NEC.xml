@@ -1,0 +1,49 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Income\Other Income (1099-G, 1099-K, 1099-MISC, 1099-NEC, W-2G)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Nonemployee Compensation (IRS 1099-NEC)">
+		<GridData ID="-47442" Description="Nonemployee Compensation">
+			<Detail>
+				<WorkSheetSection Name="IRS 1099-NEC (Nonemployee Compensation)">
+					<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDSNEC.0"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDSNEC.1"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDSNEC.2"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City" FieldID="IFDSNEC.3"/>
+					<FieldData FieldName="NECPY" Type="Text" Location="Nonemployee compensation - PY" FieldID="IFDSNEC.4"/>
+					<FieldData FieldName="BUSINESS" Type="Text" Location="Business name" FieldID="IFDSNEC.6"/>
+					<FieldData FieldName="FARM" Type="Text" Location="Farm name" FieldID="IFDSNEC.9"/>
+					<FieldData FieldName="PAYNAME" Type="Text" Location="Payer's name" FieldID="IFDSNEC.5"/>
+					<FieldData FieldName="PAYADDR" Type="Text" Location="Payer's street address" FieldID="IFDSNEC.7"/>
+					<FieldData FieldName="PAYCITY" Type="Text" Location="Payer's city" FieldID="IFDSNEC.8"/>
+					<FieldData FieldName="PAYSTATE" Type="Enum" Location="Payer's state" FieldID="IFDSNEC.44"/>
+					<FieldData FieldName="PAYZIP" Type="Text" Location="Payer's ZIP" FieldID="IFDSNEC.45"/>
+					<FieldData FieldName="PAYPROV" Type="Text" Location="Payer's province or county" FieldID="IFDSNEC.49"/>
+					<FieldData FieldName="PAYPSTL" Type="Text" Location="Payer's foreign postal code" FieldID="IFDSNEC.13"/>
+					<FieldData FieldName="PAYFC" Type="Enum" Location="Payer's foreign country" FieldID="IFDSNEC.48"/>
+					<FieldData FieldName="PAYPHONE" Type="Text" Location="Payer phone number" FieldID="IFDSNEC.35"/>
+					<FieldData FieldName="PAYFEDID" Type="Text" Location="Payer's fed indentification" FieldID="IFDSNEC.11"/>
+					<FieldData FieldName="RECID" Type="Text" Location="Recipient's identification num" FieldID="IFDSNEC.12"/>
+					<FieldData FieldName="NONEMPC" Type="Float" Location="Nonemployee compensation" FieldID="IFDSNEC.15"/>
+					<FieldData FieldName="RECNAME" Type="Text" Location="Recipient's name" FieldID="IFDSNEC.17"/>
+					<FieldData FieldName="DIRECTSL" Type="Enum" Location="Direct sales" FieldID="IFDSNEC.14"/>
+					<FieldData FieldName="RECADDR" Type="Text" Location="Recipient's street address" FieldID="IFDSNEC.18"/>
+					<FieldData FieldName="RECCITY" Type="Text" Location="Recipient's city" FieldID="IFDSNEC.21"/>
+					<FieldData FieldName="RECSTATE" Type="Enum" Location="Recipient's state" FieldID="IFDSNEC.46"/>
+					<FieldData FieldName="RECZIP" Type="Text" Location="Recipient's ZIP" FieldID="IFDSNEC.47"/>
+					<FieldData FieldName="FEDWH" Type="Float" Location="Federal income tax withheld" FieldID="IFDSNEC.10"/>
+					<FieldData FieldName="FRNCNTRY" Type="Enum" Location="Foreign country" FieldID="IFDSNEC.50"/>
+					<FieldData FieldName="PROVCNTY" Type="Text" Location="Foreign province/county" FieldID="IFDSNEC.51"/>
+					<FieldData FieldName="ACCTNUM" Type="Text" Location="Account number" FieldID="IFDSNEC.22"/>
+					<FieldData FieldName="SECTIN" Type="Enum" Location="Second TIN notice" FieldID="IFDSNEC.23"/>
+					<FieldData FieldName="STTXWH1" Type="Float" Location="State income tax withheld 1" FieldID="IFDSNEC.26"/>
+					<FieldData FieldName="STNUM1" Type="Text" Location="State/Payer's state number 1" FieldID="IFDSNEC.27"/>
+					<FieldData FieldName="STINC1" Type="Float" Location="State income 1" FieldID="IFDSNEC.28"/>
+
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

@@ -1,0 +1,39 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Deductions\Student Loan Interest Statement (1098-E)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Student Loan Interest Statement">
+		<GridData ID="-47711" Description="Student Loan Interest Statement">
+			<Detail>
+				<WorkSheetSection Name="IRS 1098-E">
+					<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDSSINT.13"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDSSINT.14"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDSSINT.15"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City" FieldID="IFDSSINT.0"/>
+					<FieldData FieldName="RECNAME" Type="Text" Location="Recipient's name" FieldID="IFDSSINT.17"/>
+					<FieldData FieldName="RECADDR" Type="Text" Location="Recipient's address" FieldID="IFDSSINT.18"/>
+					<FieldData FieldName="RECCITY" Type="Text" Location="Recipient's city" FieldID="IFDSSINT.19"/>
+					<FieldData FieldName="RECSTATE" Type="Enum" Location="Recipient's state" FieldID="IFDSSINT.20"/>
+					<FieldData FieldName="RECZIP" Type="Text" Location="Recipient's ZIP code" FieldID="IFDSSINT.21"/>
+					<FieldData FieldName="RECPROV" Type="Text" Location="Recipient's Province" FieldID="IFDSSINT.32"/>
+					<FieldData FieldName="RECCNTY" Type="Enum" Location="Recipient's foreign country cd" FieldID="IFDSSINT.33"/>
+					<FieldData FieldName="RECPHONE" Type="Text" Location="Recipient's telephone number" FieldID="IFDSSINT.22"/>
+					<FieldData FieldName="RECID" Type="Text" Location="Recipient's federal ID" FieldID="IFDSSINT.23"/>
+					<FieldData FieldName="STDSSN" Type="Text" Location="Student's SSN" FieldID="IFDSSINT.24"/>
+					<FieldData FieldName="STUINT" Type="Float" Location="Student Loan Interest Received" FieldID="IFDSSINT.2"/>
+					<FieldData FieldName="STDNAME" Type="Text" Location="Student's first name" FieldID="IFDSSINT.25"/>
+					<FieldData FieldName="STDADDR" Type="Text" Location="Student's address" FieldID="IFDSSINT.26"/>
+					<FieldData FieldName="STDCITY" Type="Text" Location="Student's city" FieldID="IFDSSINT.27"/>
+					<FieldData FieldName="STDSTATE" Type="Enum" Location="Student's state" FieldID="IFDSSINT.28"/>
+					<FieldData FieldName="STDZIP" Type="Text" Location="Student's ZIP code" FieldID="IFDSSINT.29"/>
+					<FieldData FieldName="STPROV" Type="Text" Location="Student's province" FieldID="IFDSSINT.34"/>
+					<FieldData FieldName="STCNTY" Type="Enum" Location="Student's country" FieldID="IFDSSINT.35"/>
+					<FieldData FieldName="ACCNO" Type="Text" Location="Account Number" FieldID="IFDSSINT.9"/>
+					<FieldData FieldName="LOANX" Type="Enum" Location="Check if fees and cap int not" FieldID="IFDSSINT.4"/>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

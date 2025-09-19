@@ -1,0 +1,58 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Income\Other Income (1099-G, 1099-K, 1099-MISC, 1099-NEC, W-2G)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Gambling Winnings (IRS W-2G)">
+		<GridData ID="-47546" Description="Gambling Winnings (IRS W-2G)">
+			<Detail>
+				<WorkSheetSection Name="IRS W-2G">
+					<FieldData FieldName="TS" Type="Enum" Location="TS" FieldID="IFDSOIGW.2"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDSOIGW.3"/>
+					<FieldData FieldName="PAYERNAM" Type="Text" Location="Payer's name" FieldID="IFDSOIGW.0"/>
+					<FieldData FieldName="GRWINNGS" Type="Float" Location="Gross winnings" FieldID="IFDSOIGW.51"/>
+					<FieldData FieldName="DATEWON" Type="Date" Location="Date won" FieldID="IFDSOIGW.54"/>
+					<FieldData FieldName="STRADDRS" Type="Text" Location="Street address" FieldID="IFDSOIGW.1"/>
+					<FieldData FieldName="TYPEWAGR" Type="Text" Location="Type of wager" FieldID="IFDSOIGW.53"/>
+					<FieldData FieldName="FEDTAXWH" Type="Float" Location="Federal income tax withheld" FieldID="IFDSOIGW.52"/>
+					<FieldData FieldName="CITYNAME" Type="Text" Location="Name of city" FieldID="IFDSOIGW.18"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="Payer state" FieldID="IFDSOIGW.19"/>
+					<FieldData FieldName="ZIPCODE" Type="Text" Location="Zip code" FieldID="IFDSOIGW.20"/>
+					<FieldData FieldName="TRANSACT" Type="Text" Location="Transaction" FieldID="IFDSOIGW.55"/>
+					<FieldData FieldName="RACE" Type="Text" Location="Race" FieldID="IFDSOIGW.66"/>
+					<FieldData FieldName="PROVINCE" Type="Text" Location="Province or county" FieldID="IFDSOIGW.12"/>
+					<FieldData FieldName="FRNCNTRY" Type="Enum" Location="Payer's foreign country code" FieldID="IFDSOIGW.13"/>
+					<FieldData FieldName="WINIDENT" Type="Float" Location="Winnings from identical wagers" FieldID="IFDSOIGW.67"/>
+					<FieldData FieldName="CASHIER" Type="Text" Location="Cashier" FieldID="IFDSOIGW.68"/>
+					<FieldData FieldName="FEDIDNO" Type="Text" Location="Federal identification number" FieldID="IFDSOIGW.21"/>
+					<FieldData FieldName="TELEPHNO" Type="Text" Location="Telephone number" FieldID="IFDSOIGW.23"/>
+					<FieldData FieldName="WINERTIN" Type="Text" Location="Winner's taxpayer id number" FieldID="IFDSOIGW.8"/>
+					<FieldData FieldName="WINDOW" Type="Text" Location="Window" FieldID="IFDSOIGW.69"/>
+					<FieldData FieldName="WINRNAME" Type="Text" Location="Name of winner (if different)" FieldID="IFDSOIGW.36"/>
+					<FieldData FieldName="FIRSTID" Type="Text" Location="First ID" FieldID="IFDSOIGW.70"/>
+					<FieldData FieldName="SECONDID" Type="Text" Location="Second ID" FieldID="IFDSOIGW.81"/>
+					<FieldData FieldName="WINRADDR" Type="Text" Location="Address of winner (if diff)" FieldID="IFDSOIGW.37"/>
+					<FieldData FieldName="WINRCITY" Type="Text" Location="City of winner (if different)" FieldID="IFDSOIGW.42"/>
+					<FieldData FieldName="WINNERST" Type="Enum" Location="State of winner (if different)" FieldID="IFDSOIGW.43"/>
+					<FieldData FieldName="WINRZIPC" Type="Text" Location="Zip code of winner (if diff)" FieldID="IFDSOIGW.44"/>
+					<FieldData FieldName="WINPROV" Type="Text" Location="Winner's province or county" FieldID="IFDSOIGW.14"/>
+					<FieldData FieldName="WFRNCNTY" Type="Enum" Location="Winner's foreign country" FieldID="IFDSOIGW.15"/>
+					<GridData ID="C40287" Description="State and City Information">
+						<Fields>
+							<FieldHeader FieldName="ST" Type="Enum" Location="State" FieldID="IFDSOIGW.4"/>
+							<FieldHeader FieldName="EMPIDNO" Type="Text" Location="Payer's state ID number" FieldID="IFDSOIGW.5"/>
+							<FieldHeader FieldName="STWIN" Type="Float" Location="State winnings" FieldID="IFDSOIGW.10"/>
+							<FieldHeader FieldName="STATEWH" Type="Float" Location="State withholding" FieldID="IFDSOIGW.17"/>
+							<FieldHeader FieldName="CITYWIN" Type="Float" Location="Local winnings" FieldID="IFDSOIGW.22"/>
+							<FieldHeader FieldName="CITYWH" Type="Float" Location="Local withholding" FieldID="IFDSOIGW.24"/>
+							<FieldHeader FieldName="CITYCD" Type="Enum" Location="City code" FieldID="IFDSOIGW.32"/>
+							<FieldHeader FieldName="LOCALNM" Type="Text" Location="Locality name" FieldID="IFDSOIGW.26"/>
+							<FieldHeader FieldName="STATEUSE" Type="Float" Location="State Use" FieldID="IFDSOIGW.27"/>
+						</Fields>
+					</GridData>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

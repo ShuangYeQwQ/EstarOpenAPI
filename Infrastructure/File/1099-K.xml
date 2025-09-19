@@ -1,0 +1,66 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Income\Other Income (1099-G, 1099-K, 1099-MISC, 1099-NEC, W-2G)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Payment Card and Third Party Network Transactions (IRS 1099-K)">
+		<GridData ID="-47585" Description="Payment Card Transactions">
+			<Detail>
+				<WorkSheetSection Name="IRS 1099-K">
+					<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDS109K.0"/>
+					<FieldData FieldName="FS" Type="Enum" Location="Federal/state" FieldID="IFDS109K.1"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDS109K.2"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City code" FieldID="IFDS109K.3"/>
+					<FieldData FieldName="BUSINESS" Type="Text" Location="Business name" FieldID="IFDS109K.4"/>
+					<FieldData FieldName="FARM" Type="Text" Location="Farm name" FieldID="IFDS109K.5"/>
+					<FieldData FieldName="RENTROY" Type="Text" Location="Rent / royalty name" FieldID="IFDS109K.6"/>
+					<FieldData FieldName="PAYERSID" Type="Text" Location="Filer's TIN" FieldID="IFDS109K.7"/>
+					<FieldData FieldName="PAYERNAM" Type="Text" Location="Payer's name" FieldID="IFDS109K.8"/>
+					<FieldData FieldName="RECID" Type="Text" Location="Payee's TIN" FieldID="IFDS109K.14"/>
+					<FieldData FieldName="PAYERADD" Type="Text" Location="Payer's address" FieldID="IFDS109K.9"/>
+					<FieldData FieldName="PAYERCTY" Type="Text" Location="Payer's city" FieldID="IFDS109K.10"/>
+					<FieldData FieldName="PAYERST" Type="Enum" Location="Payer's state" FieldID="IFDS109K.11"/>
+					<FieldData FieldName="PAYERZIP" Type="Text" Location="Payer's ZIP code/postal code" FieldID="IFDS109K.12"/>
+					<FieldData FieldName="PAYRFC" Type="Enum" Location="Payer's foreign country" FieldID="IFDS109K.13"/>
+					<FieldData FieldName="PAYERPRO" Type="Text" Location="Payer's province" FieldID="IFDS109K.15"/>
+					<FieldData FieldName="PAYERPHN" Type="Text" Location="Payer's phone no" FieldID="IFDS109K.16"/>
+					<FieldData FieldName="PYMNTCRD" Type="Float" Location="Gross amt payment card/tpn" FieldID="IFDS109K.19"/>
+					<FieldData FieldName="PSE" Type="Enum" Location="payment settlement entity" FieldID="IFDS109K.17"/>
+					<FieldData FieldName="PAYCARD" Type="Enum" Location="Payment card" FieldID="IFDS109K.18"/>
+					<FieldData FieldName="NOCARD" Type="Float" Location="Card not present transactions" FieldID="IFDS109K.50"/>
+					<FieldData FieldName="MERCHCD" Type="Text" Location="Merchant category code" FieldID="IFDS109K.20"/>
+					<FieldData FieldName="EPF" Type="Enum" Location="EPF or other third party" FieldID="IFDS109K.22"/>
+					<FieldData FieldName="THRDPRTY" Type="Enum" Location="third party network" FieldID="IFDS109K.21"/>
+					<FieldData FieldName="NOPURCH" Type="Text" Location="Number of purchases" FieldID="IFDS109K.23"/>
+					<FieldData FieldName="BOX4" Type="Float" Location="Federal income tax withheld" FieldID="IFDS109K.24"/>
+					<FieldData FieldName="PAYEENM" Type="Text" Location="Payee name" FieldID="IFDS109K.25"/>
+					<FieldData FieldName="JANPYMT" Type="Float" Location="January payment" FieldID="IFDS109K.26"/>
+					<FieldData FieldName="FEBPYMT" Type="Float" Location="Feb payment" FieldID="IFDS109K.27"/>
+					<FieldData FieldName="PAYEEADD" Type="Text" Location="Payee's address" FieldID="IFDS109K.30"/>
+					<FieldData FieldName="MARCHPAY" Type="Float" Location="March payment" FieldID="IFDS109K.28"/>
+					<FieldData FieldName="APRPYMT" Type="Float" Location="April payment" FieldID="IFDS109K.29"/>
+					<FieldData FieldName="PAYEECTY" Type="Text" Location="Payee city" FieldID="IFDS109K.33"/>
+					<FieldData FieldName="PAYSTATE" Type="Enum" Location="Payee state" FieldID="IFDS109K.34"/>
+					<FieldData FieldName="PAYEZIP" Type="Text" Location="Payee ZIP code" FieldID="IFDS109K.35"/>
+					<FieldData FieldName="MAYPYMT" Type="Float" Location="May payment" FieldID="IFDS109K.31"/>
+					<FieldData FieldName="JUNEPYMT" Type="Float" Location="June payment" FieldID="IFDS109K.32"/>
+					<FieldData FieldName="PAYFC" Type="Enum" Location="Payee foreign country" FieldID="IFDS109K.38"/>
+					<FieldData FieldName="PAYEPROV" Type="Text" Location="Payee province" FieldID="IFDS109K.39"/>
+					<FieldData FieldName="JULYPYMT" Type="Float" Location="July payment" FieldID="IFDS109K.36"/>
+					<FieldData FieldName="AUGPYMNT" Type="Float" Location="August payment" FieldID="IFDS109K.37"/>
+					<FieldData FieldName="SEPTPYMT" Type="Float" Location="September payment" FieldID="IFDS109K.40"/>
+					<FieldData FieldName="OCTPYMNT" Type="Float" Location="October payment" FieldID="IFDS109K.41"/>
+					<FieldData FieldName="PSENAME" Type="Text" Location="PSE name and phone no" FieldID="IFDS109K.42"/>
+					<FieldData FieldName="NOVPYMNT" Type="Float" Location="November payment" FieldID="IFDS109K.43"/>
+					<FieldData FieldName="DECPYMNT" Type="Float" Location="December payment" FieldID="IFDS109K.44"/>
+					<FieldData FieldName="ACCNTNO" Type="Text" Location="Account no" FieldID="IFDS109K.45"/>
+					<FieldData FieldName="SECTIN" Type="Enum" Location="Second TIN Notice" FieldID="IFDS109K.51"/>
+					<FieldData FieldName="BOX6" Type="Float" Location="box 6" FieldID="IFDS109K.46"/>
+					<FieldData FieldName="BOX7" Type="Float" Location="box 7" FieldID="IFDS109K.47"/>
+					<FieldData FieldName="BOX8" Type="Float" Location="box 8" FieldID="IFDS109K.48"/>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

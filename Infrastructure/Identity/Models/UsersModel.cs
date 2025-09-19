@@ -173,6 +173,10 @@ namespace Infrastructure.Identity.Models
     public class UserServiceDetailModel {
         public Guid Id { get; private set; } = Guid.NewGuid(); // 直接初始化
         /// <summary>
+        /// 用户ID
+        /// </summary>
+        public string UId { get; set; }
+        /// <summary>
         /// 服务ID
         /// </summary>
         public string ServiceId { get; set; }
@@ -255,10 +259,6 @@ namespace Infrastructure.Identity.Models
         /// 用户服务详情id
         /// </summary>
         public Guid UserServiceDeatilId { get; set; }
-        /// <summary>
-        /// 服务计数(持续性)
-        /// </summary>
-        public string ServiceNumber { get; set; }
         /// <summary>
         /// 服务变量id
         /// </summary>

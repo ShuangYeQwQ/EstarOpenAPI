@@ -53,6 +53,65 @@ namespace Application.ResponseModel.ServicePage
         //服务状态
         public string status { get; set; }
     }
+
+    //用户服务详情
+    public class UserServiceDetail_res
+    {
+        /// <summary>
+        /// 服务名称
+        /// </summary>
+        public string ServiceName { get; set; }
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public string CreateTime { get; set; }
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public string Status { get; set; }
+        /// <summary>
+        /// 已支付金额
+        /// </summary>
+        public string PayAmount { get; set; }
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        public string Begindate { get; set; }
+        /// <summary>
+        /// 结束时间
+        /// </summary>
+        public string Enddate { get; set; }
+        /// <summary>
+        /// 员工id
+        /// </summary>
+        public string OrdinaryEmployees { get; set; }
+        /// <summary>
+        /// 员工id
+        /// </summary>
+        public string ExpertEmployees { get; set; }
+        /// <summary>
+        /// 员工id
+        /// </summary>
+        public string ProfessionalEmployees { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string OrdinaryEmployeesName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ExpertEmployeesName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ProfessionalEmployeesName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string taskId { get; set; }
+
+    }
+
     //首页服务未完成个数
     public class ServiceListCount_res
     {
@@ -64,7 +123,6 @@ namespace Application.ResponseModel.ServicePage
         public int serviceCount { get; set; }
 
     }
-
 
     public class ServiceDeatil_res
     {

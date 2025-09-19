@@ -1,0 +1,170 @@
+﻿<View>
+	<Identifier Hierarchy="Federal\Income\Wages, Salaries and Tips (W-2)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection Name="Wages and Salaries (IRS W-2)">
+		<GridData ID="-47009" Description="Wages and Salaries">
+			<Detail>
+				<!-- IRS 1095-A Section -->
+				<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDS109A.0"/>
+				<FieldData FieldName="CA3895" Type="Enum" Location="CA 3895" FieldID="IFDS109A.130"/>
+				<FieldData FieldName="SCHCENT" Type="Text" Location="Schedule C name" FieldID="IFDS109A.19"/>
+				<FieldData FieldName="SCHFENT" Type="Text" Location="Schedule F name" FieldID="IFDS109A.20"/>
+				<FieldData FieldName="PASSNAME" Type="Text" Location="Passthrough name" FieldID="IFDS109A.1"/>
+				<FieldData FieldName="MKTIDENT" Type="Enum" Location="Marketplace identifier" FieldID="IFDS109A.4"/>
+				<FieldData FieldName="POLICY" Type="Text" Location="Marketplace-assigned policy no" FieldID="IFDS109A.5"/>
+				<FieldData FieldName="POLNAME" Type="Text" Location="Policy issuer's name" FieldID="IFDS109A.6"/>
+				<FieldData FieldName="RECNAME" Type="Text" Location="Recipient's name" FieldID="IFDS109A.7"/>
+				<FieldData FieldName="RECSSN" Type="Text" Location="Recipient's SSN" FieldID="IFDS109A.8"/>
+				<FieldData FieldName="RECDOB" Type="Text" Location="Recipient's DOB" FieldID="IFDS109A.9"/>
+				<FieldData FieldName="SPNAME" Type="Text" Location="Recipient's spouse's name" FieldID="IFDS109A.10"/>
+				<FieldData FieldName="SPSSN" Type="Text" Location="Recipient's spouse's SSN" FieldID="IFDS109A.11"/>
+				<FieldData FieldName="SPDOB" Type="Text" Location="Recipient's spouse's DOB" FieldID="IFDS109A.12"/>
+				<FieldData FieldName="POLSTART" Type="Date" Location="Policy start date" FieldID="IFDS109A.13"/>
+				<FieldData FieldName="POLTERM" Type="Date" Location="Policy termination date" FieldID="IFDS109A.14"/>
+				<FieldData FieldName="STADDR" Type="Text" Location="Street address" FieldID="IFDS109A.15"/>
+				<FieldData FieldName="CITY" Type="Text" Location="City or town" FieldID="IFDS109A.16"/>
+				<FieldData FieldName="STATE" Type="Text" Location="State or province" FieldID="IFDS109A.17"/>
+				<FieldData FieldName="CNTYZIP" Type="Text" Location="Country and ZIP or postal code" FieldID="IFDS109A.18"/>
+
+				<!-- Monthly Premium Fields -->
+				<!-- January -->
+				<FieldData FieldName="JANA" Type="Float" Location="January premium" FieldID="IFDS109A.26"/>
+				<FieldData FieldName="JANB" Type="Float" Location="January SLCSP" FieldID="IFDS109A.27"/>
+				<FieldData FieldName="JANC" Type="Float" Location="January advance payment" FieldID="IFDS109A.28"/>
+				<FieldData FieldName="JANLAW" Type="Enum" Location="January not lawfully present" FieldID="IFDS109A.68"/>
+				<FieldData FieldName="JANREF" Type="Enum" Location="January reference month" FieldID="IFDS109A.69"/>
+				<FieldData FieldName="JANPCT" Type="Float" Location="January premium percent" FieldID="IFDS109A.93"/>
+				<FieldData FieldName="JANSLCSP" Type="Float" Location="January applicable SLCSP" FieldID="IFDS109A.94"/>
+				<FieldData FieldName="JANQSEHR" Type="Float" Location="Janaury QSEHRA" FieldID="IFDS109A.117"/>
+
+				<!-- February -->
+				<FieldData FieldName="FEBA" Type="Float" Location="February premium" FieldID="IFDS109A.29"/>
+				<FieldData FieldName="FEBB" Type="Float" Location="February SLCSP" FieldID="IFDS109A.30"/>
+				<FieldData FieldName="FEBC" Type="Float" Location="February advance payment" FieldID="IFDS109A.31"/>
+				<FieldData FieldName="FEBLAW" Type="Enum" Location="February not lawfully present" FieldID="IFDS109A.70"/>
+				<FieldData FieldName="FEBREF" Type="Enum" Location="February reference month" FieldID="IFDS109A.71"/>
+				<FieldData FieldName="FEBPCT" Type="Float" Location="February premium percent" FieldID="IFDS109A.95"/>
+				<FieldData FieldName="FEBSLCSP" Type="Float" Location="February applicable SLCSP" FieldID="IFDS109A.106"/>
+				<FieldData FieldName="FEBQSEHR" Type="Float" Location="February QSEHRA" FieldID="IFDS109A.118"/>
+
+				<!-- March -->
+				<FieldData FieldName="MARA" Type="Float" Location="March premium" FieldID="IFDS109A.32"/>
+				<FieldData FieldName="MARB" Type="Float" Location="March SLCSP" FieldID="IFDS109A.33"/>
+				<FieldData FieldName="MARC" Type="Float" Location="March advance payment" FieldID="IFDS109A.34"/>
+				<FieldData FieldName="MARLAW" Type="Enum" Location="March not lawfully present" FieldID="IFDS109A.72"/>
+				<FieldData FieldName="MARREF" Type="Enum" Location="March reference month" FieldID="IFDS109A.73"/>
+				<FieldData FieldName="MARPCT" Type="Float" Location="March premium percent" FieldID="IFDS109A.96"/>
+				<FieldData FieldName="MARSLCSP" Type="Float" Location="March applicable SLCSP" FieldID="IFDS109A.107"/>
+				<FieldData FieldName="MARQSEHR" Type="Float" Location="March QSEHRA" FieldID="IFDS109A.119"/>
+
+				<!-- April -->
+				<FieldData FieldName="APRA" Type="Float" Location="April premium" FieldID="IFDS109A.35"/>
+				<FieldData FieldName="APRB" Type="Float" Location="April SLCSP" FieldID="IFDS109A.36"/>
+				<FieldData FieldName="APRC" Type="Float" Location="April advance payment" FieldID="IFDS109A.37"/>
+				<FieldData FieldName="APRLAW" Type="Enum" Location="April not lawfully present" FieldID="IFDS109A.74"/>
+				<FieldData FieldName="APRREF" Type="Enum" Location="April reference month" FieldID="IFDS109A.75"/>
+				<FieldData FieldName="APRPCT" Type="Float" Location="April premium percent" FieldID="IFDS109A.97"/>
+				<FieldData FieldName="APRSLCSP" Type="Float" Location="April applicable SLCSP" FieldID="IFDS109A.108"/>
+				<FieldData FieldName="APRQSEHR" Type="Float" Location="April QSEHR" FieldID="IFDS109A.120"/>
+
+				<!-- May -->
+				<FieldData FieldName="MAYA" Type="Float" Location="May premium" FieldID="IFDS109A.38"/>
+				<FieldData FieldName="MAYB" Type="Float" Location="May SLCSP" FieldID="IFDS109A.39"/>
+				<FieldData FieldName="MAYC" Type="Float" Location="May advance payment" FieldID="IFDS109A.40"/>
+				<FieldData FieldName="MAYLAW" Type="Enum" Location="May not lawfully present" FieldID="IFDS109A.76"/>
+				<FieldData FieldName="MAYREF" Type="Enum" Location="May reference month" FieldID="IFDS109A.77"/>
+				<FieldData FieldName="MAYPCT" Type="Float" Location="May premium percent" FieldID="IFDS109A.98"/>
+				<FieldData FieldName="MAYSLCSP" Type="Float" Location="May applicable SLCSP" FieldID="IFDS109A.109"/>
+				<FieldData FieldName="MAYQSEHR" Type="Float" Location="May QSEHRA" FieldID="IFDS109A.121"/>
+
+				<!-- June -->
+				<FieldData FieldName="JUNA" Type="Float" Location="June premium" FieldID="IFDS109A.41"/>
+				<FieldData FieldName="JUNB" Type="Float" Location="June SLCSP" FieldID="IFDS109A.42"/>
+				<FieldData FieldName="JUNC" Type="Float" Location="June advance payment" FieldID="IFDS109A.43"/>
+				<FieldData FieldName="JUNLAW" Type="Enum" Location="June not lawfully present" FieldID="IFDS109A.78"/>
+				<FieldData FieldName="JUNREF" Type="Enum" Location="June reference month" FieldID="IFDS109A.79"/>
+				<FieldData FieldName="JUNPCT" Type="Float" Location="June premium percent" FieldID="IFDS109A.99"/>
+				<FieldData FieldName="JUNSLCSP" Type="Float" Location="June applicable SLCSP" FieldID="IFDS109A.110"/>
+				<FieldData FieldName="JUNQSEHR" Type="Float" Location="June QSEHRA" FieldID="IFDS109A.122"/>
+
+				<!-- July -->
+				<FieldData FieldName="JULA" Type="Float" Location="July premium" FieldID="IFDS109A.44"/>
+				<FieldData FieldName="JULB" Type="Float" Location="July SLCSP" FieldID="IFDS109A.45"/>
+				<FieldData FieldName="JULC" Type="Float" Location="July advance payment" FieldID="IFDS109A.46"/>
+				<FieldData FieldName="JULLAW" Type="Enum" Location="July not lawfully present" FieldID="IFDS109A.80"/>
+				<FieldData FieldName="JULREF" Type="Enum" Location="July reference month" FieldID="IFDS109A.81"/>
+				<FieldData FieldName="JULPCT" Type="Float" Location="July premium percent" FieldID="IFDS109A.100"/>
+				<FieldData FieldName="JULSLCSP" Type="Float" Location="July applicable SLCSP" FieldID="IFDS109A.111"/>
+				<FieldData FieldName="JULQSEHR" Type="Float" Location="July QSEHRA" FieldID="IFDS109A.123"/>
+
+				<!-- August -->
+				<FieldData FieldName="AUGA" Type="Float" Location="August premium" FieldID="IFDS109A.47"/>
+				<FieldData FieldName="AUGB" Type="Float" Location="August SLCSP" FieldID="IFDS109A.48"/>
+				<FieldData FieldName="AUGC" Type="Float" Location="August advance payment" FieldID="IFDS109A.49"/>
+				<FieldData FieldName="AUGLAW" Type="Enum" Location="August not lawfully present" FieldID="IFDS109A.82"/>
+				<FieldData FieldName="AUGREF" Type="Enum" Location="August reference month" FieldID="IFDS109A.83"/>
+				<FieldData FieldName="AUGPCT" Type="Float" Location="August premium percent" FieldID="IFDS109A.101"/>
+				<FieldData FieldName="AUGSLCSP" Type="Float" Location="August applicable SLCSP" FieldID="IFDS109A.112"/>
+				<FieldData FieldName="AUGQSEHR" Type="Float" Location="August QSEHRA" FieldID="IFDS109A.124"/>
+
+				<!-- September -->
+				<FieldData FieldName="SEPA" Type="Float" Location="September premium" FieldID="IFDS109A.50"/>
+				<FieldData FieldName="SEPB" Type="Float" Location="September SLCSP" FieldID="IFDS109A.51"/>
+				<FieldData FieldName="SEPC" Type="Float" Location="September advance payment" FieldID="IFDS109A.52"/>
+				<FieldData FieldName="SEPLAW" Type="Enum" Location="Septermber not lawfully presen" FieldID="IFDS109A.84"/>
+				<FieldData FieldName="SEPREF" Type="Enum" Location="September reference month" FieldID="IFDS109A.85"/>
+				<FieldData FieldName="SEPPCT" Type="Float" Location="September premium percent" FieldID="IFDS109A.102"/>
+				<FieldData FieldName="SEPSLCSP" Type="Float" Location="September applicable SLCSP" FieldID="IFDS109A.113"/>
+				<FieldData FieldName="SEPQSEHR" Type="Float" Location="September QSEHRA" FieldID="IFDS109A.125"/>
+
+				<!-- October -->
+				<FieldData FieldName="OCTA" Type="Float" Location="October premium" FieldID="IFDS109A.53"/>
+				<FieldData FieldName="OCTB" Type="Float" Location="October SLCSP" FieldID="IFDS109A.54"/>
+				<FieldData FieldName="OCTC" Type="Float" Location="October advance payment" FieldID="IFDS109A.55"/>
+				<FieldData FieldName="OCTLAW" Type="Enum" Location="October not lawfully present" FieldID="IFDS109A.86"/>
+				<FieldData FieldName="OCTREF" Type="Enum" Location="October reference month" FieldID="IFDS109A.87"/>
+				<FieldData FieldName="OCTPCT" Type="Float" Location="October premium percnet" FieldID="IFDS109A.103"/>
+				<FieldData FieldName="OCTSLCSP" Type="Float" Location="October applicable SLCSP" FieldID="IFDS109A.114"/>
+				<FieldData FieldName="OCTQSEHR" Type="Float" Location="October QSEHRA" FieldID="IFDS109A.126"/>
+
+				<!-- November -->
+				<FieldData FieldName="NOVA" Type="Float" Location="November premium" FieldID="IFDS109A.56"/>
+				<FieldData FieldName="NOVB" Type="Float" Location="November SLCSP" FieldID="IFDS109A.57"/>
+				<FieldData FieldName="NOVC" Type="Float" Location="November advance payment" FieldID="IFDS109A.58"/>
+				<FieldData FieldName="NOVLAW" Type="Enum" Location="November not lawfully present" FieldID="IFDS109A.88"/>
+				<FieldData FieldName="NOVREF" Type="Enum" Location="November reference month" FieldID="IFDS109A.89"/>
+				<FieldData FieldName="NOVPCT" Type="Float" Location="November premium percent" FieldID="IFDS109A.104"/>
+				<FieldData FieldName="NOVSLCSP" Type="Float" Location="November applicable SLCSP" FieldID="IFDS109A.115"/>
+				<FieldData FieldName="NOVQSEHR" Type="Float" Location="November QSEHRA" FieldID="IFDS109A.127"/>
+
+				<!-- December -->
+				<FieldData FieldName="DECA" Type="Float" Location="December premium" FieldID="IFDS109A.59"/>
+				<FieldData FieldName="DECB" Type="Float" Location="December SLCSP" FieldID="IFDS109A.60"/>
+				<FieldData FieldName="DECC" Type="Float" Location="December advance payment" FieldID="IFDS109A.61"/>
+				<FieldData FieldName="DECLAW" Type="Enum" Location="December not lawfully present" FieldID="IFDS109A.90"/>
+				<FieldData FieldName="DECREF" Type="Enum" Location="December reference month" FieldID="IFDS109A.91"/>
+				<FieldData FieldName="DECPCT" Type="Float" Location="December premium percent" FieldID="IFDS109A.105"/>
+				<FieldData FieldName="DECSLCSP" Type="Float" Location="December applicable SLCSP" FieldID="IFDS109A.116"/>
+				<FieldData FieldName="DECQSEHR" Type="Float" Location="December QSEHRA" FieldID="IFDS109A.128"/>
+
+				<!-- Annual Total Fields -->
+				<FieldData FieldName="TOTALA" Type="Float" Location="Annual total premium" FieldID="IFDS109A.62"/>
+				<FieldData FieldName="TOTALB" Type="Float" Location="Annual total SLCSP" FieldID="IFDS109A.63"/>
+				<FieldData FieldName="TOTALC" Type="Float" Location="Annual advance payment" FieldID="IFDS109A.64"/>
+				<FieldData FieldName="TOTQSEHR" Type="Float" Location="Annual total QSEHRA" FieldID="IFDS109A.129"/>
+
+				<!-- Coverage Household Grid Fields -->
+				<FieldData FieldName="TS" Type="Enum" Location="TS" FieldID="IFDS109A.3"/>
+				<FieldData FieldName="DEPNAME" Type="Text" Location="Dependent name" FieldID="IFDS109A.67"/>
+				<FieldData FieldName="COVNAME" Type="Text" Location="Covered Individual Name" FieldID="IFDS109A.2"/>
+				<FieldData FieldName="COVSSN" Type="Text" Location="Covered Individuals SSN" FieldID="IFDS109A.22"/>
+				<FieldData FieldName="COVDOB" Type="Text" Location="Covered Individual DOB" FieldID="IFDS109A.23"/>
+				<FieldData FieldName="COVSTART" Type="Text" Location="Covered Individual Start Date" FieldID="IFDS109A.24"/>
+				<FieldData FieldName="COVTERM" Type="Text" Location="Covered Individual Termination" FieldID="IFDS109A.25"/>
+
+</Detail>
+</GridData>
+</WorkSheetSection>
+</View>

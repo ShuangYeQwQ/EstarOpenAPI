@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Interfaces.Response.CCHTax
+namespace Infrastructure.Response.CCHTax
 {
     public class ELFReleaseReturnsResponse
     {
-        public bool HasError { get; set; }
-        public string ErrorMessage { get; set; } = string.Empty;
+        public string HasError { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

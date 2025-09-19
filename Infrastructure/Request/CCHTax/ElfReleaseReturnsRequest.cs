@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Request.CCHTax
 {
-    public class ElfReleaseReturnsRequest
+    public class ELFReleaseReturnsRequest
     {
         public string ReturnUnitKeyGuid { get; set; }  // 这里是 string
 

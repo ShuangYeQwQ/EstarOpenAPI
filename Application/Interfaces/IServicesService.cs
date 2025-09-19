@@ -35,10 +35,15 @@ namespace Application.Interfaces
         /// <returns></returns>
         Task<Response<string>> UpdateUserTaskStatusAsync(common_req<string> signup_req);
         /// <summary>
-        ///服务列表
+        ///用户服务列表
         /// </summary>
         /// <returns></returns>
-        Task<Response<UserServiceList_res>> GetServiceListAsync(common_req<UserService_req> signup_req);
+        Task<Response<UserServiceList_res>> GetUserServiceListAsync(common_req<UserService_req> signup_req);
+        /// <summary>
+        ///用户服务详情列表
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<UserServiceDetail_res>> GetUserServiceDetailAsync(common_req<string> signup_req);
         /// <summary>
         ///服务下变量列表
         /// </summary>

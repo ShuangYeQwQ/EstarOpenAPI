@@ -1,0 +1,47 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Deductions\Distributions From an HSA / MSA (1099-SA)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Distributions From an HSA or MSA (IRS 1099-SA)">
+		<GridData ID="-47712" Description="Distributions From HSA or MSA">
+			<Detail>
+				<WorkSheetSection Name="IRS 1099-SA">
+					<FieldData FieldName="TS" Type="Enum" Location="TS" FieldID="IFDSDIST.3"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDSDIST.6"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDSDIST.4"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City" FieldID="IFDSDIST.5"/>
+					<FieldData FieldName="8853NAME" Type="Text" Location="8853 name" FieldID="IFDSDIST.0"/>
+					<FieldData FieldName="ENTNUM" Type="Float" Location="Entity number" FieldID="IFDSDIST.1"/>
+					<FieldData FieldName="PAYNAME" Type="Text" Location="Payer's name" FieldID="IFDSDIST.2"/>
+					<FieldData FieldName="PAYADDR" Type="Text" Location="Payer's address" FieldID="IFDSDIST.8"/>
+					<FieldData FieldName="PAYCITY" Type="Text" Location="Payer's city" FieldID="IFDSDIST.9"/>
+					<FieldData FieldName="PAYSTATE" Type="Enum" Location="Payer's state" FieldID="IFDSDIST.12"/>
+					<FieldData FieldName="PAYZIP" Type="Text" Location="Payer's ZIP code" FieldID="IFDSDIST.19"/>
+					<FieldData FieldName="PAYPROV" Type="Text" Location="Payer's province or country" FieldID="IFDSDIST.11"/>
+					<FieldData FieldName="PAYCNTRY" Type="Enum" Location="Payer's country code" FieldID="IFDSDIST.13"/>
+					<FieldData FieldName="PAYPHONE" Type="Text" Location="Payer's phone number" FieldID="IFDSDIST.23"/>
+					<FieldData FieldName="PAYFID" Type="Text" Location="Payer's federal ID number" FieldID="IFDSDIST.30"/>
+					<FieldData FieldName="RECSSN" Type="Text" Location="Recipient's SSN" FieldID="IFDSDIST.31"/>
+					<FieldData FieldName="GRSDIST" Type="Float" Location="Gross distribution" FieldID="IFDSDIST.39"/>
+					<FieldData FieldName="EARNINGS" Type="Float" Location="Earnings on excess cont." FieldID="IFDSDIST.10"/>
+					<FieldData FieldName="RECNAME" Type="Text" Location="Recipient's name" FieldID="IFDSDIST.32"/>
+					<FieldData FieldName="DISTCD" Type="Text" Location="Distribution code" FieldID="IFDSDIST.7"/>
+					<FieldData FieldName="FMV" Type="Float" Location="FMV on date of death" FieldID="IFDSDIST.16"/>
+					<FieldData FieldName="RECADDR" Type="Text" Location="Recipient's address" FieldID="IFDSDIST.33"/>
+					<FieldData FieldName="RECCITY" Type="Text" Location="Recipient's city" FieldID="IFDSDIST.34"/>
+					<FieldData FieldName="RECSTATE" Type="Enum" Location="Recipient's state" FieldID="IFDSDIST.35"/>
+					<FieldData FieldName="RECZIP" Type="Text" Location="Recipient's ZIP code" FieldID="IFDSDIST.36"/>
+					<FieldData FieldName="HSA" Type="Enum" Location="HSA" FieldID="IFDSDIST.41"/>
+					<FieldData FieldName="ARCHER" Type="Enum" Location="Archer MSA" FieldID="IFDSDIST.42"/>
+					<FieldData FieldName="RECPROV" Type="Text" Location="Recipient's province or county" FieldID="IFDSDIST.14"/>
+					<FieldData FieldName="RECCNTRY" Type="Enum" Location="Recipient's foreign country cd" FieldID="IFDSDIST.15"/>
+					<FieldData FieldName="MA" Type="Enum" Location="MA MSA" FieldID="IFDSDIST.43"/>
+					<FieldData FieldName="ACCTNUMB" Type="Text" Location="Account number" FieldID="IFDSDIST.37"/>
+
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>

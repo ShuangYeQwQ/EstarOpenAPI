@@ -14,12 +14,14 @@ using Infrastructure.Identity.Models;
 using Infrastructure.Shared;
 using iText.Kernel.Geom;
 using iText.Layout.Element;
+using iText.StyledXmlParser.Jsoup.Select;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using Org.BouncyCastle.Crypto;
 using Stripe.Radar;
 using Stripe.V2;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -130,6 +132,10 @@ namespace Infrastructure.Identity.Services
             List<DbCommand> dbcom = new List<DbCommand>();
             try
             {
+                #region 客户购买的服务是否已有验证
+
+                #endregion
+
                 #region 将服务按服务模板点数/最近处理服务时间/最近处理服务状态/创建时间分配给员工，获取3个员工id，会计id
                 cmdText = @" WITH MinPoints AS (
     SELECT 
@@ -256,13 +262,13 @@ values(@Id,@Uid,@ServiceId,@Status,@Descs,@CreateTime,@FirstPayAmount,@TotalAmou
                 }
                 #endregion
 
-                #region 创建服务详情，订单详情
+                #region 创建服务详情，订单详情，服务任务
                 for (int i = 0; i < payItems.Count; i++)
                 {
                     var serviceid = payItems[i].Id;
                     var servicemoney = Pub.To<decimal>(payItems[i].Money);
                     var servicenum = payItems[i].Num;
-                    var servicetype = payItems[i].Type;
+                    var servicetype = payItems[i].Type;//0:基础服务   1: 服务变量  2:附加服务
                     if (payamount.Equals("0"))
                     {
                         servicemoney = 0;
@@ -271,6 +277,7 @@ values(@Id,@Uid,@ServiceId,@Status,@Descs,@CreateTime,@FirstPayAmount,@TotalAmou
                     {
                         //添加服务详情
                         UserServiceDetailModel userServiceDetailModel = new UserServiceDetailModel();
+                        userServiceDetailModel.UId = uid;
                         userServiceDetailModel.UserServiceId = userServiceModel.Id;
                         userServiceDetailModel.ServiceId = serviceid;
                         userServiceDetailModel.CreateTime = DateTime.Now;
@@ -288,10 +295,11 @@ values(@Id,@Uid,@ServiceId,@Status,@Descs,@CreateTime,@FirstPayAmount,@TotalAmou
                         userServiceDetailModel.ProfessionalEmployees = ProfessionalEmployees;
                         userServiceDetailModel.AccountingEmployees = AccountingEmployees;
                         userServiceDetailModel.Descs = "";
-                        sql = @" insert into User_ServiceDetail(Id,UserServiceId, ServiceId, CreateTime, TotalAmount, PayAmount, Begindate, Enddate, Status, BeginServiceDate, EndServiceDate, ServiceNumber, IsEnd, OrdinaryEmployees, ExpertEmployees, ProfessionalEmployees, AccountingEmployees, Descs) 
-values(@Id,@UserServiceId, @ServiceId, @CreateTime, @TotalAmount, @PayAmount, @Begindate, @Enddate, @Status, @BeginServiceDate, @EndServiceDate, @ServiceNumber, @IsEnd, @OrdinaryEmployees, @ExpertEmployees, @ProfessionalEmployees, @AccountingEmployees, @Descs) ";
+                        sql = @" insert into User_ServiceDetail(Id,Uid,UserServiceId, ServiceId, CreateTime, TotalAmount, PayAmount, Begindate, Enddate, Status, BeginServiceDate, EndServiceDate, ServiceNumber, IsEnd, OrdinaryEmployees, ExpertEmployees, ProfessionalEmployees, AccountingEmployees, Descs) 
+values(@Id,@Uid,@UserServiceId, @ServiceId, @CreateTime, @TotalAmount, @PayAmount, @Begindate, @Enddate, @Status, @BeginServiceDate, @EndServiceDate, @ServiceNumber, @IsEnd, @OrdinaryEmployees, @ExpertEmployees, @ProfessionalEmployees, @AccountingEmployees, @Descs) ";
                         cmd = new SqlCommand(sql);
                         cmd.Parameters.AddWithValue("@Id", userServiceDetailModel.Id);
+                        cmd.Parameters.AddWithValue("@Uid", userServiceDetailModel.UId);
                         cmd.Parameters.AddWithValue("@UserServiceId", userServiceDetailModel.UserServiceId);
                         cmd.Parameters.AddWithValue("@ServiceId", userServiceDetailModel.ServiceId);
                         cmd.Parameters.AddWithValue("@CreateTime", userServiceDetailModel.CreateTime);
@@ -329,16 +337,14 @@ values(@Id,@UserServiceId, @ServiceId, @CreateTime, @TotalAmount, @PayAmount, @B
                                 UserServiceItems userServiceItems = new UserServiceItems();
                                 userServiceItems.UserServiceDeatilId = userServiceDetailModel.Id;
                                 userServiceItems.ServiceItemId = filteredItems.Id;
-                                userServiceItems.ServiceNumber = "1";
                                 userServiceItems.UserServiceItemValue = filteredItems.Num;
                                 userServiceItems.UserServiceItemAmount = filteredItems.Money;
                                 userServiceItems.StaffServiceItemValue = "0";
                                 userServiceItems.StaffServiceItemAmount = "0";
-                                sql = @" insert into User_ServiceItems(UserServiceDeatilId, ServiceNumber, ServiceItemId, UserServiceItemValue, UserServiceItemAmount, StaffServiceItemValue, StaffServiceItemAmount) 
+                                sql = @" insert into User_ServiceItems(UserServiceDeatilId, ServiceItemId, UserServiceItemValue, UserServiceItemAmount, StaffServiceItemValue, StaffServiceItemAmount) 
                             values(@UserServiceDeatilId, @ServiceNumber, @ServiceItemId, @UserServiceItemValue, @UserServiceItemAmount, @StaffServiceItemValue, @StaffServiceItemAmount) ";
                                 cmd = new SqlCommand(sql);
                                 cmd.Parameters.AddWithValue("@UserServiceDeatilId", userServiceItems.UserServiceDeatilId);
-                                cmd.Parameters.AddWithValue("@ServiceNumber", userServiceItems.ServiceNumber);
                                 cmd.Parameters.AddWithValue("@ServiceItemId", userServiceItems.ServiceItemId);
                                 cmd.Parameters.AddWithValue("@UserServiceItemValue", userServiceItems.UserServiceItemValue);
                                 cmd.Parameters.AddWithValue("@UserServiceItemAmount", userServiceItems.UserServiceItemAmount);
@@ -364,9 +370,26 @@ values(@Id,@UserServiceId, @ServiceId, @CreateTime, @TotalAmount, @PayAmount, @B
                             cmd.Parameters.AddWithValue("@Amount", servicemoney);
                             dbcom.Add(cmd);
                         }
+                        sql = @" insert into user_task(Uid, UserServiceDetailId, CreateTime, UpdateTime, Sid, TaskTitle, TaskContent, Status, Type, SendType) 
+values(@Uid, @UserServiceDetailId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskContent, @Status, @Type, @SendType) ";
+                        cmd = new SqlCommand(sql);
+                        cmd.Parameters.AddWithValue("@Uid", userServiceDetailModel.UId);
+                        cmd.Parameters.AddWithValue("@UserServiceDetailId", userServiceDetailModel.Id);
+                        cmd.Parameters.AddWithValue("@Createtime", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@UpdateTime", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@Sid","");
+                        cmd.Parameters.AddWithValue("@TaskTitle", "服务处理");
+                        cmd.Parameters.AddWithValue("@TaskContent", "发送服务所需的文件或输入服务所需的内容");
+                        cmd.Parameters.AddWithValue("@Status", "0");
+                        cmd.Parameters.AddWithValue("@Type", "0");
+                        cmd.Parameters.AddWithValue("@SendType", "0");
+                        dbcom.Add(cmd);
+
                     }
                 }
                 #endregion
+                
+               
 
                 int num = GoogleSqlDBHelper.ExecuteNonQueryTransaction(dbcom, ref msg);
                 if (num <= 0)
@@ -517,7 +540,7 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
         {
 
             UserTaskDetail_res userDetailTask_Res = new UserTaskDetail_res();
-            string sqltxt = "  select ut.UserServiceDetailId, ut.CreateTime, ut.TaskTitle, ut.TaskContent, ut.Type,isnull(u.nickname,'') as sendUser,s.ServiceName,usd.Begindate from User_Task ut left join Users u on ut.Sid = u.Uid inner join User_ServiceDetail usd on ut.UserServiceDetailId = usd.Id inner join Services s on usd.ServiceId = s.Id where ut.uid = @Uid and ut.id = @Id  ";
+            string sqltxt = "  select ut.UserServiceDetailId, ut.CreateTime, ut.TaskTitle, ut.TaskContent, ut.Type,isnull(u.nickname,'系统发布') as sendUser,s.ServiceName,usd.Begindate from User_Task ut left join Users u on ut.Sid = u.Uid inner join User_ServiceDetail usd on ut.UserServiceDetailId = usd.Id inner join Services s on usd.ServiceId = s.Id where ut.uid = @Uid and ut.id = @Id  ";
             SqlCommand sqlCommand = new SqlCommand(sqltxt);
             sqlCommand.Parameters.AddWithValue("@Uid", signup_req.User);
             sqlCommand.Parameters.AddWithValue("@Id", signup_req.Actioninfo);
@@ -574,12 +597,12 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
 
         }
         /// <summary>
-        /// 服务列表
+        /// 用户服务列表
         /// </summary>
         /// <param name="signup_req"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<Response<UserServiceList_res>> GetServiceListAsync(common_req<UserService_req> signup_req)
+        public async Task<Response<UserServiceList_res>> GetUserServiceListAsync(common_req<UserService_req> signup_req)
         {
             string role = signup_req.Actioninfo.Role;
             UserServiceList_res serviceList_Res = new UserServiceList_res();
@@ -594,10 +617,15 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
             string serviceName = signup_req.Actioninfo.ServiceName;
             string status = signup_req.Actioninfo.Status;
             string wheretxt = "";
-            if (!status.Equals("-1"))
+            if (status.Equals("2"))
             {
-                wheretxt += " AND us.Status = '"+ status + "'";
+                wheretxt += " AND us.Status = '" + status + "'";
             }
+            if (!status.Equals("1"))
+            {
+                wheretxt += " AND us.Status != '10'";
+            }
+             
             if (!string.IsNullOrEmpty(serviceName))
             {
                 wheretxt += " AND  s.ServiceName like '%" + serviceName + "%' ";
@@ -609,35 +637,30 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
                 case "1":
                     break;
                 case "2":
-                    cmdText = string.Format(@"select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_Service us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
-where us.Status != '2' and 
-us.ID IN (select UserServiceId from User_ServiceDetail where OrdinaryEmployees = '{0}'  AND Status != '10' GROUP BY UserServiceId) ", signup_req.User);
-                    servicecountcmdText = string.Format(@"");
+                    //普通员工
+                    cmdText = string.Format(@" select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_ServiceDetail us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
+where 1 = 1 AND OrdinaryEmployees = '{0}' {3}
+ORDER BY us.CreateTime DESC
+OFFSET {1} ROWS 
+FETCH NEXT {2} ROWS ONLY ", signup_req.User, page, pageSize, wheretxt);
+                    servicecountcmdText = string.Format(@" select COUNT(*) AS TotalCount from User_ServiceDetail us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
+where 1 = 1 AND OrdinaryEmployees = '{0}' {1} ", signup_req.User, wheretxt);
                     break;
                 case "3":
-                    cmdText = string.Format(@"select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_Service us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
-where us.Status != '2' and 
-us.ID IN (select UserServiceId from User_ServiceDetail where ExpertEmployees = '{0}'  AND Status != '10' GROUP BY UserServiceId) ORDER BY us.CreateTime DESC ", signup_req.User);
-                    break;
+                     break;
                 case "4":
-                    cmdText = string.Format(@"select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_Service us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
-where us.Status != '2' and 
-us.ID IN (select UserServiceId from User_ServiceDetail where ProfessionalEmployees = '{0}'  AND Status != '10' GROUP BY UserServiceId) ORDER BY us.CreateTime DESC ", signup_req.User);
-                    break;
+                   break;
                 case "5":
-                    cmdText = string.Format(@"select us.id,s.ServiceName as serviceName,u.NickName as nickName,us.CreateTime as beginDate,us.Status as serviceStatus from User_Service us  inner join Services s on us.ServiceId = s.Id inner join Users u on us.Uid = u.Uid
-where us.Status != '2' and 
-us.ID IN (select UserServiceId from User_ServiceDetail where AccountingEmployees = '{0}'  AND Status != '10' GROUP BY UserServiceId) ORDER BY us.CreateTime DESC ", signup_req.User);
-                    break;
+                  break;
                 case "6":
-                  
+                  //普通用户
                     cmdText = string.Format(@" SELECT 
     us.id,
     s.ServiceName AS serviceName,
     u.NickName AS nickName,
     us.CreateTime AS beginDate,
     us.Status AS serviceStatus 
-FROM User_Service us
+FROM User_ServiceDetail us
 INNER JOIN Services s ON us.ServiceId = s.Id
 INNER JOIN Users u ON us.Uid = u.Uid
 WHERE 1 = 1 AND us.uid = '{0}' {3}
@@ -645,7 +668,7 @@ ORDER BY us.CreateTime DESC
 OFFSET {1} ROWS 
 FETCH NEXT {2} ROWS ONLY ", signup_req.User,page, pageSize, wheretxt);
                     servicecountcmdText = string.Format(@" SELECT COUNT(*) AS TotalCount
-FROM User_Service us
+FROM User_ServiceDetail us
 INNER JOIN Services s ON us.ServiceId = s.Id
 INNER JOIN Users u ON us.Uid = u.Uid
 WHERE us.uid = '{0}' {1} ", signup_req.User, wheretxt);
@@ -674,6 +697,59 @@ WHERE us.uid = '{0}' {1} ", signup_req.User, wheretxt);
             }
             return new Response<UserServiceList_res>(serviceList_Res, "");
         }
+
+
+        /// <summary>
+        /// 用户服务详情
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<Response<UserServiceDetail_res>> GetUserServiceDetailAsync(common_req<string> signup_req)
+        {
+
+//            WITH RankedData AS(
+//  SELECT *,
+//    ROW_NUMBER() OVER(
+//      PARTITION BY ServiceId
+//      ORDER BY ServiceNumber DESC
+//    ) AS rn
+//  FROM User_ServiceDetail
+//  WHERE UserServiceId = @UserServiceId
+//)
+//SELECT rd.UserServiceId, rd.ServiceId,rd.CreateTime,CASE rd.Status
+//    WHEN 10 THEN '已完成'
+//    ELSE '未完成'
+//  END AS Status,s.ServiceNameDesc as ServiceName
+//FROM RankedData rd
+//LEFT JOIN Services s ON rd.ServiceId = s.Id
+//WHERE rd.rn = 1
+//ORDER BY rd.ServiceNumber DESC 
+             UserServiceDetail_res userServiceDetail_Res = new  UserServiceDetail_res();
+            string cmdText = string.Format(@" SELECT s.ServiceName,us.CreateTime,
+CASE us.Status   WHEN 10 THEN '已完成'  WHEN 0 THEN '待处理' ELSE '审核中' END as Status
+,us.PayAmount,us.Begindate,us.Enddate,us.OrdinaryEmployees,us.ExpertEmployees,us.ProfessionalEmployees,
+isnull((select top 1 Name from Staff where uid = us.OrdinaryEmployees),'') as OrdinaryEmployeesName,
+isnull((select top 1 Name from Staff where uid = us.ExpertEmployees),'') as ExpertEmployeesName,
+isnull((select top 1 Name from Staff where uid = us.ProfessionalEmployees),'') as ProfessionalEmployeesName,
+isnull((select top 1 id from User_Task where UserServiceDetailId = us.id and Status = '0' and uid = @uid),'') as taskid
+FROM User_ServiceDetail us left join Services s on us.ServiceId = s.Id 
+WHERE us.Id = @UserServiceDetailId ");
+            SqlCommand sqlCommand = new SqlCommand(cmdText);
+            sqlCommand.Parameters.AddWithValue("@UserServiceDetailId", signup_req.Actioninfo);
+            sqlCommand.Parameters.AddWithValue("@uid", signup_req.User);
+            DataTable table = new DataTable();
+            GoogleSqlDBHelper.Fill(sqlCommand, table);
+            if (table != null && table.Rows.Count > 0)
+            {
+                userServiceDetail_Res = Pub.ToList<UserServiceDetail_res>(table).FirstOrDefault();
+                return new Response<UserServiceDetail_res>(userServiceDetail_Res,"");
+            }
+                return new Response<UserServiceDetail_res>("未找到数据");
+        }
+       
+       
+
         /// <summary>
         /// 服务下变量列表
         /// </summary>
@@ -914,7 +990,7 @@ where si.ServiceId = '{0}') ", id);
                     break;
                 case "8":
                     //新公司成立
-
+                    cmdText = string.Format(@" SELECT top 1 id,ServiceName,ServiceNameDesc,Amount,ServiceLevel1,ServiceLevel2,ServiceLevel3,Descs FROM Services s WHERE ServiceLevel1 = '2' AND  ServiceLevel2 = '1' AND ServiceLevel3 = '1' ");
                     break;
                 case "9":
                     //代发薪资
@@ -1005,6 +1081,7 @@ WHERE sal.ServiceId = '{0}'
                         serviceAdditional.Descs = table.Rows[i]["Descs"] + "";
                         serviceAdditional.AdditionalList = new List<ServiceDeatil_res>();
                         serviceAdditional.ServicePackage = new List<ServiceDeatil_res>();
+                        serviceAdditional.serviceItems = GetServiceItem(table.Rows[i]["id"] + "");
                         serviceDetail.AdditionalList.Add(serviceAdditional);
                     }
                 }

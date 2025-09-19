@@ -1,0 +1,21 @@
+﻿<Payload DataType="Tax" DataFormat="Standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<TaxReturn>
+		<ReturnHeader
+		  ClientID=""
+		  TaxYear=""
+		  ReturnType=""
+		  ReturnGroupName=""
+		  Country=""
+		  OfficeName = ""
+		 BusinessUnitName = ""
+		  ConfigurationSet=""
+		  ReturnVersion=""
+		  EINorSSN=""
+		  ControlNumber=""
+    />
+
+		<TaxPayerDetails NameLine1="" NameLine2="" />
+
+
+	</TaxReturn>
+</Payload>

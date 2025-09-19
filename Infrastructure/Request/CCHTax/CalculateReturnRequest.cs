@@ -11,8 +11,8 @@ namespace Infrastructure.Request.CCHTax
     [XmlRoot("TaxCalculateReturnOptions")]
     public class CalculateReturnRequest
     {
-        public string TaxReturnClientDataOptions { get; set; }
+        public List<string> ReturnId { get; set; }
 
-        public string TaxReturnCalcAuthorizationOptions { get; set; }
+        public string ConfigurationXml { get; set; }
     }
 }

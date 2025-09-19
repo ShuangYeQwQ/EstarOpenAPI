@@ -1,0 +1,113 @@
+﻿<View>
+	<Identifier Hierarchy="Federal\Income\Interest (1099-INT)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection Name="Interest (IRS 1099-INT)">
+		<GridData ID="-47010" Description="Interest">
+			<Detail>
+				<WorkSheetSection  Name="IRS 1099-INT">
+					<FieldData Location="IFDSINT.0" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.1" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.55" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.3" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.22" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.5" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.4" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.6" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.7" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.31" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.32" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.10" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.29" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.37" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.12" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.36" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.34" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.13" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.8" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.9" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.15" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.16" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.11" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.14" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.20" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.21" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.17" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.38" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.39" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.28" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.30" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.40" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.41" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.47" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.48" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.51" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.53" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.52" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.18" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.19" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.2" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.35" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.42" LocationType="FieldID" Value=""  />
+					<FieldData Location="IFDSINT.44" LocationType="FieldID" Value=""  />
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+	
+</View>
+
+
+<!--<WorkSheetSection ID="47010" SectionNumber="47010" Name="Interest (IRS 1099-INT)">
+	<GridData ID="-47010" Description="Interest">
+		<Detail>
+			<WorkSheetSection ID="IFDSINT" SectionNumber="40031" Name="IRS 1099-INT">
+				<FieldData Location="TSJ" LocationType="Description" Value="" FieldID="IFDSINT.0" />
+				<FieldData Location="FS" LocationType="Description" Value="" FieldID="IFDSINT.1" />
+				<FieldData Location="State" LocationType="Description" Value="" FieldID="IFDSINT.55" />
+				<FieldData Location="City" LocationType="Description" Value="" FieldID="IFDSINT.3" />
+				<FieldData Location="Prior year" LocationType="Description" Value="" FieldID="IFDSINT.22" />
+				<FieldData Location="Payer's name" LocationType="Description" Value="" FieldID="IFDSINT.5" />
+				<FieldData Location="Payer's RTN" LocationType="Description" Value="" FieldID="IFDSINT.4" />
+				<FieldData Location="Payer's street address" LocationType="Description" Value="" FieldID="IFDSINT.6" />
+				<FieldData Location="Payer's city" LocationType="Description" Value="" FieldID="IFDSINT.7" />
+				<FieldData Location="Payer's state" LocationType="Description" Value="" FieldID="IFDSINT.31" />
+				<FieldData Location="Payer's ZIP" LocationType="Description" Value="" FieldID="IFDSINT.32" />
+				<FieldData Location="Interest income not in box 3" LocationType="Description" Value="" FieldID="IFDSINT.10" />
+				<FieldData Location="Payer phone number" LocationType="Description" Value="" FieldID="IFDSINT.29" />
+				<FieldData Location="Foreign county/ province" LocationType="Description" Value="" FieldID="IFDSINT.37" />
+				<FieldData Location="Early withdrawal penalty" LocationType="Description" Value="" FieldID="IFDSINT.12" />
+				<FieldData Location="Foreign postal code" LocationType="Description" Value="" FieldID="IFDSINT.36" />
+				<FieldData Location="Foreign Country code" LocationType="Description" Value="" FieldID="IFDSINT.34" />
+				<FieldData Location="Interest on U.S. savings bonds" LocationType="Description" Value="" FieldID="IFDSINT.13" />
+				<FieldData Location="Payer's TIN" LocationType="Description" Value="" FieldID="IFDSINT.8" />
+				<FieldData Location="Recipient's TIN" LocationType="Description" Value="" FieldID="IFDSINT.9" />
+				<FieldData Location="Federal income tax withheld" LocationType="Description" Value="" FieldID="IFDSINT.15" />
+				<FieldData Location="Investment expenses" LocationType="Description" Value="" FieldID="IFDSINT.16" />
+				<FieldData Location="Recipient's name" LocationType="Description" Value="" FieldID="IFDSINT.11" />
+				<FieldData Location="Recipient's street address" LocationType="Description" Value="" FieldID="IFDSINT.14" />
+				<FieldData Location="Foreign tax paid" LocationType="Description" Value="" FieldID="IFDSINT.20" />
+				<FieldData Location="Forgn cntry or U.S. possession" LocationType="Description" Value="" FieldID="IFDSINT.21" />
+				<FieldData Location="Recipient's city" LocationType="Description" Value="" FieldID="IFDSINT.17" />
+				<FieldData Location="Recipient's state" LocationType="Description" Value="" FieldID="IFDSINT.38" />
+				<FieldData Location="Recipient's zip/postal code" LocationType="Description" Value="" FieldID="IFDSINT.39" />
+				<FieldData Location="Tax-exempt Interest" LocationType="Description" Value="" FieldID="IFDSINT.28" />
+				<FieldData Location="Specified private activity bon" LocationType="Description" Value="" FieldID="IFDSINT.30" />
+				<FieldData Location="Recipient's foreign cntry" LocationType="Description" Value="" FieldID="IFDSINT.40" />
+				<FieldData Location="Recipient's province" LocationType="Description" Value="" FieldID="IFDSINT.41" />
+				<FieldData Location="Market discount" LocationType="Description" Value="" FieldID="IFDSINT.47" />
+				<FieldData Location="Bond premium" LocationType="Description" Value="" FieldID="IFDSINT.48" />
+				<FieldData Location="FATCA filing requirement" LocationType="Description" Value="" FieldID="IFDSINT.51" />
+				<FieldData Location="Bond premium on Treas. oblig." LocationType="Description" Value="" FieldID="IFDSINT.53" />
+				<FieldData Location="Bond premium - tax-exempt bond" LocationType="Description" Value="" FieldID="IFDSINT.52" />
+				<FieldData Location="Account number" LocationType="Description" Value="" FieldID="IFDSINT.18" />
+				<FieldData Location="Second TIN notification" LocationType="Description" Value="" FieldID="IFDSINT.19" />
+				<FieldData Location="St" LocationType="Description" Value="" FieldID="IFDSINT.2" />
+				<FieldData Location="Cusip no." LocationType="Description" Value="" FieldID="IFDSINT.35" />
+				<FieldData Location="Payer's state ID number" LocationType="Description" Value="" FieldID="IFDSINT.42" />
+				<FieldData Location="State withholding" LocationType="Description" Value="" FieldID="IFDSINT.44" />
+			</WorkSheetSection>
+		</Detail>
+	</GridData>
+</WorkSheetSection>-->

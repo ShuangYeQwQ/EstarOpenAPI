@@ -15,8 +15,4 @@
     <ProjectReference Include="..\GoogleCloudModel\GoogleCloudModel.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ResponseModel\Task\" />
-  </ItemGroup>
-
 </Project>

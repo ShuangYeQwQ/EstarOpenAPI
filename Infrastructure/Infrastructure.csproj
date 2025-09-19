@@ -7,20 +7,45 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
-    <PackageReference Include="Google.Cloud.Firestore" Version="3.9.0" />
+    <PackageReference Include="Aspose.Slides.NET" Version="25.7.0" />
+    <PackageReference Include="DocX" Version="4.0.25105.5786" />
+    <PackageReference Include="EPPlus" Version="8.0.8" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.70.0" />
+    <PackageReference Include="Google.Cloud.Firestore" Version="3.10.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.13.0" />
+    <PackageReference Include="IronPdf" Version="2025.7.17" />
     <PackageReference Include="itext" Version="9.0.0" />
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PayPalServerSDK" Version="0.6.0" />
     <PackageReference Include="Stripe.net" Version="47.0.0" />
+    <PackageReference Include="System.IO" Version="4.3.0" />
+    <PackageReference Include="Tesseract" Version="5.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\EStarGoogleCloud\EStarGoogleCloud.csproj" />
     <ProjectReference Include="..\FireStoreModel\FireStoreModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CCH.Pfx.TPI.SDK.ServerSide.BatchProcessing">
+      <HintPath>..\EstarOpenAPI\lib\CCH.Pfx.TPI.SDK.ServerSide.BatchProcessing.dll</HintPath>
+    </Reference>
+    <Reference Include="CCH.Pfx.TPI.SDK.ServerSide.Common">
+      <HintPath>..\EstarOpenAPI\lib\CCH.Pfx.TPI.SDK.ServerSide.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="CCH.Pfx.TPI.SDK.ServerSide.Security">
+      <HintPath>..\EstarOpenAPI\lib\CCH.Pfx.TPI.SDK.ServerSide.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="CCH.Pfx.TPI.SDK.ServerSide.TaxDataProcessing">
+      <HintPath>..\EstarOpenAPI\lib\CCH.Pfx.TPI.SDK.ServerSide.TaxDataProcessing.dll</HintPath>
+    </Reference>
+    <Reference Include="CCH.Pfx.TPI.SDK.ServerSide.TaxTransfer">
+      <HintPath>..\EstarOpenAPI\lib\CCH.Pfx.TPI.SDK.ServerSide.TaxTransfer.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

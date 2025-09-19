@@ -1,0 +1,266 @@
+﻿<View>
+	<Identifier Hierarchy="Federal\Income\Dividends (1099-DIV)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection ID="IFDSDIV" SectionNumber="40026" Name="IRS 1099-DIV">
+		<FieldData Location="IFDSDIV.0" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.1" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.50" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.3" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.27" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.5" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.6" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.4" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.7" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.32" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.34" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.12" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.35" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.33" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.36" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.37" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.8" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.13" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.15" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.9" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.10" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.11" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.52" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.53" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.14" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.16" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.18" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.17" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.51" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.19" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.20" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.38" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.39" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.21" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.22" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.40" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.41" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.25" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.26" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.48" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.42" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.43" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.2" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.23" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.24" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.44" LocationType="FieldID" Value=""  />
+		<FieldData Location="IFDSDIV.45" LocationType="FieldID" Value=""  />
+	</WorkSheetSection>
+
+</View>
+
+
+
+
+<!--<WorkSheetSection ID="IFDSDIV" SectionNumber="40026" Name="IRS 1099-DIV">
+	<FieldData Location="TSJ" LocationType="Description" Value="" FieldID="IFDSDIV.0" />
+	<FieldData Location="FS" LocationType="Description" Value="" FieldID="IFDSDIV.1" />
+	<FieldData Location="ST" LocationType="Description" Value="" FieldID="IFDSDIV.50" />
+	<FieldData Location="City" LocationType="Description" Value="" FieldID="IFDSDIV.3" />
+	<FieldData Location="Ordinary dividends - PY" LocationType="Description" Value="" FieldID="IFDSDIV.27" />
+	<FieldData Location="Payer's name" LocationType="Description" Value="" FieldID="IFDSDIV.5" />
+	<FieldData Location="Payer's address" LocationType="Description" Value="" FieldID="IFDSDIV.6" />
+	<FieldData Location="Ordinary dividends" LocationType="Description" Value="" FieldID="IFDSDIV.4" />
+	<FieldData Location="Payer's city" LocationType="Description" Value="" FieldID="IFDSDIV.7" />
+	<FieldData Location="Payer's state" LocationType="Description" Value="" FieldID="IFDSDIV.32" />
+	<FieldData Location="Payer's zip" LocationType="Description" Value="" FieldID="IFDSDIV.34" />
+	<FieldData Location="Payer's phone number" LocationType="Description" Value="" FieldID="IFDSDIV.12" />
+	<FieldData Location="Foreign county/ province" LocationType="Description" Value="" FieldID="IFDSDIV.35" />
+	<FieldData Location="Qualified dividends" LocationType="Description" Value="" FieldID="IFDSDIV.33" />
+	<FieldData Location="Foreign postal code" LocationType="Description" Value="" FieldID="IFDSDIV.36" />
+	<FieldData Location="foreign country code" LocationType="Description" Value="" FieldID="IFDSDIV.37" />
+	<FieldData Location="Total capital gain distr" LocationType="Description" Value="" FieldID="IFDSDIV.8" />
+	<FieldData Location="Unrecaptured Sec 1250 gain" LocationType="Description" Value="" FieldID="IFDSDIV.13" />
+	<FieldData Location="Section 1202 gain" LocationType="Description" Value="" FieldID="IFDSDIV.15" />
+	<FieldData Location="28% rate gain" LocationType="Description" Value="" FieldID="IFDSDIV.9" />
+	<FieldData Location="Payer's Federal identification" LocationType="Description" Value="" FieldID="IFDSDIV.10" />
+	<FieldData Location="Recipient's identification num" LocationType="Description" Value="" FieldID="IFDSDIV.11" />
+	<FieldData Location="Section 897 ordinary dividends" LocationType="Description" Value="" FieldID="IFDSDIV.52" />
+	<FieldData Location="Section 897 capital gain" LocationType="Description" Value="" FieldID="IFDSDIV.53" />
+	<FieldData Location="Recipient's name" LocationType="Description" Value="" FieldID="IFDSDIV.14" />
+	<FieldData Location="Nontaxable distributions" LocationType="Description" Value="" FieldID="IFDSDIV.16" />
+	<FieldData Location="Federal income tax withheld" LocationType="Description" Value="" FieldID="IFDSDIV.18" />
+	<FieldData Location="Recipient's street address" LocationType="Description" Value="" FieldID="IFDSDIV.17" />
+	<FieldData Location="Section 199A dividends" LocationType="Description" Value="" FieldID="IFDSDIV.51" />
+	<FieldData Location="Investment expenses" LocationType="Description" Value="" FieldID="IFDSDIV.19" />
+	<FieldData Location="Recipient's city" LocationType="Description" Value="" FieldID="IFDSDIV.20" />
+	<FieldData Location="Recipient's state" LocationType="Description" Value="" FieldID="IFDSDIV.38" />
+	<FieldData Location="Recipient's zip/postal code" LocationType="Description" Value="" FieldID="IFDSDIV.39" />
+	<FieldData Location="Foreign tax paid" LocationType="Description" Value="" FieldID="IFDSDIV.21" />
+	<FieldData Location="Forgn country or US possession" LocationType="Description" Value="" FieldID="IFDSDIV.22" />
+	<FieldData Location="Recipient's foreign country" LocationType="Description" Value="" FieldID="IFDSDIV.40" />
+	<FieldData Location="Recipient's foreign province" LocationType="Description" Value="" FieldID="IFDSDIV.41" />
+	<FieldData Location="Cash liquidation distr" LocationType="Description" Value="" FieldID="IFDSDIV.25" />
+	<FieldData Location="Noncash liquidation distr" LocationType="Description" Value="" FieldID="IFDSDIV.26" />
+	<FieldData Location="FATCA filing requirement" LocationType="Description" Value="" FieldID="IFDSDIV.48" />
+	<FieldData Location="Exempt-interest div" LocationType="Description" Value="" FieldID="IFDSDIV.42" />
+	<FieldData Location="Private activity bonds - Div" LocationType="Description" Value="" FieldID="IFDSDIV.43" />
+	<FieldData Location="State" LocationType="Description" Value="" FieldID="IFDSDIV.2" />
+	<FieldData Location="Account number" LocationType="Description" Value="" FieldID="IFDSDIV.23" />
+	<FieldData Location="2nd TIN not." LocationType="Description" Value="" FieldID="IFDSDIV.24" />
+	<FieldData Location="Payer's state I.D. number" LocationType="Description" Value="" FieldID="IFDSDIV.44" />
+	<FieldData Location="State withholding" LocationType="Description" Value="" FieldID="IFDSDIV.45" />
+</WorkSheetSection>-->
+
+
+<!--<View xsi:type="Worksheet">
+	<Identifier Hierarchy="Federal\Income\Dividends (1099-DIV)" ID="47492" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection ID="47024" SectionNumber="47024" Name="Dividends (IRS 1099-DIV)">
+		<GridData ID="-47024" Description="Dividends">
+			<Detail>
+				<WorkSheetSection ID="IFDSDIV" SectionNumber="40026" Name="IRS 1099-DIV">
+					<FieldData Location="TSJ" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="1" FieldName="TSJ" FieldID="IFDSDIV.0" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="FS" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="1" FieldName="FS" FieldID="IFDSDIV.1" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="ST" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="2" FieldName="ST" FieldID="IFDSDIV.50" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="City" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="6" FieldName="CITY" FieldID="IFDSDIV.3" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="Ordinary dividends - PY" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="true" Length="14" FieldName="ORDDIVPY" FieldID="IFDSDIV.27" />
+					</FieldData>
+					<FieldData Location="Payer's name" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="75" FieldName="PAYNAME" FieldID="IFDSDIV.5" />
+					</FieldData>
+					<FieldData Location="Payer's address" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="35" FieldName="PAYADDR" FieldID="IFDSDIV.6" />
+					</FieldData>
+					<FieldData Location="Ordinary dividends" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="ORDDIV" FieldID="IFDSDIV.4" />
+					</FieldData>
+					<FieldData Location="Payer's city" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="35" FieldName="PAYCSZ" FieldID="IFDSDIV.7" />
+					</FieldData>
+					<FieldData Location="Payer's state" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="2" FieldName="PAYRST" FieldID="IFDSDIV.32" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="Payer's zip" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="10" FieldName="PAYRZIP" FieldID="IFDSDIV.34" />
+					</FieldData>
+					<FieldData Location="Payer's phone number" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="PAYPHONE" FieldID="IFDSDIV.12" />
+					</FieldData>
+					<FieldData Location="Foreign county/ province" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="17" FieldName="CNTRYPRV" FieldID="IFDSDIV.35" />
+					</FieldData>
+					<FieldData Location="Qualified dividends" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="QUALDIV" FieldID="IFDSDIV.33" />
+					</FieldData>
+					<FieldData Location="Foreign postal code" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="16" FieldName="POSTALCD" FieldID="IFDSDIV.36" />
+					</FieldData>
+					<FieldData Location="foreign country code" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="2" FieldName="FRNCNTYC" FieldID="IFDSDIV.37" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="Total capital gain distr" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="TOTCAPGN" FieldID="IFDSDIV.8" />
+					</FieldData>
+					<FieldData Location="Unrecaptured Sec 1250 gain" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="SEC1250" FieldID="IFDSDIV.13" />
+					</FieldData>
+					<FieldData Location="Section 1202 gain" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="SEC1202" FieldID="IFDSDIV.15" />
+					</FieldData>
+					<FieldData Location="28% rate gain" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="28RATE" FieldID="IFDSDIV.9" />
+					</FieldData>
+					<FieldData Location="Payer's Federal identification" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="11" FieldName="PAYERID" FieldID="IFDSDIV.10" />
+					</FieldData>
+					<FieldData Location="Recipient's identification num" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="11" Format="NNN-NN-NNNN" FieldName="RECIDNO" FieldID="IFDSDIV.11" />
+					</FieldData>
+					<FieldData Location="Section 897 ordinary dividends" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="897DIV" FieldID="IFDSDIV.52" />
+					</FieldData>
+					<FieldData Location="Section 897 capital gain" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="897CAPGN" FieldID="IFDSDIV.53" />
+					</FieldData>
+					<FieldData Location="Recipient's name" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="35" FieldName="RECNAME" FieldID="IFDSDIV.14" />
+					</FieldData>
+					<FieldData Location="Nontaxable distributions" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="NONTAXD" FieldID="IFDSDIV.16" />
+					</FieldData>
+					<FieldData Location="Federal income tax withheld" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="FEDWH" FieldID="IFDSDIV.18" />
+					</FieldData>
+					<FieldData Location="Recipient's street address" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="35" FieldName="RECADDR" FieldID="IFDSDIV.17" />
+					</FieldData>
+					<FieldData Location="Section 199A dividends" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="S199ADIV" FieldID="IFDSDIV.51" />
+					</FieldData>
+					<FieldData Location="Investment expenses" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="INVESTEX" FieldID="IFDSDIV.19" />
+					</FieldData>
+					<FieldData Location="Recipient's city" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="35" FieldName="RECCSZ" FieldID="IFDSDIV.20" />
+					</FieldData>
+					<FieldData Location="Recipient's state" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="2" FieldName="RECST" FieldID="IFDSDIV.38" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="Recipient's zip/postal code" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="16" FieldName="RECZIPP" FieldID="IFDSDIV.39" />
+					</FieldData>
+					<FieldData Location="Foreign tax paid" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="FRNTAXPD" FieldID="IFDSDIV.21" />
+					</FieldData>
+					<FieldData Location="Forgn country or US possession" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="22" FieldName="FRNCNTRY" FieldID="IFDSDIV.22" />
+					</FieldData>
+					<FieldData Location="Recipient's foreign country" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="2" FieldName="RECFC" FieldID="IFDSDIV.40" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="Recipient's foreign province" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="17" FieldName="RECPROV" FieldID="IFDSDIV.41" />
+					</FieldData>
+					<FieldData Location="Cash liquidation distr" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="CASHLIQ" FieldID="IFDSDIV.25" />
+					</FieldData>
+					<FieldData Location="Noncash liquidation distr" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="NONCASH" FieldID="IFDSDIV.26" />
+					</FieldData>
+					<FieldData Location="FATCA filing requirement" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="1" FieldName="FATCA" FieldID="IFDSDIV.48" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="Exempt-interest div" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="TEDIV" FieldID="IFDSDIV.42" />
+					</FieldData>
+					<FieldData Location="Private activity bonds - Div" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="PBDIV" FieldID="IFDSDIV.43" />
+					</FieldData>
+					<FieldData Location="State" LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="2" FieldName="STATE" FieldID="IFDSDIV.2" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="Account number" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="29" FieldName="ACCTNUM" FieldID="IFDSDIV.23" />
+					</FieldData>
+					<FieldData Location="2nd TIN not." LocationType="Description" Value="">
+						<FieldMeta Type="Enum" IsMandatory="false" IsReadOnly="false" Length="1" FieldName="2NDTIN" FieldID="IFDSDIV.24" UsesEnumDescription="false" />
+					</FieldData>
+					<FieldData Location="Payer's state I.D. number" LocationType="Description" Value="">
+						<FieldMeta Type="Text" IsMandatory="false" IsReadOnly="false" Length="20" FieldName="STID" FieldID="IFDSDIV.44" />
+					</FieldData>
+					<FieldData Location="State withholding" LocationType="Description" Value="">
+						<FieldMeta Type="Float" IsMandatory="false" IsReadOnly="false" Length="14" FieldName="STWH" FieldID="IFDSDIV.45" />
+					</FieldData>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>-->

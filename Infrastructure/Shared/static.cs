@@ -531,7 +531,7 @@ namespace Infrastructure.Shared
                 // 使用 PdfReader 读取 PDF 模板
                 using (PdfReader reader = new PdfReader(templatePath))
                 using (PdfWriter writer = new PdfWriter(pathname))
-                using (PdfDocument pdfDoc = new PdfDocument(reader, writer))
+                using (iText.Kernel.Pdf.PdfDocument pdfDoc = new iText.Kernel.Pdf.PdfDocument(reader, writer))
                 {
                     // 获取 PDF 表单
                     PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
@@ -599,7 +599,7 @@ namespace Infrastructure.Shared
                 //}
                 // 打开PDF文档
                 using (PdfReader reader = new PdfReader(templatePath))
-                using (PdfDocument pdf = new PdfDocument(reader))
+                using (iText.Kernel.Pdf.PdfDocument pdf = new iText.Kernel.Pdf.PdfDocument(reader))
                 {
                     PdfAcroForm form = PdfAcroForm.GetAcroForm(pdf, false);
 

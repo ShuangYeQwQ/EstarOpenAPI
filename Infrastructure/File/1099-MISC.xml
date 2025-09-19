@@ -1,0 +1,65 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Income\Other Income (1099-G, 1099-K, 1099-MISC, 1099-NEC, W-2G)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Miscellaneous Information (IRS 1099-MISC)">
+		<GridData ID="-47329" Description="Miscellaneous Information">
+			<Detail>
+				<WorkSheetSection Name="IRS 1099-MISC (Other Income)">
+					<FieldData FieldName="TSJ" Type="Enum" Location="TSJ" FieldID="IFDSMISC.0"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDSMISC.1"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDSMISC.2"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City" FieldID="IFDSMISC.3"/>
+					<FieldData FieldName="OTHINCPY" Type="Text" Location="Other income - PY" FieldID="IFDSMISC.32"/>
+					<FieldData FieldName="BUSINESS" Type="Text" Location="Business name" FieldID="IFDSMISC.41"/>
+					<FieldData FieldName="FARM" Type="Text" Location="Farm name" FieldID="IFDSMISC.42"/>
+					<FieldData FieldName="RENTROY" Type="Text" Location="Rent/Royalty name" FieldID="IFDSMISC.43"/>
+					<FieldData FieldName="NOMISC" Type="Enum" Location="No 1099-MISC received" FieldID="IFDSMISC.54"/>
+					<FieldData FieldName="RENTS" Type="Float" Location="Rents" FieldID="IFDSMISC.4"/>
+					<FieldData FieldName="PAYNAME" Type="Text" Location="Payer's name" FieldID="IFDSMISC.5"/>
+					<FieldData FieldName="ROYALTY" Type="Float" Location="Royalties" FieldID="IFDSMISC.6"/>
+					<FieldData FieldName="PAYADDR" Type="Text" Location="Payer's street address" FieldID="IFDSMISC.7"/>
+					<FieldData FieldName="PAYCITY" Type="Text" Location="Payer's city" FieldID="IFDSMISC.8"/>
+					<FieldData FieldName="PAYSTATE" Type="Enum" Location="Payer's state" FieldID="IFDSMISC.44"/>
+					<FieldData FieldName="PAYZIP" Type="Text" Location="Payer's ZIP" FieldID="IFDSMISC.45"/>
+					<FieldData FieldName="PAYFC" Type="Enum" Location="Payer's foreign country" FieldID="IFDSMISC.48"/>
+					<FieldData FieldName="PAYPROV" Type="Text" Location="Payer's province or county" FieldID="IFDSMISC.49"/>
+					<FieldData FieldName="PAYPHONE" Type="Text" Location="Payer phone number" FieldID="IFDSMISC.35"/>
+					<FieldData FieldName="OTHINC" Type="Float" Location="Other income" FieldID="IFDSMISC.9"/>
+					<FieldData FieldName="FEDWH" Type="Float" Location="Federal income tax withheld" FieldID="IFDSMISC.10"/>
+					<FieldData FieldName="FISHPROC" Type="Float" Location="Fishing boat proceeds" FieldID="IFDSMISC.13"/>
+					<FieldData FieldName="1MEDPMTS" Type="Float" Location="Medical &amp; health care payments" FieldID="IFDSMISC.14"/>
+					<FieldData FieldName="PAYFEDID" Type="Text" Location="Payer's fed indentification" FieldID="IFDSMISC.11"/>
+					<FieldData FieldName="RECID" Type="Text" Location="Recipient's identification num" FieldID="IFDSMISC.12"/>
+					<FieldData FieldName="RECNAME" Type="Text" Location="Recipient's name" FieldID="IFDSMISC.17"/>
+					<FieldData FieldName="DIRSALE" Type="Enum" Location="Payer made direct sales" FieldID="IFDSMISC.19"/>
+					<FieldData FieldName="SUBPMTS" Type="Float" Location="Substitute payments" FieldID="IFDSMISC.16"/>
+					<FieldData FieldName="RECADDR" Type="Text" Location="Recipient's street address" FieldID="IFDSMISC.18"/>
+					<FieldData FieldName="RECCITY" Type="Text" Location="Recipient's city" FieldID="IFDSMISC.21"/>
+					<FieldData FieldName="RECSTATE" Type="Enum" Location="Recipient's state" FieldID="IFDSMISC.46"/>
+					<FieldData FieldName="RECZIP" Type="Text" Location="Recipient's ZIP" FieldID="IFDSMISC.47"/>
+					<FieldData FieldName="CROPINS" Type="Float" Location="Crop insurance proceeds" FieldID="IFDSMISC.20"/>
+					<FieldData FieldName="PD2ATTY" Type="Float" Location="Gross proceeds paid to attrny" FieldID="IFDSMISC.25"/>
+					<FieldData FieldName="FRNCNTRY" Type="Enum" Location="Foreign country" FieldID="IFDSMISC.50"/>
+					<FieldData FieldName="FISH" Type="Float" Location="Fish purchased for resale" FieldID="IFDSMISC.15"/>
+					<FieldData FieldName="409ADEF" Type="Float" Location="Section 409A deferrals" FieldID="IFDSMISC.36"/>
+					<FieldData FieldName="PROVCNTY" Type="Text" Location="Foreign province/county" FieldID="IFDSMISC.51"/>
+					<FieldData FieldName="ACCTNUM" Type="Text" Location="Account number" FieldID="IFDSMISC.22"/>
+					<FieldData FieldName="FATCA" Type="Enum" Location="FATCA filing requirement" FieldID="IFDSMISC.53"/>
+					<FieldData FieldName="SECTIN" Type="Enum" Location="Second TIN notice" FieldID="IFDSMISC.23"/>
+					<FieldData FieldName="EXCESSGP" Type="Float" Location="Excess golden parachute paymts" FieldID="IFDSMISC.24"/>
+					<FieldData FieldName="409AINC" Type="Float" Location="Section 409A income" FieldID="IFDSMISC.37"/>
+					<FieldData FieldName="STTXWH1" Type="Float" Location="State income tax withheld 1" FieldID="IFDSMISC.26"/>
+					<FieldData FieldName="STNUM1" Type="Text" Location="State/Payer's state number 1" FieldID="IFDSMISC.27"/>
+					<FieldData FieldName="STINC1" Type="Float" Location="State income 1" FieldID="IFDSMISC.28"/>
+					<FieldData FieldName="STTXWH2" Type="Float" Location="State income tax w/h 2" FieldID="IFDSMISC.29"/>
+					<FieldData FieldName="STNUM2" Type="Text" Location="State/Payer's state number 2" FieldID="IFDSMISC.30"/>
+					<FieldData FieldName="STINC2" Type="Float" Location="State income 2" FieldID="IFDSMISC.31"/>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>
+

@@ -12,6 +12,7 @@ using Infrastructure.Shared;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using System.Data;
+using System.Management;
 using System.Text;
 using static Application.ResponseModel.AccountPage.UserInformation_res;
 using DateTime = System.DateTime;
@@ -81,10 +82,6 @@ END";
             }
             return num;
         }
-
-       
-
-       
 
         /// <summary>
         /// 添加用户银行账号信息
@@ -574,7 +571,7 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
             UserInformation_res userInformation_Res = new UserInformation_res();
             userInformation_Res.UserPersonInformation = new UserPersonInformationResponse();
             userInformation_Res.UserCompanyInformation = new UserCompanyInformationResponse();
-            cmdText = @" select nickname as name,BirthDate as birthday,Gender as sex,email,Mobilephone as phone,address,PostalCode as zipcode,Socialsecuritynumber,domain from users where uid = '" + uid + "' ";
+            cmdText = @" select nickname as name,BirthDate as birthday,Gender as sex,email,Mobilephone as phone,Address,AdminArea1 as State,AdminArea2 as city,AddressLine1 as Street,Addressline2 as Apartment,PostalCode as zipcode,Socialsecuritynumber,domain from users where uid = '" + uid + "' ";
             DataTable table = new DataTable();
             GoogleSqlDBHelper.Fill(cmdText, table);
             if (table != null && table.Rows.Count > 0)
@@ -583,7 +580,7 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
                 userInformation_Res.UserPersonInformation = userPersonInformationResponse.First();
                 if (!string.IsNullOrEmpty(userInformation_Res.UserPersonInformation.Domain))
                 {
-                    cmdText = @" select name,Address,Phone,MainBusiness,Email,Zipcode,CompantNumber,TimeSheetType,BusinessType,Edd,EmployerIdentificationNumber as Ein,BankAccount,PayPeriod from User_Compant where id = '"+ userInformation_Res.UserPersonInformation.Domain + "' ";
+                    cmdText = @" select name,Address,Phone,MainBusiness,Email,Zipcode,CompantNumber,TimeSheetType,BusinessType,Edd,EmployerIdentificationNumber as Ein,BankAccount,PayPeriod from Compant where id = '"+ userInformation_Res.UserPersonInformation.Domain + "' ";
                      table = new DataTable();
                     GoogleSqlDBHelper.Fill(cmdText, table);
                     if (table != null && table.Rows.Count > 0)
@@ -598,7 +595,7 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
         }
 
         /// <summary>
-        /// 添加用户基本信息
+        /// 更新用户基本信息
         /// </summary>
         /// <param name="signup_req"></param>
         /// <returns></returns>
@@ -609,61 +606,95 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
             string changevalue = signup_req.Actioninfo;
             string setsql = "";
             int num = 0;
-            string parameterName = "";
-            SqlDbType parameterType = SqlDbType.NVarChar;
-            object parameterValue = changevalue; // 默认值为字符串
+           List<string> parameterName = new List<string>();
+            List<SqlDbType> parameterType = new List<SqlDbType>();
+            List<string> parameterValue = new List<string>(); 
+            //object parameterValue = changevalue; // 默认值为字符串
 
             switch (type.ToLower())
             {
                 case "name":
                     setsql = "UPDATE users SET NickName = @NickName";
-                    parameterName = "@NickName";
-                    parameterType = SqlDbType.NVarChar;
+                    parameterName.Add("@NickName");
+                    parameterType.Add(SqlDbType.NVarChar);
+                    parameterValue.Add(changevalue);
                     break;
                 case "birthday":
                     setsql = "UPDATE users SET BirthDate = @BirthDate";
-                    parameterName = "@BirthDate";
-                    parameterType = SqlDbType.DateTime;
+                    parameterName.Add("@BirthDate");
+                    parameterType.Add(SqlDbType.DateTime);
                     if (!DateTime.TryParse(changevalue, out DateTime birthDate))
                     {
                         throw new ArgumentException("BirthDate 格式无效。");
                     }
-                    parameterValue = birthDate;
+                    parameterValue.Add(birthDate.ToString());
                     break;
                 case "gender":
                     setsql = "UPDATE users SET Gender = @Gender";
-                    parameterName = "@Gender";
-                    parameterType = SqlDbType.Int;
+                    parameterName.Add("@Gender");
+                    parameterType.Add(SqlDbType.Int);
                     if (!int.TryParse(changevalue, out int gender))
                     {
-                        throw new ArgumentException("Gender 必须为整数。");
+                        throw new ArgumentException("Gender 出现错误。");
                     }
-                    parameterValue = gender;
+                    parameterValue.Add(gender.ToString());
                     break;
                 case "email":
                     setsql = "UPDATE users SET Email = @Email";
-                    parameterName = "@Email";
-                    parameterType = SqlDbType.NVarChar;
+                    parameterName.Add("@Email");
+                    parameterType.Add(SqlDbType.NVarChar);
+                    parameterValue.Add(changevalue);
                     break;
-                case "mobile": // 修正拼写错误，原为 "monile"
+                case "mobile": 
                     setsql = "UPDATE users SET Mobilephone = @Mobilephone";
-                    parameterName = "@Mobilephone";
-                    parameterType = SqlDbType.NVarChar;
+                    parameterName.Add("@Mobilephone");
+                    parameterType.Add(SqlDbType.NVarChar);
+                    parameterValue.Add(changevalue);
                     break;
                 case "address":
-                    setsql = "UPDATE users SET Address = @Address";
-                    parameterName = "@Address";
-                    parameterType = SqlDbType.NVarChar;
-                    break;
-                case "postalcode":
-                    setsql = "UPDATE users SET PostalCode = @PostalCode";
-                    parameterName = "@PostalCode";
-                    parameterType = SqlDbType.VarChar;
+                    string [] addressarr = changevalue.Split(',');
+                    string address = "";
+                    setsql = "UPDATE users SET AdminArea1 = @AdminArea1,AdminArea2 = @AdminArea2,AddressLine1 = @AddressLine1,Addressline2 = @Addressline2,PostalCode = @PostalCode,Address = @Address ";
+                    for (int i = 0;i< addressarr.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                parameterName.Add("@AdminArea1");
+                                parameterType.Add(SqlDbType.NVarChar);
+                                address = addressarr[i];
+                                break;
+                            case 1:
+                                parameterName.Add("@AdminArea2");
+                                parameterType.Add(SqlDbType.NVarChar);
+                                address = address +","+ addressarr[i];
+                                break;
+                            case 2:
+                                parameterName.Add("@AddressLine1");
+                                parameterType.Add(SqlDbType.NVarChar);
+                                address = address + "," + addressarr[i];
+                                break;
+                            case 3:
+                                parameterName.Add("@Addressline2");
+                                parameterType.Add(SqlDbType.NVarChar);
+                                address = address +","+ addressarr[i];
+                                break;
+                            case 4:
+                                parameterName.Add("@PostalCode");
+                                parameterType.Add(SqlDbType.VarChar);
+                                break;
+                        }
+                        parameterValue.Add(addressarr[i]);
+                    }
+                    parameterName.Add("@Address");
+                    parameterType.Add(SqlDbType.NVarChar);
+                    parameterValue.Add(changevalue);
                     break;
                 case "socialsecuritynumber":
                     setsql = "UPDATE users SET Socialsecuritynumber = @Socialsecuritynumber";
-                    parameterName = "@Socialsecuritynumber";
-                    parameterType = SqlDbType.NVarChar;
+                    parameterName.Add("@Socialsecuritynumber");
+                    parameterType.Add(SqlDbType.NVarChar);
+                    parameterValue.Add(changevalue);
                     break;
                 default:
                     throw new ArgumentException("无效的更新类型。");
@@ -674,8 +705,9 @@ WHERE Email = @Email OR MobilePhone = @MobilePhone";
                 string cmdText = $"{setsql} WHERE uid = @uid";
                 SqlCommand cmd = new SqlCommand(cmdText);
                 cmd.Parameters.Add("@uid", SqlDbType.NVarChar).Value = user;
-                cmd.Parameters.Add(parameterName, parameterType).Value = parameterValue;
-
+                for (int i = 0; i < parameterName.Count; i++) {
+                    cmd.Parameters.Add(parameterName[i], parameterType[i]).Value = parameterValue[i];
+                }
                  num = GoogleSqlDBHelper.ExecuteNonQuery(cmd);
             }
             if (num <= 0)

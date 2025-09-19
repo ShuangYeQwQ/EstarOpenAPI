@@ -1,0 +1,43 @@
+﻿<View>
+	<!--xsi:type="Worksheet"-->
+	<Identifier Hierarchy="Federal\Income\Payments from Qualified Education Programs (1099-Q)" />
+	<Controls>
+		<Entity ID="1" />
+	</Controls>
+	<WorkSheetSection  Name="Payments from Qualified Education Programs (IRS 1099-Q)">
+		<GridData ID="-47611" Description="Qualified Education Programs">
+			<Detail>
+				<WorkSheetSection Name="IRS 1099-Q">
+					<FieldData FieldName="TS" Type="Enum" Location="TS" FieldID="IFDSCESA.3"/>
+					<FieldData FieldName="FS" Type="Enum" Location="FS" FieldID="IFDSCESA.6"/>
+					<FieldData FieldName="STATE" Type="Enum" Location="State" FieldID="IFDSCESA.4"/>
+					<FieldData FieldName="CITY" Type="Enum" Location="City" FieldID="IFDSCESA.5"/>
+					<FieldData FieldName="PAYNAME" Type="Text" Location="Payer's name" FieldID="IFDSCESA.2"/>
+					<FieldData FieldName="PAYADDR" Type="Text" Location="Payer's address" FieldID="IFDSCESA.8"/>
+					<FieldData FieldName="TDIST" Type="Float" Location="Gross distribution" FieldID="IFDSCESA.10"/>
+					<FieldData FieldName="PAYCITY" Type="Text" Location="Payer's city" FieldID="IFDSCESA.9"/>
+					<FieldData FieldName="PAYSTATE" Type="Enum" Location="Payer's state" FieldID="IFDSCESA.12"/>
+					<FieldData FieldName="PAYZIP" Type="Text" Location="Payer's ZIP code" FieldID="IFDSCESA.19"/>
+					<FieldData FieldName="PAYPHONE" Type="Text" Location="Payer's phone number" FieldID="IFDSCESA.23"/>
+					<FieldData FieldName="EARNINGS" Type="Float" Location="Earnings" FieldID="IFDSCESA.38"/>
+					<FieldData FieldName="PAYFID" Type="Text" Location="Payer's federal ID number" FieldID="IFDSCESA.30"/>
+					<FieldData FieldName="RECSSN" Type="Text" Location="Recipient's SSN" FieldID="IFDSCESA.31"/>
+					<FieldData FieldName="BASIS" Type="Float" Location="Basis" FieldID="IFDSCESA.39"/>
+					<FieldData FieldName="TRUSTEE" Type="Enum" Location="Trustee to trustee transfer" FieldID="IFDSCESA.40"/>
+					<FieldData FieldName="RECNAME" Type="Text" Location="Recipient's name" FieldID="IFDSCESA.32"/>
+					<FieldData FieldName="RECADDR" Type="Text" Location="Recipient's address" FieldID="IFDSCESA.33"/>
+					<FieldData FieldName="QTPPRIVT" Type="Enum" Location="QTP - private" FieldID="IFDSCESA.41"/>
+					<FieldData FieldName="NOTBENEF" Type="Enum" Location="Not designated beneficiary" FieldID="IFDSCESA.44"/>
+					<FieldData FieldName="QTPSTATE" Type="Enum" Location="QTP - state" FieldID="IFDSCESA.42"/>
+					<FieldData FieldName="RECCITY" Type="Text" Location="Recipient's city" FieldID="IFDSCESA.34"/>
+					<FieldData FieldName="RECSTATE" Type="Enum" Location="Recipient's state" FieldID="IFDSCESA.35"/>
+					<FieldData FieldName="RECZIP" Type="Text" Location="Recipient's ZIP code" FieldID="IFDSCESA.36"/>
+					<FieldData FieldName="ESATYPE" Type="Enum" Location="Coverdell ESA" FieldID="IFDSCESA.43"/>
+					<FieldData FieldName="DISTCD" Type="Text" Location="Distribution code" FieldID="IFDSCESA.7"/>
+					<FieldData FieldName="ACCTNUMB" Type="Text" Location="Account number" FieldID="IFDSCESA.37"/>
+					<FieldData FieldName="VALUE" Type="Float" Location="Value of Coverdell ESA account" FieldID="IFDSCESA.1"/>
+				</WorkSheetSection>
+			</Detail>
+		</GridData>
+	</WorkSheetSection>
+</View>
