@@ -22,6 +22,7 @@ using iText.Forms.Fields;
 using static Google.Cloud.DocumentAI.V1.TrainProcessorVersionRequest.Types;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Xml.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Shared
 {
@@ -648,5 +649,79 @@ namespace Infrastructure.Shared
             }
         }
 
+
+        /// <summary>
+        /// 检查文件
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static async Task<bool> ValidateFileAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                //_logger.LogWarning("Empty file uploaded");
+                return false;
+            }
+
+            // 检查文件大小
+            var maxFileSize = GetMaxFileSize();
+            if (file.Length > maxFileSize)
+            {
+                //_logger.LogWarning("File too large: {FileName} ({Size} bytes)", file.FileName, file.Length);
+                return false;
+            }
+
+            // 检查文件类型
+            if (!FileHelper.IsSupportedFileType(file.FileName))
+            {
+                //_logger.LogWarning("Unsupported file type: {FileName}", file.FileName);
+                return false;
+            }
+
+            // 检查文件头（基本病毒扫描）
+            try
+            {
+                await using var stream = file.OpenReadStream();
+                if (!await ValidateFileSignatureAsync(stream, Path.GetExtension(file.FileName)))
+                {
+                    //_logger.LogWarning("Invalid file signature: {FileName}", file.FileName);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex, "Error validating file signature: {FileName}", file.FileName);
+                return false;
+            }
+
+            return true;
+        }
+
+        public static long GetMaxFileSize()
+        {
+            var maxSizeMB = 100;
+            return maxSizeMB * 1024L * 1024L;
+        }
+        private static async Task<bool> ValidateFileSignatureAsync(Stream stream, string extension)
+        {
+            try
+            {
+                var buffer = new byte[20];
+                await stream.ReadAsync(buffer.AsMemory(0, 20));
+                stream.Position = 0;
+
+                return extension.ToLower() switch
+                {
+                    ".pdf" => buffer.Take(5).SequenceEqual(new byte[] { 0x25, 0x50, 0x44, 0x46, 0x2D }), // %PDF-
+                    ".docx" => buffer.Take(4).SequenceEqual(new byte[] { 0x50, 0x4B, 0x03, 0x04 }), // PK..
+                    ".txt" => true, // 文本文件没有特定签名
+                    _ => true
+                };
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Application.RequestModel;
-using Application.RequestModel.AccountPage;
 using Application.Wrappers;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -10,8 +9,12 @@ using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
-    public interface ICchApiService
+    public  interface IAiChatService
     {
-       
+        /// <summary>
+        ///客户上传个人文件
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<string>> UploadDocument(common_req<IFormFile> signup_req);
     }
 }

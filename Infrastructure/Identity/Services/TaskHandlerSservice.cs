@@ -216,8 +216,5 @@ values((select top 1 UId from User_ServiceDetail where id = @UserServiceDetailId
             }
         }
 
-
-
-
     }
 }

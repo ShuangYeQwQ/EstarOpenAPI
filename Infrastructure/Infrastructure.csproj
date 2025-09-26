@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspose.Slides.NET" Version="25.7.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageReference Include="DocX" Version="4.0.25105.5786" />
     <PackageReference Include="EPPlus" Version="8.0.8" />
     <PackageReference Include="Google.Apis.Auth" Version="1.70.0" />
@@ -18,6 +19,7 @@
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="OpenAI" Version="2.5.0" />
     <PackageReference Include="PayPalServerSDK" Version="0.6.0" />
     <PackageReference Include="Stripe.net" Version="47.0.0" />
     <PackageReference Include="System.IO" Version="4.3.0" />
