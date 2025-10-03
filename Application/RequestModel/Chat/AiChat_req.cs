@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,7 @@ namespace Application.RequestModel.Chat
 {
     public class AiChat_req
     {
-        public string CustomerId { get; set; }
-        public string Question { get; set; }
-        public int TopK { get; set; } = 5;
+       public string usertext { get; set; }
     }
 
 }

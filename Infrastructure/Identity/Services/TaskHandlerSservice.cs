@@ -4,6 +4,7 @@ using Application.RequestModel.HomePage;
 using Application.RequestModel.TaskPage;
 using Application.ResponseModel.Task;
 using Application.Wrappers;
+using DocumentFormat.OpenXml.Office.Word;
 using EStarGoogleCloud;
 using EStarGoogleCloud.Response;
 using Google.Cloud.Firestore;
@@ -62,16 +63,68 @@ values((select top 1 UId from User_ServiceDetail where id = @UserServiceDetailId
             return new Response<int>(num,"");
        
         }
-        //更新用户任务状态
+        //更新用户任务状态/更改用户服务状态
         public async Task<Response<int>> UpdateUserTaskStatusAsync(common_req<UpdataTaskStatus_req> signup_req)
         {
+            string status = signup_req.Actioninfo.status;
             string cmdText = string.Format(@" update user_task set Status = @Status,UserContent=@UserContent where id = @Id ");
             SqlCommand sqlCommand = new SqlCommand(cmdText);
             sqlCommand.Parameters.AddWithValue("@Id", signup_req.Actioninfo.id);
-            sqlCommand.Parameters.AddWithValue("@Status", signup_req.Actioninfo.status);
+            sqlCommand.Parameters.AddWithValue("@Status", status);
                 sqlCommand.Parameters.AddWithValue("@UserContent", signup_req.Actioninfo.content);
-            
             int num = GoogleSqlDBHelper.ExecuteNonQuery(sqlCommand);
+            if (num > 0)
+            {
+                if (status.Trim().Equals("0"))
+                {
+                    
+                }
+                else if (status.Trim().Equals("1"))
+                {
+                    cmdText = string.Format(@" select id,Uid,status,OrdinaryEmployees,ExpertEmployees,ProfessionalEmployees,AccountingEmployees from User_ServiceDetail where id in(select UserServiceDetailId from user_task where id = '{0}')  ", signup_req.Actioninfo.id);
+                    sqlCommand = new SqlCommand(cmdText);
+                    DataTable table = new DataTable();
+                    GoogleSqlDBHelper.Fill(sqlCommand, table);//获取用户服务状态
+                    if (table != null && table.Rows.Count >= 0)
+                    {
+                        string sid = table.Rows[0]["id"] + "";
+                        string uid = table.Rows[0]["Uid"] + "";
+                        string servicestatus = table.Rows[0]["status"] + "";
+                        string OrdinaryEmployees = table.Rows[0]["OrdinaryEmployees"] + "";
+                        string ExpertEmployees = table.Rows[0]["ExpertEmployees"] + "";
+                        string ProfessionalEmployees = table.Rows[0]["ProfessionalEmployees"] + "";
+                        string AccountingEmployees = table.Rows[0]["AccountingEmployees"] + "";
+                        if (signup_req.User == uid)
+                        {
+                            if (servicestatus.Equals("0"))
+                            {
+                                cmdText = string.Format(@" update User_ServiceDetail set Status = @Status where id = @Id ");
+                                sqlCommand = new SqlCommand(cmdText);
+                                sqlCommand.Parameters.AddWithValue("@Id", sid);
+                                sqlCommand.Parameters.AddWithValue("@Status", "1");
+                                 num = GoogleSqlDBHelper.ExecuteNonQuery(sqlCommand);
+                            }
+                        }
+                        else if (signup_req.User == OrdinaryEmployees)
+                        {
+                            
+                        }
+                        else if (signup_req.User == ExpertEmployees)
+                        {
+                            
+                        }
+                        else if (signup_req.User == ProfessionalEmployees)
+                        {
+                            
+                        }
+                        else if (signup_req.User == AccountingEmployees)
+                        {
+                            
+                        }
+                    }
+                    }
+            }
+
             return new Response<int>(num, "");
         }
 
@@ -92,9 +145,6 @@ values((select top 1 UId from User_ServiceDetail where id = @UserServiceDetailId
           
 
         }
-
-
-
 
         /// <summary>
         /// 谷歌识别文件

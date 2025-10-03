@@ -18,6 +18,9 @@ using Application.RequestModel;
 using Microsoft.AspNetCore.Http;
 using Stripe;
 using Infrastructure.Shared;
+using Application.RequestModel.HomePage;
+using Application.ResponseModel.HomePage;
+using Application.RequestModel.Chat;
 
 namespace Infrastructure.Identity.Services
 {
@@ -66,13 +69,13 @@ namespace Infrastructure.Identity.Services
                 _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             }
 
-            private async Task<string> PostAsync(string url, string jsonContent)
+            private async Task<string> PostAsync(string url, string jsonContent,string token)
             {
                 var request = new HttpRequestMessage(HttpMethod.Post, "https://in03-45c7c25d7b6c39b.serverless.gcp-us-west1.cloud.zilliz.com/v2/vectordb" + url)
                 {
                     Content = new StringContent(jsonContent, Encoding.UTF8, "application/json")
                 };
-
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 using var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
@@ -91,7 +94,7 @@ namespace Infrastructure.Identity.Services
             ""metricType"": ""COSINE"",
             ""vectorField"": ""vector""
         }}";
-                return PostAsync("/collections/create", payload);
+                return PostAsync("/collections/create", payload, "9390036a8ed963044e33008912e3b74e8067a688999d873f09a582a809f3c7077c8b8247e64cfaac3e755f8b86da547b5b565aa1");
             }
             /// <summary>
             /// 创建数据
@@ -129,7 +132,7 @@ namespace Infrastructure.Identity.Services
                     WriteIndented = false
                 });
 
-                return await PostAsync("/entities/insert", json);
+                return await PostAsync("/entities/insert", json, "9390036a8ed963044e33008912e3b74e8067a688999d873f09a582a809f3c7077c8b8247e64cfaac3e755f8b86da547b5b565aa1");
             }
             ///// <summary>
             ///// 更新数据
@@ -180,9 +183,26 @@ namespace Infrastructure.Identity.Services
             /// <param name="collectionName"></param>
             /// <param name="userId"></param>
             /// <returns></returns>
-            public async Task<string> SearchVectorAsync(string collectionName, string userId) {
-                string json = $@"{{ ""collectionName"": ""{collectionName}"",""filter"": ""userId == \""{userId}\""}}";
-                return await PostAsync("/entities/query", json);
+            public async Task<string> SearchVectorAsync(string collectionName,string userId,float[] data) {
+                //string json = $@"{{ ""collectionName"": ""{collectionName}"",""filter"": ""userId == \""{userId}\""}}";
+
+                string json = $@"{{
+  ""collectionName"": ""{collectionName}"",
+  ""search"": [
+    {{
+      ""data"": {data},
+      ""annsField"": ""vector"",
+      ""filter"": ""userId == \""{userId}\""
+      ""limit"": 10,
+      ""outputFields"": [""*""]
+    }}
+  ],
+  ""rerank"": {{                                                                          
+    ""strategy"": ""rrf"",
+    ""params"": {{ ""k"": 10 }}
+  }}
+}}";
+                return await PostAsync("/entities/hybrid_search", json, "9390036a8ed963044e33008912e3b74e8067a688999d873f09a582a809f3c7077c8b8247e64cfaac3e755f8b86da547b5b565aa1");
             }
             /// <summary>
             /// 删除用户数据
@@ -193,56 +213,89 @@ namespace Infrastructure.Identity.Services
             public async Task<string> DeleteVectorAsync(string collectionName, string id,string filename)
             {
                 string json = $@"{{ ""collectionName"": ""{collectionName}"",""filter"": ""id == \""{id}\""}}";
-                return await PostAsync("/entities/delete", json);
+                return await PostAsync("/entities/delete", json, "9390036a8ed963044e33008912e3b74e8067a688999d873f09a582a809f3c7077c8b8247e64cfaac3e755f8b86da547b5b565aa1");
             }
+
+            /// <summary>
+            /// 客户上传文件
+            /// </summary>
+            /// <param name="signup_req"></param>
+            /// <returns></returns>
+            public async Task<Response<List<string>>> UploadDocument(List<IFormFile> files, string userId, string type)
+            {
+                if (type.Trim().Equals("0"))
+                {
+                   return await DownloadDocument(files, userId);
+                }
+                else
+                {
+                    return await UserChat(files, userId);
+                }
+            }
+
 
             /// <summary>
             /// 文件提取文本，保存向量数据
             /// </summary>
             /// <param name="signup_req"></param>
             /// <returns></returns>
-            public async Task<Response<string>> UploadDocument(common_req<IFormFile> signup_req)
+            public async Task<Response<List<string>>> DownloadDocument(List<IFormFile> files, string userId)
             {
-                // 1. 提取文本 (伪代码)
-                var text = await FileHelper.ExtractTextAsync(signup_req.Actioninfo);
+                for (int i = 0; i < files.Count; i++)
+                {
+                    // 1. 提取文本 
+                    var text = await FileHelper.ExtractTextAsync(files[i]);
 
-                // 2. 向量化
-                OpenAIService openAIService = new OpenAIService("");
-                var embeddings = await openAIService.GetEmbeddingsBatchAsync(new[] { text });
+                    // 2. 向量化
+                    OpenAIService openAIService = new OpenAIService("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");
+                    var embeddings = await openAIService.GetEmbeddingsBatchAsync(new[] { text });
 
-                // 3. 存储
-                await InsertVectorAsync(signup_req.User, signup_req.Actioninfo.FileName,"", embeddings.ToArray(), new[] { text });
+                    // 3. 存储
+                    await InsertVectorAsync(userId, files[i].FileName, "", embeddings.ToArray(), new[] { text });
+                }
 
-                return new Response<string>("文件已处理并存入向量数据库", "");
+                return new Response<List<string>>(new List<string>(), "文件已处理并存入向量数据库");
             }
             /// <summary>
             /// 根据用户文件获取关联回答
             /// </summary>
             /// <param name="signup_req"></param>
             /// <returns></returns>
-            public async Task<Response<string>> UserChat(common_req<IFormFile> signup_req)
+            public async Task<Response<List<string>>> UserChat(List<IFormFile> files, string userId)//common_req<IFormFile> signup_req
             {
-                // 1. 提取文本 (伪代码)
-                var text = await FileHelper.ExtractTextAsync(signup_req.Actioninfo);
-                // 2.  query embedding
-                OpenAIService openAIService = new OpenAIService("");
-                var queryEmbedding = (await openAIService.GetEmbeddingsBatchAsync(new[] { text }))[0];
-
-                // 3. 检索
-                var searchResultJson = await SearchVectorAsync(signup_req.User, queryEmbedding);
-                var searchResult = JsonDocument.Parse(searchResultJson)
-                    .RootElement.GetProperty("data")
-                    .EnumerateArray()
-                    .Select(e => e.GetProperty("text").GetString())
-                    .ToList();
-
-                // 4. 基于上下文生成答案
-                var answer = await openAIService.GetAnswerFromContextAsync(text, searchResult);
-
-                return new Response<string>(answer, "");
+                OpenAIService openAIService = new OpenAIService("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");
+                 List<string> answer = new List<string>();
+                for (int i = 0; i < files.Count; i++)
+                {
+                    // 1. 提取文本 
+                    var text = await FileHelper.ExtractTextAsync(files[i]);
+                    // 2.  query embedding
+                    var queryEmbedding = (await openAIService.GetEmbeddingsBatchAsync(new[] { text }))[0];
+                    // 3. 检索
+                    var searchResultJson = await SearchVectorAsync(userId, userId, queryEmbedding);
+                    var searchResult = JsonDocument.Parse(searchResultJson)
+                        .RootElement.GetProperty("data")
+                        .EnumerateArray()
+                        .Select(e => e.GetProperty("text").GetString())
+                        .ToList();
+                    // 4. 基于上下文生成答案
+                    answer.Add(await openAIService.GetAnswerFromContextAsync(text, searchResult));
+                }
+                return new Response<List<string>>(answer, "");
             }
 
 
+            /// <summary>
+            /// 根据用户文本获取关联回答
+            /// </summary>
+            /// <param name="signup_req"></param>
+            /// <returns></returns>
+            public async Task<Response<string>> UserTextChat(common_req<AiChat_req> signup_req)
+            {
+                OpenAIService openAIService = new OpenAIService("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");
+                var answer = await openAIService.GetAnswerFromContextAsync(signup_req.Actioninfo.usertext, null);
+                return new Response<string>(answer, "");
+            }
 
         }
     }
