@@ -128,6 +128,7 @@ namespace Infrastructure.Identity.Services
 
             return new Response<List<GoogleDocumentAIFormName_res>>(googleDocumentAIFormName_Res, "");
         }
+
         // sql = $"select id,FileAddress,FileName,FileType,BucketName,FileURL,FileSize from User_Service_File where UId = '{signup_req.user}' and UserServiceId = '{signup_req.actioninfo}' and isnull(FormType,'') = '' ";
         //DataTable dt2 = new DataTable();
         //GoogleSqlDBHelper.Fill(sql, dt2);

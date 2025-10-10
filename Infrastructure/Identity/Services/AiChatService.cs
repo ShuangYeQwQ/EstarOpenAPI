@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
-using static Infrastructure.Identity.Services.AiChatService;
 using PaypalServerSdk.Standard.Models;
 using static Google.Cloud.DocumentAI.V1.Document.Types.Page.Types;
 using System.Text.Json;
@@ -21,12 +20,12 @@ using Infrastructure.Shared;
 using Application.RequestModel.HomePage;
 using Application.ResponseModel.HomePage;
 using Application.RequestModel.Chat;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Net.Http;
 
 namespace Infrastructure.Identity.Services
 {
-    public class AiChatService
-    {
-        public class AIChatService : IAiChatService
+        public class AiChatService : IAiChatService
         {
 
             //        public async Task<string> GetResponse(string userMessage, string? context = null)
@@ -59,19 +58,22 @@ namespace Infrastructure.Identity.Services
 
 
 
-            private readonly HttpClient _httpClient;
+            //private readonly HttpClient _httpClient;
             //https://in03-45c7c25d7b6c39b.serverless.gcp-us-west1.cloud.zilliz.com/v2/vectordb
             //9390036a8ed963044e33008912e3b74e8067a688999d873f09a582a809f3c7077c8b8247e64cfaac3e755f8b86da547b5b565aa1
-            public AIChatService(string apiKey)
-            {
-                _httpClient = new HttpClient();
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-                _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            }
+            //public AiChatService(string apiKey)
+            //{
+            //    _httpClient = new HttpClient();
+            //    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            //    _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //}
 
             private async Task<string> PostAsync(string url, string jsonContent,string token)
             {
-                var request = new HttpRequestMessage(HttpMethod.Post, "https://in03-45c7c25d7b6c39b.serverless.gcp-us-west1.cloud.zilliz.com/v2/vectordb" + url)
+            HttpClient _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer","");
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://in03-45c7c25d7b6c39b.serverless.gcp-us-west1.cloud.zilliz.com/v2/vectordb" + url)
                 {
                     Content = new StringContent(jsonContent, Encoding.UTF8, "application/json")
                 };
@@ -296,9 +298,24 @@ namespace Infrastructure.Identity.Services
                 var answer = await openAIService.GetAnswerFromContextAsync(signup_req.Actioninfo.usertext, null);
                 return new Response<string>(answer, "");
             }
-
+        /// <summary>
+        /// 根据用户图片获取关联回答
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        public async Task<Response<string>> AIRecognizeText(List<IFormFile> files)
+        {
+            OpenAIService openAIService = new OpenAIService("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");
+            string answer = "";
+            for (int i = 0; i < files.Count; i++)
+            {
+                // 1. 提取文本 
+                var text = await FileHelper.ExtractTextAsync(files[i]);
+                //2. 生成回答
+                 answer = await openAIService.GetAnswerFromContextAsync(text, null);
+            }
+            return new Response<string>(answer, "");
         }
     }
+    }
 
-
-}

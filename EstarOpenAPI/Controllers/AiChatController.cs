@@ -39,10 +39,20 @@ namespace EstarOpenAPI.Controllers
         /// <param name="userId">客户id</param>
         /// <param name="type">上传类型 0：保存，1：提问</param>
         /// <returns></returns>
-        [HttpPost("upload")]
+        [HttpPost("textairecognize")]
         public async Task<IActionResult> AIRecognizeText([FromBody] common_req<AiChat_req> signup_req)//[FromBody] common_req<IFormFile> signup_req
         {
             return Ok(await _aichatService.UserTextChat(signup_req));
+        }
+        /// <summary>
+        /// 图片ai识别
+        /// </summary>
+        /// <param name="files">文件</param>
+        /// <returns></returns>
+        [HttpPost("imagerecognition")]
+        public async Task<IActionResult> AIRecognizeText([FromForm] List<IFormFile> files)//[FromBody] common_req<IFormFile> signup_req
+        {
+            return Ok(await _aichatService.AIRecognizeText(files));
         }
     }
 }

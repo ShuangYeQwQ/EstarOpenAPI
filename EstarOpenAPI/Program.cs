@@ -17,6 +17,8 @@ builder.Services.AddScoped<IServicesService, ServicesService>();
 builder.Services.AddScoped<ITaskHandlerSservice, TaskHandlerSservice>();
 builder.Services.AddScoped<ITasksService, TasksService>();
 builder.Services.AddScoped<IGoogleFileService, GoogleFileService>();
+builder.Services.AddScoped<ICchApiService, CchApiService>();
+builder.Services.AddScoped<IAiChatService, AiChatService>();
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
     options.ListenAnyIP(44386, listenOptions =>
@@ -30,7 +32,7 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];  // Set your Secret API Key here
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
 
 
 var app = builder.Build();

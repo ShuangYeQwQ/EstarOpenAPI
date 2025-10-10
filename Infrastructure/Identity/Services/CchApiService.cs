@@ -1,4 +1,5 @@
-﻿using CCH.Pfx.TPI.SDK.ServerSide.BatchProcessing;
+﻿using Application.Interfaces;
+using CCH.Pfx.TPI.SDK.ServerSide.BatchProcessing;
 using CCH.Pfx.TPI.SDK.ServerSide.Common;
 using CCH.Pfx.TPI.SDK.ServerSide.Security;
 using CCH.Pfx.TPI.SDK.ServerSide.TaxTransfer;
@@ -13,12 +14,8 @@ using System.Text.Json;
 
 namespace Infrastructure.Identity.Services
 {
-    public class CchApiService
+    public class CchApiService: ICchApiService
     {
-        public CchApiService()
-        {
-
-        }
 
 
         public async Task<T> SendRequestAsync<T>(string baseUrl, string accessToken, string endpoint, HttpMethod method, object? requestBody = null) where T : class

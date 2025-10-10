@@ -19,6 +19,7 @@ using Microsoft.Data.SqlClient;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using System.Data.Common;
 using static Google.Cloud.DocumentAI.V1.Document.Types.Page.Types;
+using Google.Rpc;
 
 
 
@@ -50,22 +51,38 @@ namespace Infrastructure.Identity.Services
                 string verificationcode = action_info.verificationcode + "";
                 Signup_res signup_Res = new Signup_res();
                 string sql = "";
-                string code = "";
                 Users user = new Users();
                 string msg = "";
                 var command = new SqlCommand();
                 //command.Parameters.AddWithValue("@email", email);
+                //邮箱验证
                 if (type.Equals("0"))
                 {
-                   
-                    sql = string.Format($@" SELECT top 1 Code FROM otp_verify where email = @email  and ExpiryTime > GETDATE()  order by Sendtime DESC ");
+                    //and ExpiryTime > GETDATE() and retrycount <= '5'  
+                    sql = string.Format($@" SELECT top 1 Code,retrycount,ExpiryTime FROM otp_verify where email = @email  order by Sendtime DESC ");
                     command = new SqlCommand(sql);
                     command.Parameters.AddWithValue("@email", email);
-                    code = GoogleSqlDBHelper.ExecuteScalar(command);
+                    DataTable dt = new DataTable();
+                    GoogleSqlDBHelper.Fill(command, dt);
+                    if (dt.Rows.Count <= 0)
+                    {
+                        return new Response<Signup_res>("验证失败！未找到该邮箱对应的验证码");
+                    }
+                    string code = dt.Rows[0]["Code"] + "";
+                    int retrycount = Pub.To<int>(dt.Rows[0]["retrycount"] + "");
+                    DateTime expiryTime = Pub.To<DateTime>(dt.Rows[0]["ExpiryTime"] + "");
                     if (!code.Equals(verificationcode) || !string.IsNullOrEmpty(msg))
                     {
-                        Pub.SaveLog(nameof(HomePageService), "验证码错误，请检查您输入的验证码是否与接收的一致");
+                        //Pub.SaveLog(nameof(HomePageService), "验证码错误，请检查您输入的验证码是否与接收的一致");
                         return new Response<Signup_res>("验证码错误，请检查您输入的验证码是否与接收的一致");
+                    }
+                    if (retrycount > 5)
+                    {
+                        return new Response<Signup_res>("验证失败！错误次数大于5次，请重新发送验证码验证");
+                    }
+                    if (DateTime.Now > expiryTime)
+                    {
+                        return new Response<Signup_res>("验证失败！验证码已过期");
                     }
                     user.Email = email;
                 }
@@ -146,24 +163,37 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
             string user = signup_req.User + "";
             string email = signup_req.Actioninfo.email + "";
             string type = signup_req.Type + "";//0:邮箱验证，1:手机验证
+            string nickname = signup_req.Actioninfo.nickname + "";
             string msg = "";
             var command = new SqlCommand();
             try
             {
                 if (email != null && email != "" && type != null && type != "")
                 {
-                    //获取邮件信息模板配置
-                     string sql = string.Format(" SELECT EmailBody,EmailSubject FROM common_config ");
+                    string sql = "";
                     DataTable dt = new DataTable();
+                    //验证邮箱是否存在
+                    sql = string.Format(" SELECT EmailBody,EmailSubject FROM Users where Email = @email ");
+                    command = new SqlCommand(sql);
+                    command.Parameters.AddWithValue("@email", email);
+                    GoogleSqlDBHelper.Fill(command, dt);
+                    if (dt.Rows.Count > 0) {
+                        return new Response<string>("当前邮箱已有账户，请登录或找回密码");
+                    }
+                    //获取邮件信息模板配置
+                    sql = string.Format(" SELECT EmailBody,EmailSubject FROM EmailConfig where EmailType = '3' ");
+                    
                     GoogleSqlDBHelper.Fill(sql, dt);
                      if (dt != null && dt.Rows.Count > 0)
                     {
                     string code = Pub.GenerateOtp();
                     string subject = dt.Rows[0]["EmailSubject"] + "";
                     string body = dt.Rows[0]["EmailBody"] + "";
+
                     string newBody = body.Replace("{userEmail}", email);
                     newBody = newBody.Replace("{oneTimeCode}", code);
-                    if (type.Equals("0"))
+                        newBody = newBody.Replace("{UserName}", nickname);
+                        if (type.Equals("0"))
                     {
                         int num = Pub.SendEmail(email, subject, newBody);
                         if (num <= 0)
@@ -172,7 +202,7 @@ email, user.password, user.Username, user.Createdate, user.Updatedate,"",DateTim
                         }
                             sql = string.Format($@"insert into otp_verify(code,Sendtime,ExpiryTime,Status,VerifyTime,MobilePhone,Type,Email,EmailBody,EmailSubject,retrycount) 
 values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email,@EmailBody,@EmailSubject,@retrycount)");
-                            command = new SqlCommand();
+                            command = new SqlCommand(sql);
                             command.Parameters.AddWithValue("@code", code);
                             command.Parameters.AddWithValue("@Sendtime", DateTime.Now);
                             command.Parameters.AddWithValue("@ExpiryTime", DateTime.Now.AddMinutes(5));
@@ -185,7 +215,6 @@ values(@code,@Sendtime,@ExpiryTime,@Status,@VerifyTime,@MobilePhone,@Type,@Email
                             command.Parameters.AddWithValue("@EmailSubject", subject);
                             command.Parameters.AddWithValue("@retrycount", "0");
                             num = GoogleSqlDBHelper.ExecuteNonQuery(command);
-
                           if( num > 0)
                             {
                                 return new Response<string>("ok", "邮件发送成功");

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Application.Interfaces
 {
     public  interface IAiChatService
-    {
+    { 
         /// <summary>
         ///客户上传个人文件
         /// </summary>
@@ -22,5 +22,10 @@ namespace Application.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<Response<string>> UserTextChat(common_req<AiChat_req> signup_req);
+        /// <summary>
+        ///根据用户图片获取关联回答
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<string>> AIRecognizeText(List<IFormFile> files);
     }
 }

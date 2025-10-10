@@ -128,6 +128,18 @@ values((select top 1 UId from User_ServiceDetail where id = @UserServiceDetailId
             return new Response<int>(num, "");
         }
 
+        //获取用户已上传的服务表格
+        public async Task<Response<UserFormList_res>> GetUserFormListAsync(common_req<string> signup_req)
+        {
+            string user = signup_req.User;
+            UserFormList_res userFormList_Res = new UserFormList_res();
+            string sql = string.Format($"  ");
+            return new Response<UserFormList_res>(userFormList_Res, "");
+        }
+        //UserFormList_res
+
+
+
         /// <summary>
         /// 
         /// </summary>
