@@ -7,6 +7,8 @@ using Application.ResponseModel.AccountPage;
 using Application.ResponseModel.GoogleDocumentAI;
 using Application.ResponseModel.ServicePage;
 using Application.Wrappers;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using EStarGoogleCloud;
 using EStarGoogleCloud.Response;
 using Google.Cloud.Firestore;
@@ -15,8 +17,11 @@ using Infrastructure.Shared;
 using iText.Kernel.Geom;
 using iText.Layout.Element;
 using iText.StyledXmlParser.Jsoup.Select;
+using LightGBMSharp;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
 using Org.BouncyCastle.Crypto;
 using Stripe.Radar;
 using Stripe.V2;
@@ -117,7 +122,7 @@ namespace Infrastructure.Identity.Services
         /// </summary>
         /// <param name="users"></param>
         /// <returns></returns>
-        public static string AddUserService(string uid, string sid, string payamount,string paymentplatform,string oid,string currencycode, List<PayItem> payItems)
+        public static string AddUserService(string uid, string sid, string payamount, string paymentplatform, string oid, string currencycode, List<PayItem> payItems)
         {
             //根据点数,服务状态设置服务员工 - 添加服务基本信息  -  各项服务明细（主服务，附加服务）  -  服务变量信息    -    修改服务员工点数
             string OrdinaryEmployees = "";//普通
@@ -377,7 +382,7 @@ values(@Uid, @UserServiceDetailId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @
                         cmd.Parameters.AddWithValue("@UserServiceDetailId", userServiceDetailModel.Id);
                         cmd.Parameters.AddWithValue("@Createtime", DateTime.Now);
                         cmd.Parameters.AddWithValue("@UpdateTime", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@Sid","");
+                        cmd.Parameters.AddWithValue("@Sid", "");
                         cmd.Parameters.AddWithValue("@TaskTitle", "服务处理");
                         cmd.Parameters.AddWithValue("@TaskContent", "发送服务所需的文件或输入服务所需的内容");
                         cmd.Parameters.AddWithValue("@Status", "0");
@@ -388,8 +393,8 @@ values(@Uid, @UserServiceDetailId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @
                     }
                 }
                 #endregion
-                
-               
+
+
 
                 int num = GoogleSqlDBHelper.ExecuteNonQueryTransaction(dbcom, ref msg);
                 if (num <= 0)
@@ -411,7 +416,7 @@ values(@Uid, @UserServiceDetailId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @
         /// </summary>
         /// <param name="users"></param>
         /// <returns></returns>
-        public static void AddAccountOrder( UserOrderModel orderModel, List<PayItem> payItems)
+        public static void AddAccountOrder(UserOrderModel orderModel, List<PayItem> payItems)
         {
             int num = 0;
             string sql = "";
@@ -546,9 +551,9 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
             sqlCommand.Parameters.AddWithValue("@Id", signup_req.Actioninfo);
             DataTable table = new DataTable();
             GoogleSqlDBHelper.Fill(sqlCommand, table);
-            if(table != null && table.Rows.Count > 0)
+            if (table != null && table.Rows.Count > 0)
             {
-                userDetailTask_Res.sendUser = table.Rows[0]["sendUser"] +"";
+                userDetailTask_Res.sendUser = table.Rows[0]["sendUser"] + "";
                 userDetailTask_Res.taskContent = table.Rows[0]["taskContent"] + "";
                 userDetailTask_Res.type = table.Rows[0]["type"] + "";
                 userDetailTask_Res.createTime = table.Rows[0]["createTime"] + "";
@@ -613,7 +618,7 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
             string servicecountcmdText = "";
             int page = signup_req.Actioninfo.Page;
             int pageSize = 10;
-            page =  (page - 1) * pageSize;
+            page = (page - 1) * pageSize;
             string serviceName = signup_req.Actioninfo.ServiceName;
             string status = signup_req.Actioninfo.Status;
             string wheretxt = "";
@@ -625,7 +630,7 @@ values(@Uid, @UserServiceId, @CreateTime, @UpdateTime, @Sid, @TaskTitle, @TaskCo
             {
                 wheretxt += " AND us.Status != '10'";
             }
-             
+
             if (!string.IsNullOrEmpty(serviceName))
             {
                 wheretxt += " AND  s.ServiceName like '%" + serviceName + "%' ";
@@ -647,13 +652,13 @@ FETCH NEXT {2} ROWS ONLY ", signup_req.User, page, pageSize, wheretxt);
 where 1 = 1 AND OrdinaryEmployees = '{0}' {1} ", signup_req.User, wheretxt);
                     break;
                 case "3":
-                     break;
+                    break;
                 case "4":
-                   break;
+                    break;
                 case "5":
-                  break;
+                    break;
                 case "6":
-                  //普通用户
+                    //普通用户
                     cmdText = string.Format(@" SELECT 
     us.id,
     s.ServiceName AS serviceName,
@@ -666,7 +671,7 @@ INNER JOIN Users u ON us.Uid = u.Uid
 WHERE 1 = 1 AND us.uid = '{0}' {3}
 ORDER BY us.CreateTime DESC
 OFFSET {1} ROWS 
-FETCH NEXT {2} ROWS ONLY ", signup_req.User,page, pageSize, wheretxt);
+FETCH NEXT {2} ROWS ONLY ", signup_req.User, page, pageSize, wheretxt);
                     servicecountcmdText = string.Format(@" SELECT COUNT(*) AS TotalCount
 FROM User_ServiceDetail us
 INNER JOIN Services s ON us.ServiceId = s.Id
@@ -680,7 +685,7 @@ WHERE us.uid = '{0}' {1} ", signup_req.User, wheretxt);
                 default:
                     break;
             }
-          
+
             //数据库处理
             DataTable table = new DataTable();
             GoogleSqlDBHelper.Fill(cmdText, table);
@@ -692,7 +697,7 @@ WHERE us.uid = '{0}' {1} ", signup_req.User, wheretxt);
             GoogleSqlDBHelper.Fill(servicecountcmdText, table);
             if (table != null && table.Rows.Count > 0)
             {
-                serviceList_Res.totalCount = Pub.To<int>(table.Rows[0]["totalCount"] +"");
+                serviceList_Res.totalCount = Pub.To<int>(table.Rows[0]["totalCount"] + "");
                 serviceList_Res.totalPages = (int)Math.Ceiling(serviceList_Res.totalCount / (double)pageSize);
             }
             return new Response<UserServiceList_res>(serviceList_Res, "");
@@ -708,24 +713,24 @@ WHERE us.uid = '{0}' {1} ", signup_req.User, wheretxt);
         public async Task<Response<UserServiceDetail_res>> GetUserServiceDetailAsync(common_req<string> signup_req)
         {
 
-//            WITH RankedData AS(
-//  SELECT *,
-//    ROW_NUMBER() OVER(
-//      PARTITION BY ServiceId
-//      ORDER BY ServiceNumber DESC
-//    ) AS rn
-//  FROM User_ServiceDetail
-//  WHERE UserServiceId = @UserServiceId
-//)
-//SELECT rd.UserServiceId, rd.ServiceId,rd.CreateTime,CASE rd.Status
-//    WHEN 10 THEN '已完成'
-//    ELSE '未完成'
-//  END AS Status,s.ServiceNameDesc as ServiceName
-//FROM RankedData rd
-//LEFT JOIN Services s ON rd.ServiceId = s.Id
-//WHERE rd.rn = 1
-//ORDER BY rd.ServiceNumber DESC 
-             UserServiceDetail_res userServiceDetail_Res = new  UserServiceDetail_res();
+            //            WITH RankedData AS(
+            //  SELECT *,
+            //    ROW_NUMBER() OVER(
+            //      PARTITION BY ServiceId
+            //      ORDER BY ServiceNumber DESC
+            //    ) AS rn
+            //  FROM User_ServiceDetail
+            //  WHERE UserServiceId = @UserServiceId
+            //)
+            //SELECT rd.UserServiceId, rd.ServiceId,rd.CreateTime,CASE rd.Status
+            //    WHEN 10 THEN '已完成'
+            //    ELSE '未完成'
+            //  END AS Status,s.ServiceNameDesc as ServiceName
+            //FROM RankedData rd
+            //LEFT JOIN Services s ON rd.ServiceId = s.Id
+            //WHERE rd.rn = 1
+            //ORDER BY rd.ServiceNumber DESC 
+            UserServiceDetail_res userServiceDetail_Res = new UserServiceDetail_res();
             string cmdText = string.Format(@" SELECT s.ServiceName,us.CreateTime,
 CASE us.Status   WHEN 10 THEN '已完成'  WHEN 0 THEN '待处理' ELSE '审核中' END as Status
 ,us.PayAmount,us.Begindate,us.Enddate,us.OrdinaryEmployees,us.ExpertEmployees,us.ProfessionalEmployees,
@@ -743,12 +748,12 @@ WHERE us.Id = @UserServiceDetailId ");
             if (table != null && table.Rows.Count > 0)
             {
                 userServiceDetail_Res = Pub.ToList<UserServiceDetail_res>(table).FirstOrDefault();
-                return new Response<UserServiceDetail_res>(userServiceDetail_Res,"");
+                return new Response<UserServiceDetail_res>(userServiceDetail_Res, "");
             }
-                return new Response<UserServiceDetail_res>("未找到数据");
+            return new Response<UserServiceDetail_res>("未找到数据");
         }
-       
-       
+
+
 
         /// <summary>
         /// 服务下变量列表
@@ -1178,5 +1183,61 @@ WHERE sal.ServiceId = '{0}'
 
         }
 
+
+
+
+        /// <summary>
+        /// 店保险
+        /// </summary>
+        /// <param name="input"></param>
+        public void SmallCommercModel(SmallCommercData small)
+        {
+            var predictor = new InsurancePredictor(
+    "insurance_model.onnx",
+    "model_features.txt",
+    "feature_importance.csv"
+);
+
+            float[] input = { 941, 5, 250000, 12, 800000, 1, 0.15f, 2000, 2, 1, 1, 60, 1000000, 500000, 1000000, 2000000, 5000, 10000, 1, 3 };
+
+            var result = predictor.Predict(input);
+
+            //float[] features = new float[]
+            //{
+            //    small.zip3, small.state, small.industry_naics, small.years_in_business,
+            //    small.gross_revenue_usd, small.num_employees, small.payroll_usd,
+            //    small.prior_claims_5yr, small.loss_ratio_5yr, small.location_sqft,
+            //    small.num_locations, small.sprinklers, small.burglar_alarm,
+            //    small.hours_of_operation_per_week, small.coverage_property_limit,
+            //    small.coverage_bi_limit, small.coverage_gl_each_occur,
+            //    small.coverage_gl_aggregate, small.deductible_property,
+            //    small.deductible_gl
+            //};
+            //using var session = new InferenceSession("smallcommerc_model.onnx");
+            //var tensor = new DenseTensor<float>(features, new[] { 1, features.Length });
+            //var inputName = session.InputMetadata.Keys.First();
+            //var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
+            //// 执行推理
+            //using var results = session.Run(inputs);
+            //var prediction = results.First().AsEnumerable<float>().First();
+        }
+        /// <summary>
+        /// 劳工保险
+        /// </summary>
+        /// <param name="input"></param>
+        public void CommercialWorkersCompModel(CommercialWorkersComp commercialWorkersComp)
+        {
+            float[] features = new float[]
+            {
+
+            };
+            using var session = new InferenceSession("commercialworkerscomp_model.onnx");
+            var tensor = new DenseTensor<float>(features, new[] { 1, features.Length });
+            var inputName = session.InputMetadata.Keys.First();
+            var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
+            // 执行推理
+            using var results = session.Run(inputs);
+            var prediction = results.First().AsEnumerable<float>().First();
+        }
     }
 }

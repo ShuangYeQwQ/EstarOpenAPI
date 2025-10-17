@@ -27,7 +27,7 @@ namespace EstarOpenAPI.Controllers
             return Ok(await _taskHandlerSservice.AddUserTaskAsync(signup_req));
         }
         /// <summary>
-        /// 修改客户任务状态
+        /// 获取客户上传的表格
         /// </summary>
         /// <param name="signup_req"></param>
         /// <returns></returns>
@@ -35,7 +35,17 @@ namespace EstarOpenAPI.Controllers
         public async Task<IActionResult> UpdateUserTaskStatusAsync([FromBody] common_req<UpdataTaskStatus_req> signup_req)
         {
             return Ok(await _taskHandlerSservice.UpdateUserTaskStatusAsync(signup_req));
+        } /// <summary>
+          /// 修改客户任务状态
+          /// </summary>
+          /// <param name="signup_req"></param>
+          /// <returns></returns>
+        [HttpPost("getuserformlist")]
+        public async Task<IActionResult> GetUserFormListAsync([FromBody] common_req<string> signup_req)
+        {
+            return Ok(await _taskHandlerSservice.GetUserFormListAsync(signup_req));
         }
+
         ///// <summary>
         ///// 处理任务
         ///// </summary>

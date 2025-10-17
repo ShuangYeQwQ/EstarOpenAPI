@@ -2,6 +2,7 @@
 using Application.RequestModel;
 using Application.RequestModel.HomePage;
 using Application.RequestModel.TaskPage;
+using Application.ResponseModel.ServicePage;
 using Application.ResponseModel.Task;
 using Application.Wrappers;
 using DocumentFormat.OpenXml.Office.Word;
@@ -11,6 +12,7 @@ using Google.Cloud.Firestore;
 using Infrastructure.Identity.Models;
 using Infrastructure.Request.CchGenerator;
 using Infrastructure.Request.CchWorkSheet;
+using Infrastructure.Shared;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -19,20 +21,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static Application.ResponseModel.AccountPage.UserInformation_res;
 
 namespace Infrastructure.Identity.Services
 {
     public class TaskHandlerSservice : ITaskHandlerSservice
     {
 
-        public Task<Response<int>> GetEmployeesCanAddTaskAsync(common_req<string> signup_req)
-        {
-            string cmdText = string.Format(@"SELECT * FROM Users WHERE Uid IN 
-(SELECT Uid FROM User_ServiceDetail usd WHERE id = '{0}' and (OrdinaryEmployees = '{1}' OR ExpertEmployees = '{1}' OR ProfessionalEmployees = '{1}' OR AccountingEmployees = '{1}') AND Status != '10' and 
-id not in(select UserServiceDetailId from User_Task where  UserServiceDetailId = usd.id and Status = '0'))", signup_req.Actioninfo, signup_req.User);
+//        public Task<Response<int>> GetEmployeesCanAddTaskAsync(common_req<string> signup_req)
+//        {
+//            string cmdText = string.Format(@"SELECT * FROM Users WHERE Uid IN 
+//(SELECT Uid FROM User_ServiceDetail usd WHERE id = '{0}' and (OrdinaryEmployees = '{1}' OR ExpertEmployees = '{1}' OR ProfessionalEmployees = '{1}' OR AccountingEmployees = '{1}') AND Status != '10' and 
+//id not in(select UserServiceDetailId from User_Task where  UserServiceDetailId = usd.id and Status = '0'))", signup_req.Actioninfo, signup_req.User);
 
-            throw new NotImplementedException();
-        }
+//            throw new NotImplementedException();
+//        }
         
         public async Task<Response<int>> AddUserTaskAsync(common_req<Employeetask_res> signup_req)
         {
@@ -128,35 +131,42 @@ values((select top 1 UId from User_ServiceDetail where id = @UserServiceDetailId
             return new Response<int>(num, "");
         }
 
-        //获取用户已上传的服务表格
-        public async Task<Response<UserFormList_res>> GetUserFormListAsync(common_req<string> signup_req)
+
+        /// <summary>
+        /// 获取用户服务表格列表
+        /// </summary>
+        /// <param name="signup_req"></param>
+        /// <returns></returns>
+        public async Task<Response<ServiceForm_res>> GetUserFormListAsync(common_req<string> signup_req)
         {
             string user = signup_req.User;
-            UserFormList_res userFormList_Res = new UserFormList_res();
-            string sql = string.Format($"  ");
-            return new Response<UserFormList_res>(userFormList_Res, "");
+            string sid = signup_req.Actioninfo;
+            ServiceForm_res userFormList_Res = new ServiceForm_res();
+            string cmdText = string.Format(@" SELECT top 1 * FROM UserServiceForm s WHERE uid = '{0}' and sid = '{1}' ", user, sid);
+            DataTable table = new DataTable();
+            GoogleSqlDBHelper.Fill(cmdText, table);
+            if (table != null && table.Rows.Count > 0)
+            {
+                userFormList_Res = Pub.ToList<ServiceForm_res>(table).FirstOrDefault();
+                return new Response<ServiceForm_res>(userFormList_Res, "");
+            }
+            return new Response<ServiceForm_res>("");
         }
-        //UserFormList_res
-
 
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="userservicedetailid"></param>
-        public void StartGoogleDocumentAiAsync(string userservicedetailid)
-        {
+       // public void StartGoogleDocumentAiAsync(string userservicedetailid)
+       // {
             //获取用户服务详情数据,用户id,服务id,服务年份
-            string cmdText = "";
-            SqlCommand sqlCommand = new SqlCommand(cmdText);
-            sqlCommand.Parameters.AddWithValue("@Id", userservicedetailid);
-
-           
+            //string cmdText = "";
+            //SqlCommand sqlCommand = new SqlCommand(cmdText);
+            //sqlCommand.Parameters.AddWithValue("@Id", userservicedetailid);
 
 
-          
-
-        }
+       // }
 
         /// <summary>
         /// 谷歌识别文件

@@ -23,6 +23,13 @@ namespace Application.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<Response<int>> UpdateUserTaskStatusAsync(common_req<UpdataTaskStatus_req> signup_req);
+
+
+        /// <summary>
+        ///获取用户服务表格列表
+        /// </summary>
+        /// <returns></returns>
+        Task<Response<ServiceForm_res>> GetUserFormListAsync(common_req<string> signup_req);
         
     }
 }
